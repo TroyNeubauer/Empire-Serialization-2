@@ -5,12 +5,16 @@
 template <class T> class BasicBuffer {
 
 public:	
-	/* Ensures that the buffer can hold count more bytes */
+	/* Ensures that the buffer can hold count more bytes also increments size after the next call to ensure capacity */
 	void ensureCapacity(T count) = delete;
 
 	uint8_t* getPointer() = delete;
+	uint8_t* getStart() = delete;
 	void flush() = delete;
 	void free() = delete;
+
+	T offset() = delete;
+
 };
 
 template <class T> class BasicMemoryBuffer : BasicBuffer<T> {
@@ -28,8 +32,12 @@ public:
 	void ensureCapacity(T newCap);
 
 	uint8_t* getPointer();
+	uint8_t* getStart();
 	void flush();
 	void free();
+
+	T offset();
+
 
 	//~BasicMemoryBuffer();
 

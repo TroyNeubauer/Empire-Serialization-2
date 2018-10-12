@@ -2,12 +2,10 @@
 #include <iostream>
 
 int main() {
-	std::cout << std::numeric_limits<int>::max() << ", " << std::numeric_limits<unsigned short>::max();
-	system("PAUSE");
-	return 0;
-	BasicMemoryBuffer<size_t> buffer(10);
+
+	BasicMemoryBuffer<size_t> buffer(4);
 	buffer.ensureCapacity(12);
-	int* buf = (int*)buffer.getPointer();
+	int* buf = (int*) buffer.getPointer();
 	*buf = 5;
 	buf++;
 
@@ -27,6 +25,13 @@ int main() {
 
 	*buf = 5;
 	buf++;
+	buffer.flush();
+
+	FILE* file = fopen("data.dat", "wb");
+	if (file != NULL) {
+		fwrite(buffer.getStart(), 1, buffer.offset(), file);
+	}
+	fclose(file);
 
 }
 
@@ -42,11 +47,12 @@ template<class T> void BasicMemoryBuffer<T>::resize(T newCap) {
 
 template<class T> void BasicMemoryBuffer<T>::ensureCapacity(T bytes) {
 	if (bytes == std::numeric_limits<T>::max()) {
-		std::cout << "Invalid number of bytes " << bytes << " cannot be " << std::numeric_limits<T>::max(;
+		std::cout << "Invalid number of bytes " << bytes << " cannot be " << std::numeric_limits<T>::max();
 	}
-	if (blockSize != -1) {
+	if (blockSize != std::numeric_limits<T>::max()) {//If this isnt the first time
 		size += blockSize;//Increment from last time
 	}
+
 	T newCap = bytes + size;
 	if (newCap > capacity) {
 		while (capacity < newCap) {
@@ -54,15 +60,24 @@ template<class T> void BasicMemoryBuffer<T>::ensureCapacity(T bytes) {
 		}
 		buffer = (uint8_t*) realloc(buffer, capacity);
 	}
+	blockSize = bytes;
+}
+
+template<class T> uint8_t* BasicMemoryBuffer<T>::getStart() {
+	return buffer;
 }
 
 template<class T> uint8_t* BasicMemoryBuffer<T>::getPointer() {
 	return buffer + size;
 }
 
+
+
 template<class T> void BasicMemoryBuffer<T>::flush() {
-	//nop
-	//nothing to flush
+	if (blockSize != std::numeric_limits<T>::max()) {//If this isnt the first time
+		size += blockSize;//Increment from last time
+	}
+	blockSize = 0;
 }
 
 template<class T> void BasicMemoryBuffer<T>::free() {
@@ -73,6 +88,10 @@ template<class T> void BasicMemoryBuffer<T>::free() {
 	buffer = nullptr;
 	size = 0;
 	capacity = 0;
+}
+
+template<class T> T BasicMemoryBuffer<T>::offset() {
+	return size;
 }
 /*
 template<class T> BasicMemoryBuffer<T>::~BasicMemoryBuffer() {
