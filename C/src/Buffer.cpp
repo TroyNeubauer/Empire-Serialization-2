@@ -1,4 +1,34 @@
 #include "Buffer.h"
+#include <iostream>
+
+int main() {
+	std::cout << std::numeric_limits<int>::max() << ", " << std::numeric_limits<unsigned short>::max();
+	system("PAUSE");
+	return 0;
+	BasicMemoryBuffer<size_t> buffer(10);
+	buffer.ensureCapacity(12);
+	int* buf = (int*)buffer.getPointer();
+	*buf = 5;
+	buf++;
+
+	*buf = 5;
+	buf++;
+
+	*buf = 5;
+	buf++;
+
+	buffer.ensureCapacity(12);
+
+	*buf = 5;
+	buf++;
+
+	*buf = 5;
+	buf++;
+
+	*buf = 5;
+	buf++;
+
+}
 
 
 template<class T> void BasicMemoryBuffer<T>::resize(T newCap) {
@@ -11,16 +41,19 @@ template<class T> void BasicMemoryBuffer<T>::resize(T newCap) {
 }
 
 template<class T> void BasicMemoryBuffer<T>::ensureCapacity(T bytes) {
+	if (bytes == std::numeric_limits<T>::max()) {
+		std::cout << "Invalid number of bytes " << bytes << " cannot be " << std::numeric_limits<T>::max(;
+	}
+	if (blockSize != -1) {
+		size += blockSize;//Increment from last time
+	}
 	T newCap = bytes + size;
 	if (newCap > capacity) {
 		while (capacity < newCap) {
 			capacity <<= 1;
 		}
-		buffer = realloc(buffer, capacity);
+		buffer = (uint8_t*) realloc(buffer, capacity);
 	}
-}
-template<class T> void BasicMemoryBuffer<T>::advance(T count) {
-	size += count;
 }
 
 template<class T> uint8_t* BasicMemoryBuffer<T>::getPointer() {
@@ -41,9 +74,9 @@ template<class T> void BasicMemoryBuffer<T>::free() {
 	size = 0;
 	capacity = 0;
 }
-
+/*
 template<class T> BasicMemoryBuffer<T>::~BasicMemoryBuffer() {
 	free();
-}
+}*/
 
 

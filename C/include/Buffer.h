@@ -7,18 +7,15 @@ template <class T> class BasicBuffer {
 public:	
 	/* Ensures that the buffer can hold count more bytes */
 	void ensureCapacity(T count) = delete;
-	/* Advances the position by x bytes (will affect calls to getPointer) */
-	void advance(T count);
 
 	uint8_t* getPointer() = delete;
 	void flush() = delete;
 	void free() = delete;
-
 };
 
 template <class T> class BasicMemoryBuffer : BasicBuffer<T> {
 public:
-	T size, capacity;
+	T size, capacity, blockSize = std::numeric_limits<T>::max();
 	uint8_t* buffer;
 	bool ownsMemory;
 
@@ -29,13 +26,12 @@ public:
 	void resize(T newCap);
 	
 	void ensureCapacity(T newCap);
-	void advance(T count);
 
 	uint8_t* getPointer();
 	void flush();
 	void free();
 
-	~BasicMemoryBuffer();
+	//~BasicMemoryBuffer();
 
 };
 
