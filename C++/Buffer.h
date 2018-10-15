@@ -1,39 +1,52 @@
-#include "Buffer.h"
-#include <iostream>
+#pragma once
 
-int main() {
 
-	BasicMemoryBuffer<size_t> buffer(4);
-	buffer.ensureCapacity(12);
-	int* buf = (int*) buffer.getPointer();
-	*buf = 5;
-	buf++;
+#pragma once
+#include <stdint.h>
+#include <stdlib.h>
+#include <limits>
 
-	*buf = 5;
-	buf++;
+template <class T> class BasicBuffer {
 
-	*buf = 5;
-	buf++;
+public:
+	/* Ensures that the buffer can hold count more bytes also increments size after the next call to ensure capacity */
+	void ensureCapacity(T count) = delete;
 
-	buffer.ensureCapacity(12);
+	uint8_t* getPointer() = delete;
+	uint8_t* getStart() = delete;
+	void flush() = delete;
+	void free() = delete;
 
-	*buf = 5;
-	buf++;
+	T offset() = delete;
 
-	*buf = 5;
-	buf++;
+};
 
-	*buf = 5;
-	buf++;
-	buffer.flush();
+template <class T> class BasicMemoryBuffer : BasicBuffer<T> {
+public:
+	T size, capacity, blockSize = std::numeric_limits<T>::max();
+	uint8_t* buffer;
+	bool ownsMemory;
 
-	FILE* file = fopen("data.dat", "wb");
-	if (file != NULL) {
-		fwrite(buffer.getStart(), 1, buffer.offset(), file);
-	}
-	fclose(file);
+public:
+	BasicMemoryBuffer(T capacity) : size(0), capacity(capacity), buffer((uint8_t*)malloc(capacity)), ownsMemory(true) {}
+	BasicMemoryBuffer(T size, T capacity, uint8_t* buffer) : size(size), capacity(capacity), buffer(buffer), ownsMemory(false) {}
 
-}
+	void resize(T newCap);
+
+	void ensureCapacity(T newCap);
+
+	uint8_t* getPointer();
+	uint8_t* getStart();
+	void flush();
+	void free();
+
+	T offset();
+
+
+	//~BasicMemoryBuffer();
+
+};
+
 
 
 template<class T> void BasicMemoryBuffer<T>::resize(T newCap) {
@@ -41,7 +54,7 @@ template<class T> void BasicMemoryBuffer<T>::resize(T newCap) {
 		free(buffer);
 	}
 	ownsMemory = true;
-	buffer = (uint8_t*) malloc(newCap);
+	buffer = (uint8_t*)malloc(newCap);
 	capacity = newCap;
 }
 
@@ -58,7 +71,7 @@ template<class T> void BasicMemoryBuffer<T>::ensureCapacity(T bytes) {
 		while (capacity < newCap) {
 			capacity <<= 1;
 		}
-		buffer = (uint8_t*) realloc(buffer, capacity);
+		buffer = (uint8_t*)realloc(buffer, capacity);
 	}
 	blockSize = bytes;
 }
@@ -70,7 +83,6 @@ template<class T> uint8_t* BasicMemoryBuffer<T>::getStart() {
 template<class T> uint8_t* BasicMemoryBuffer<T>::getPointer() {
 	return buffer + size;
 }
-
 
 
 template<class T> void BasicMemoryBuffer<T>::flush() {
@@ -93,9 +105,3 @@ template<class T> void BasicMemoryBuffer<T>::free() {
 template<class T> T BasicMemoryBuffer<T>::offset() {
 	return size;
 }
-/*
-template<class T> BasicMemoryBuffer<T>::~BasicMemoryBuffer() {
-	free();
-}*/
-
-
