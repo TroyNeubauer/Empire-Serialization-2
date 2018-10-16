@@ -31,4 +31,5 @@ int main() {
 		fwrite(buffer.getStart(), 1, buffer.offset(), file);
 	}
 	fclose(file);
+	buffer.~BasicMemoryBuffer();
 }

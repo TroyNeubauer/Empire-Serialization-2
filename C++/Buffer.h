@@ -15,7 +15,7 @@ public:
 	uint8_t* getPointer() = delete;
 	uint8_t* getStart() = delete;
 	void flush() = delete;
-	void free() = delete;
+	void close() = delete;
 
 	T offset() = delete;
 
@@ -38,9 +38,10 @@ public:
 	uint8_t* getPointer();
 	uint8_t* getStart();
 	void flush();
-	void free();
+	void close();
 
 	T offset();
+	~BasicMemoryBuffer();
 
 
 	//~BasicMemoryBuffer();
@@ -92,7 +93,9 @@ template<class T> void BasicMemoryBuffer<T>::flush() {
 	blockSize = 0;
 }
 
-template<class T> void BasicMemoryBuffer<T>::free() {
+template<class T> void BasicMemoryBuffer<T>::close() {
+	if (buffer == nullptr) return; 
+	flush();
 	if (ownsMemory) {
 		free(buffer);
 		ownsMemory = false;
@@ -104,4 +107,9 @@ template<class T> void BasicMemoryBuffer<T>::free() {
 
 template<class T> T BasicMemoryBuffer<T>::offset() {
 	return size;
+}
+
+
+template<class T> BasicMemoryBuffer<T>::~BasicMemoryBuffer() {
+	close();
 }
