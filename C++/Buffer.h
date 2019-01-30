@@ -1,115 +1,81 @@
 #pragma once
 
+template <typename MEMBER_TYPE>
+class AbstractBuffer {
 
-#pragma once
-#include <stdint.h>
-#include <stdlib.h>
-#include <limits>
-
-template <class T> class BasicBuffer {
-
-public:
-	/* Ensures that the buffer can hold count more bytes also increments size after the next call to ensure capacity */
-	void ensureCapacity(T count) = delete;
-
-	uint8_t* getPointer() = delete;
-	uint8_t* getStart() = delete;
-	void flush() = delete;
-	void close() = delete;
-
-	T offset() = delete;
-
-};
-
-template <class T> class BasicMemoryBuffer : BasicBuffer<T> {
-public:
-	T size, capacity, blockSize = std::numeric_limits<T>::max();
-	uint8_t* buffer;
-	bool ownsMemory;
+private:
+	MEMBER_TYPE m_Offset, m_Capacity;
+	uint8_t* m_Buffer;
 
 public:
-	BasicMemoryBuffer(T capacity) : size(0), capacity(capacity), buffer((uint8_t*)malloc(capacity)), ownsMemory(true) {}
-	BasicMemoryBuffer(T size, T capacity, uint8_t* buffer) : size(size), capacity(capacity), buffer(buffer), ownsMemory(false) {}
+	AbstractBuffer(MEMBER_TYPE capacity = 1024) : m_Offset(0), m_Capacity(capacity), m_Buffer(new uint8_t[capacity]) {}
+	AbstractBuffer(MEMBER_TYPE size, MEMBER_TYPE capacity, uint8_t* buffer) : m_Offset(size), m_Capacity(capacity), m_Buffer(buffer) {}
 
-	void resize(T newCap);
-
-	void ensureCapacity(T newCap);
-
-	uint8_t* getPointer();
-	uint8_t* getStart();
-	void flush();
-	void close();
-
-	T offset();
-	~BasicMemoryBuffer();
-
-
-	//~BasicMemoryBuffer();
-
-};
-
-
-
-template<class T> void BasicMemoryBuffer<T>::resize(T newCap) {
-	if (ownsMemory) {
-		free(buffer);
-	}
-	ownsMemory = true;
-	buffer = (uint8_t*)malloc(newCap);
-	capacity = newCap;
-}
-
-template<class T> void BasicMemoryBuffer<T>::ensureCapacity(T bytes) {
-	if (bytes == std::numeric_limits<T>::max()) {
-		std::cout << "Invalid number of bytes " << bytes << " cannot be " << std::numeric_limits<T>::max();
-	}
-	if (blockSize != std::numeric_limits<T>::max()) {//If this isnt the first time
-		size += blockSize;//Increment from last time
+	void resize(MEMBER_TYPE newCapacity) {
+		uint8_t* newBuffer = new uint8_t[newCapacity];
+		std::memcpy(newBuffer, m_Buffer, m_Offset);
+		m_Capacity = newCapacity;
+		delete[] m_Buffer;
+		m_Buffer = newBuffer;
 	}
 
-	T newCap = bytes + size;
-	if (newCap > capacity) {
-		while (capacity < newCap) {
-			capacity <<= 1;
+	void ensureCapacity(MEMBER_TYPE bytes) {
+		MEMBER_TYPE newCapacity = m_Capacity;
+		MEMBER_TYPE required = bytes + m_Offset;
+		if (required > m_Capacity) {
+			while (newCapacity < required) {
+				newCapacity <<= 1;
+			}
+			resize(newCapacity);
 		}
-		buffer = (uint8_t*)realloc(buffer, capacity);
 	}
-	blockSize = bytes;
-}
-
-template<class T> uint8_t* BasicMemoryBuffer<T>::getStart() {
-	return buffer;
-}
-
-template<class T> uint8_t* BasicMemoryBuffer<T>::getPointer() {
-	return buffer + size;
-}
-
-
-template<class T> void BasicMemoryBuffer<T>::flush() {
-	if (blockSize != std::numeric_limits<T>::max()) {//If this isnt the first time
-		size += blockSize;//Increment from last time
+	
+	template<typename T>
+	inline void write(T* value, size_t bytes) {
+		ensureCapacity(bytes);
+		writeImpl(value, bytes);
 	}
-	blockSize = 0;
-}
 
-template<class T> void BasicMemoryBuffer<T>::close() {
-	if (buffer == nullptr) return; 
-	flush();
-	if (ownsMemory) {
-		free(buffer);
-		ownsMemory = false;
+	template<typename T>
+	inline void writeRaw(T* value, size_t bytes) {
+		writeImpl(value, bytes);
 	}
-	buffer = nullptr;
-	size = 0;
-	capacity = 0;
-}
 
-template<class T> T BasicMemoryBuffer<T>::offset() {
-	return size;
-}
+	template<typename T>
+	inline void write(T value) {
+		ensureCapacity(sizeof(T));
+		writeImpl(&value, sizeof(T));
+	}
 
+	template<typename T>
+	inline void writeRaw(T value) {
+		writeImpl(&value, sizeof(T));
+	}
 
-template<class T> BasicMemoryBuffer<T>::~BasicMemoryBuffer() {
-	close();
-}
+	uint8_t* getPointer() {
+		return m_Buffer + m_Offset;
+	}
+
+	uint8_t* getStart() {
+		return m_Buffer;
+	}
+
+	MEMBER_TYPE offset() {
+		return m_Offset;
+	}
+
+	~AbstractBuffer() {
+		delete[] m_Buffer;
+	}
+
+private:
+	template<typename T>
+	void writeImpl(T* value, size_t bytes) {
+		std::memcpy(getPointer(), value, bytes);
+		m_Offset += bytes;
+	}
+
+};
+
+typedef AbstractBuffer<size_t> Buffer;
+
