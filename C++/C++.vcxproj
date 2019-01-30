@@ -146,6 +146,7 @@
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="EmpireErrorCodes.h" />
     <ClInclude Include="EmpireException.h" />
+    <ClInclude Include="EmpirePrimitives.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="TypeManager.h" />
   </ItemGroup>

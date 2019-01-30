@@ -11,7 +11,7 @@ public:
 	AbstractBuffer(MEMBER_TYPE capacity = 1024) : m_Offset(0), m_Capacity(capacity), m_Buffer(new uint8_t[capacity]) {}
 	AbstractBuffer(MEMBER_TYPE size, MEMBER_TYPE capacity, uint8_t* buffer) : m_Offset(size), m_Capacity(capacity), m_Buffer(buffer) {}
 
-	void resize(MEMBER_TYPE newCapacity) {
+	void Resize(MEMBER_TYPE newCapacity) {
 		uint8_t* newBuffer = new uint8_t[newCapacity];
 		std::memcpy(newBuffer, m_Buffer, m_Offset);
 		m_Capacity = newCapacity;
@@ -19,48 +19,48 @@ public:
 		m_Buffer = newBuffer;
 	}
 
-	void ensureCapacity(MEMBER_TYPE bytes) {
+	void EnsureCapacity(MEMBER_TYPE bytes) {
 		MEMBER_TYPE newCapacity = m_Capacity;
 		MEMBER_TYPE required = bytes + m_Offset;
 		if (required > m_Capacity) {
 			while (newCapacity < required) {
 				newCapacity <<= 1;
 			}
-			resize(newCapacity);
+			Resize(newCapacity);
 		}
 	}
 	
 	template<typename T>
 	inline void write(T* value, size_t bytes) {
-		ensureCapacity(bytes);
-		writeImpl(value, bytes);
+		EnsureCapacity(bytes);
+		WriteImpl(value, bytes);
 	}
 
 	template<typename T>
-	inline void writeRaw(T* value, size_t bytes) {
-		writeImpl(value, bytes);
+	inline void WriteRaw(T* value, size_t bytes) {
+		WriteImpl(value, bytes);
 	}
 
 	template<typename T>
-	inline void write(T value) {
-		ensureCapacity(sizeof(T));
-		writeImpl(&value, sizeof(T));
+	inline void Write(T value) {
+		EnsureCapacity(sizeof(T));
+		WriteImpl(&value, sizeof(T));
 	}
 
 	template<typename T>
-	inline void writeRaw(T value) {
-		writeImpl(&value, sizeof(T));
+	inline void WriteRaw(T value) {
+		WriteImpl(&value, sizeof(T));
 	}
 
-	uint8_t* getPointer() {
+	inline uint8_t* GetPointer() {
 		return m_Buffer + m_Offset;
 	}
 
-	uint8_t* getStart() {
+	inline uint8_t* GetStart() {
 		return m_Buffer;
 	}
 
-	MEMBER_TYPE offset() {
+	inline MEMBER_TYPE Offset() {
 		return m_Offset;
 	}
 
@@ -70,8 +70,8 @@ public:
 
 private:
 	template<typename T>
-	void writeImpl(T* value, size_t bytes) {
-		std::memcpy(getPointer(), value, bytes);
+	inline void WriteImpl(T* value, size_t bytes) {
+		std::memcpy(GetPointer(), value, bytes);
 		m_Offset += bytes;
 	}
 

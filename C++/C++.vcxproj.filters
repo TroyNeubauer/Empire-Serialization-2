@@ -41,5 +41,8 @@
     <ClInclude Include="EmpireException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EmpirePrimitives.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
