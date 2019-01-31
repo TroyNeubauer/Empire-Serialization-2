@@ -24,6 +24,9 @@
     <ClCompile Include="EmpireErrorCodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="little-big-int.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffer.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EmpirePrimitives.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="little-big-int.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
