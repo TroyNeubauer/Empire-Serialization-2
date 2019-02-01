@@ -150,6 +150,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffer.h" />
+    <ClInclude Include="Empire.h" />
+    <ClInclude Include="EmpireEndianness.h" />
     <ClInclude Include="EmpireErrorCodes.h" />
     <ClInclude Include="EmpireException.h" />
     <ClInclude Include="EmpirePrimitives.h" />
