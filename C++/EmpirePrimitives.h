@@ -210,10 +210,18 @@ union u128 {
 	}
 	void Divide(const u32 other, u128& result) {
 		u32 remainder = 0;
-		this->_32[0] = DivideWithRemainder(this->_32[0], other, remainder);
-		this->_32[1] = DivideWithRemainder(this->_32[1], other, remainder);
-		this->_32[2] = DivideWithRemainder(this->_32[2], other, remainder);
-		this->_32[3] = DivideWithRemainder(this->_32[3], other, remainder);
+		if (SYSTEM_ENDIANESS == Endianness::LITTLE) {//Start from higher addresses since thats where the higher values are
+			this->_32[3] = DivideWithRemainder(this->_32[3], other, remainder);
+			this->_32[2] = DivideWithRemainder(this->_32[2], other, remainder);
+			this->_32[1] = DivideWithRemainder(this->_32[1], other, remainder);
+			this->_32[0] = DivideWithRemainder(this->_32[0], other, remainder);
+		}
+		else {//Start from the lower addresses - we are BE
+			this->_32[0] = DivideWithRemainder(this->_32[0], other, remainder);
+			this->_32[1] = DivideWithRemainder(this->_32[1], other, remainder);
+			this->_32[2] = DivideWithRemainder(this->_32[2], other, remainder);
+			this->_32[3] = DivideWithRemainder(this->_32[3], other, remainder);
+		}
 	}
 
 	const u128 operator/(const u32 other) {

@@ -50,10 +50,10 @@
     <ClInclude Include="little-big-int.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Empire.h">
+    <ClInclude Include="EmpireEndianness.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EmpireEndianness.h">
+    <ClInclude Include="Empire.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
