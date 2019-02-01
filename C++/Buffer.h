@@ -31,7 +31,7 @@ public:
 	}
 	
 	template<typename T>
-	inline void write(T* value, size_t bytes) {
+	inline void Write(T* value, size_t bytes) {
 		EnsureCapacity(bytes);
 		WriteImpl(value, bytes);
 	}

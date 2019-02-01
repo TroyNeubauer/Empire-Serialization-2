@@ -75,22 +75,19 @@ void RunAllTests() {
 }
 
 int main() {
-	u128 a(0b0010101110111010000010100010101010001010001010101010100101000000L, 0b1010111010111111100111110011111111001010011010101010100101000100L);
-	u32 b = 8;
+	u128 a((u64) 0, 3847563874);
+	/*u32 b = 10;
 	std::cout << std::oct << a << std::endl;
+	std::cout << std::hex << a << std::endl << "/_____________________" << std::endl;
 	std::cout << std::hex << b << std::endl << "==========================" << std::endl;
-	a *= b;
+	a /= b;
 	std::cout << std::oct << a << std::endl;
-
-	system("PAUSE");
-	return 0;
-	std::srand(time(nullptr));
-	RunAllTests<int, 1, ToString, ParsePtimitive>();
-
-
-	system("PAUSE");
+	std::cout << std::hex << a << std::endl;*/
+	std::cout << log10(a);
+	//std::srand(time(nullptr));
+	//RunAllTests<int, 1, ToString, ParsePtimitive>();
 	Buffer buffer;
-	buffer.EnsureCapacity(12);
+	buffer.Write(a);
 
 
 	FILE* file = fopen("data.dat", "wb");
@@ -98,4 +95,6 @@ int main() {
 		fwrite(buffer.GetStart(), 1, buffer.Offset(), file);
 		fclose(file);
 	}
+
+	system("PAUSE");
 }
