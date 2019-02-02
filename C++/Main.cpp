@@ -1,11 +1,9 @@
 #include <iostream>
 #include <time.h>
 
-#include "Buffer.h"
-#include "EmpireException.h"
-#include "EmpireErrorCodes.h"
-#include "EmpirePrimitives.h"
 #include "little-big-int.hpp"
+
+#include "Empire.h"
 
 using namespace Empire;
 
@@ -73,28 +71,15 @@ void RunAllTests() {
 
 	}
 }
-
+//Full length string - fills 128 bits
+//ABCDEFABCDEFABCD1122334455667788
 int main() {
-	u128 a((u64) 0, 3847563874);
-	/*u32 b = 10;
-	std::cout << std::oct << a << std::endl;
-	std::cout << std::hex << a << std::endl << "/_____________________" << std::endl;
-	std::cout << std::hex << b << std::endl << "==========================" << std::endl;
-	a /= b;
-	std::cout << std::oct << a << std::endl;
-	std::cout << std::hex << a << std::endl;*/
-	std::cout << log10(a);
-	//std::srand(time(nullptr));
-	//RunAllTests<int, 1, ToString, ParsePtimitive>();
-	Buffer buffer;
-	buffer.Write(a);
-
-
-	FILE* file = fopen("data.dat", "wb");
-	if (file) {
-		fwrite(buffer.GetStart(), 1, buffer.Offset(), file);
-		fclose(file);
-	}
+	std::string str;
+	std::cin >> str;
+	ErrorCode code = EMPIRE_NO_ERROR;
+	u128 a(str, code, 16);
+	std::cout << "Error Code" << ErrorCodeToString(code) << std::endl;
+	std::cout << a.ToString() << std::endl;
 
 	system("PAUSE");
 }
