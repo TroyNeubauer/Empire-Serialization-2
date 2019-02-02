@@ -4,10 +4,10 @@
 namespace Empire {
 
 std::exception CodeToException(ErrorCode code) {
-	return std::exception(CodeToString(code));
+	return std::exception(ErrorCodeToString(code));
 }
 
-const char* CodeToString(ErrorCode code) {
+const char* ErrorCodeToString(ErrorCode code) {
 	switch (code) {
 	case EMPIRE_NO_ERROR:
 		return EMPIRE_NO_ERROR_TEXT;
@@ -26,6 +26,12 @@ const char* CodeToString(ErrorCode code) {
 
 	case EMPIRE_INVALID_FLAGS:
 		return EMPIRE_INVALID_FLAGS_TEXT;
+
+	case EMPIRE_STRING_INVALID_CHARACTER:
+		return EMPIRE_STRING_INVALID_CHARACTER_TEXT;
+
+	case EMPIRE_PARSE_ERROR_OVERFLOW:
+		return EMPIRE_PARSE_ERROR_OVERFLOW_TEXT;
 	default:
 		return "Unknown Error";
 	}
