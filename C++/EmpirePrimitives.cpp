@@ -1,6 +1,8 @@
 #pragma once
 
 #include "EmpirePrimitives.h"
+#include "EmpireErrorCodes.h"
+#include "EmpireException.h"
 
 #if !(defined(__SIZEOF_INT128__) && (__SIZEOF_INT128__ == 16))
 namespace Empire {
@@ -478,13 +480,11 @@ void FromString(const char* string, u64 length, u8 base, u128* result ERROR_CODE
 		} 
 #if EMPIRE_ENABLE_TEXT_PARSE_ERROR_CHECKING
 		else {
-			std::cout << "Invalid Character :" << ((int)c) << " = \'" << c << "\' At index " << i << std::endl;
-			ERROR(EMPIRE_STRING_INVALID_CHARACTER, EMPIRE_VOID_FUNCTION);
+			ERROR(EMPIRE_INVALID_CHARACTER, new InvalidCharacterErrorData(c, i, ""), EMPIRE_VOID_FUNCTION);
 		}
 
 		if (digit > base) {
-			std::cout << "Invalid Character - Larger than base of " << (int) base << " :" << ((int)c) << " = \'" << c << "\' At index " << i << std::endl;
-			ERROR(EMPIRE_STRING_INVALID_CHARACTER, EMPIRE_VOID_FUNCTION);
+			ERROR(EMPIRE_INVALID_CHARACTER, new InvalidCharacterErrorData(c, i, "Numeric character larger then base"), EMPIRE_VOID_FUNCTION);
 		}
 #endif
 		temp += multiplier * digit;
@@ -495,7 +495,7 @@ void FromString(const char* string, u64 length, u8 base, u128* result ERROR_CODE
 
 #if EMPIRE_ENABLE_TEXT_PARSE_ERROR_CHECKING
 		if (lastMultiplier > multiplier && i != 0) {
-			ERROR(EMPIRE_PARSE_ERROR_OVERFLOW, EMPIRE_VOID_FUNCTION);
+			ERROR(EMPIRE_PARSE_ERROR_OVERFLOW, new ParseOverFlowData(std::string(string), "Input too long for target size of u128"), EMPIRE_VOID_FUNCTION);
 		}
 #endif
 		if (i == 0) break;

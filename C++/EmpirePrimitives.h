@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Empire.h"
+//#include "EmpireErrorCodes.h"
 
 #include <stdint.h>
 #include <stdlib.h>

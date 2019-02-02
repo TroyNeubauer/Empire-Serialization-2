@@ -71,14 +71,18 @@ void RunAllTests() {
 
 	}
 }
+
 //Full length string - fills 128 bits
 //ABCDEFABCDEFABCD1122334455667788
 int main() {
+	ParseOverFlowData* data = new ParseOverFlowData { std::string("Input"), std::string("Error") };
+
+
 	std::string str;
 	std::cin >> str;
-	ErrorCode code = EMPIRE_NO_ERROR;
+	EmpireError code;
 	u128 a(str, code, 16);
-	std::cout << "Error Code" << ErrorCodeToString(code) << std::endl;
+	std::cout << "Error Code" << ErrorCodeToString(code.code) << std::endl;
 	std::cout << a.ToString() << std::endl;
 
 	system("PAUSE");

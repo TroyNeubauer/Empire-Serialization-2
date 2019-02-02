@@ -1,13 +1,26 @@
 #include "EmpireErrorCodes.h"
-#include "EmpireException.h"
 
 namespace Empire {
 
 std::exception CodeToException(ErrorCode code) {
-	return std::exception(ErrorCodeToString(code));
+	return std::exception(ErrorCodeToString(code).c_str());
 }
 
-const char* ErrorCodeToString(ErrorCode code) {
+void EmpireErrorInfo::x() {}//Leave blank
+
+EmpireError::EmpireError() {
+	this->code = EMPIRE_NO_ERROR;
+	this->errorInfo = nullptr;
+}
+
+void clearError(EmpireError& error) {
+	error.code = EMPIRE_NO_ERROR;
+	if (error.errorInfo != nullptr) {
+		delete error.errorInfo;
+	}
+}
+
+std::string ErrorCodeToString(ErrorCode code) {
 	switch (code) {
 	case EMPIRE_NO_ERROR:
 		return EMPIRE_NO_ERROR_TEXT;
@@ -27,8 +40,8 @@ const char* ErrorCodeToString(ErrorCode code) {
 	case EMPIRE_INVALID_FLAGS:
 		return EMPIRE_INVALID_FLAGS_TEXT;
 
-	case EMPIRE_STRING_INVALID_CHARACTER:
-		return EMPIRE_STRING_INVALID_CHARACTER_TEXT;
+	case EMPIRE_INVALID_CHARACTER:
+		return EMPIRE_INVALID_CHARACTER_TEXT;
 
 	case EMPIRE_PARSE_ERROR_OVERFLOW:
 		return EMPIRE_PARSE_ERROR_OVERFLOW_TEXT;
