@@ -1,34 +1,9 @@
-#pragma once
+#include "u128.h"
 
-#include "EmpirePrimitives.h"
-#include "EmpireErrorCodes.h"
-#include "EmpireException.h"
-
-#ifdef __AVX2__
-//AVX2
-#elif defined ( __AVX__ )
-//AVX
-#elif (defined(_M_AMD64) || defined(_M_X64))
-//SSE2 x64
-#elif _M_IX86_FP == 2
-//SSE2 x32
-#elif _M_IX86_FP == 1
-//SSE x32
-#else
-//nothing
-#endif
 
 namespace Empire {
 
-half FloatToHalf(float value) {
-	__m128 src;
-	src.m128_f32[0] = value;
-	__m128i result = _mm_maskz_cvt_roundps_ph(0b0001, src, _MM_FROUND_TO_NEAREST_INT);
-
-	return result.m128i_u16[0];
-}
-
-#if !(defined(__SIZEOF_INT128__) && (__SIZEOF_INT128__ == 16))
+#if EMPIRE_SOFTWARE_U128
 
 u128::u128(const u64 value) {
 	u128* t = this;
@@ -117,18 +92,22 @@ inline const bool u128::operator>=(u64 other) const {
 inline const bool u128::operator<(u128 other) const {
 	if (this->Top64() == other.Top64()) {
 		return this->Bottom64() < other.Bottom64();
-	} else if (this->Top64() < other.Top64()) {
+	}
+	else if (this->Top64() < other.Top64()) {
 		return true;
-	} else {//this->Top64() > other.Top64()
+	}
+	else {//this->Top64() > other.Top64()
 		return false;
 	}
 }
 inline const bool u128::operator>(u128 other) const {
 	if (this->Top64() == other.Top64()) {
 		return this->Bottom64() > other.Bottom64();
-	} else if (this->Top64() > other.Top64()) {
+	}
+	else if (this->Top64() > other.Top64()) {
 		return true;
-	} else {//this->Top64() < other.Top64()
+	}
+	else {//this->Top64() < other.Top64()
 		return false;
 	}
 }
@@ -289,9 +268,9 @@ u128 u128::operator--(int) {// Postfix
 }
 
 inline u32 u128::MutiplyWithCarry(u32 a, u32 b, u64& carry) const {
-	u64 total = ((u64) a) * ((u64) b) + ((u64) carry);
+	u64 total = ((u64)a) * ((u64)b) + ((u64)carry);
 	carry = total >> 32;
-	u32 result = (u32) total;
+	u32 result = (u32)total;
 	return result;
 }
 
@@ -313,7 +292,7 @@ void u128::Multiply(const u32& other, u128& result) const {
 
 inline void u128::Multiply(const u128& other, u128& result) const {
 	u64 temp = 0;
-	result.Bottom64Ref() =  _umul128(this->Bottom64(), other.Bottom64(), &result.Top64Ref());
+	result.Bottom64Ref() = _umul128(this->Bottom64(), other.Bottom64(), &result.Top64Ref());
 	result.Bottom64Ref() += _umul128(this->Bottom64(), other.Top64(), &temp);
 	result.Top64Ref() += temp;// Add the top part of the last mul
 
@@ -380,10 +359,6 @@ const u64 u128::operator%(const u32 other) const {
 }
 
 std::string u128::ToString(u8 base) const {
-	return to_string(*this, base);
-}
-
-std::string s128::ToString(u8 base) const {
 	return to_string(*this, base);
 }
 
@@ -537,7 +512,8 @@ std::string to_string(u128 value, u8 base) {
 	std::stringstream ss;
 	if (value == 0) {
 		ss << '0';
-	} else {
+	}
+	else {
 		while (value != 0) {
 			ss << DIGITS[value % base];
 			value /= base;
@@ -547,10 +523,6 @@ std::string to_string(u128 value, u8 base) {
 	std::string result = ss.str();
 	std::reverse(result.begin(), result.end());
 	return result;
-}
-
-std::string to_string(s128 value, u8 base) {
-	return "TODO";
 }
 
 void FromString(const char* string, u64 length, u8 base, u128* result ERROR_CODE_PARAMETER) {
@@ -565,11 +537,13 @@ void FromString(const char* string, u64 length, u8 base, u128* result ERROR_CODE
 		int digit;
 		if (c >= '0' && c <= '9') {
 			digit = c - '0';
-		} else if (c >= 'a' && c <= 'z') {
+		}
+		else if (c >= 'a' && c <= 'z') {
 			digit = 10 + c - 'a';
-		} else if (c >= 'A' && c <= 'Z') {
+		}
+		else if (c >= 'A' && c <= 'Z') {
 			digit = 10 + c - 'A';
-		} 
+		}
 #if EMPIRE_ENABLE_TEXT_PARSE_ERROR_CHECKING
 		else {
 			ERROR(EMPIRE_INVALID_CHARACTER, new InvalidCharacterErrorData(c, i, ""), EMPIRE_VOID_FUNCTION);
@@ -596,11 +570,7 @@ void FromString(const char* string, u64 length, u8 base, u128* result ERROR_CODE
 	result->_64[1] = temp._64[1];
 }
 
-void FromString(const char* string, u64 length, u8 base, s128* result ERROR_CODE_PARAMETER) {
-
-}
-
-#endif//#if defined(__SIZEOF_INT128__) && (__SIZEOF_INT128__ == 16)
+#endif// Use Foftware Implementation
 
 std::ostream& operator<<(std::ostream& os, const u128 value) noexcept
 {
