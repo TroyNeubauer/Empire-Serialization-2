@@ -4,8 +4,31 @@
 #include "EmpireErrorCodes.h"
 #include "EmpireException.h"
 
-#if !(defined(__SIZEOF_INT128__) && (__SIZEOF_INT128__ == 16))
+#ifdef __AVX2__
+//AVX2
+#elif defined ( __AVX__ )
+//AVX
+#elif (defined(_M_AMD64) || defined(_M_X64))
+//SSE2 x64
+#elif _M_IX86_FP == 2
+//SSE2 x32
+#elif _M_IX86_FP == 1
+//SSE x32
+#else
+//nothing
+#endif
+
 namespace Empire {
+
+half FloatToHalf(float value) {
+	__m128 src;
+	src.m128_f32[0] = value;
+	__m128i result = _mm_maskz_cvt_roundps_ph(0b0001, src, _MM_FROUND_TO_NEAREST_INT);
+
+	return result.m128i_u16[0];
+}
+
+#if !(defined(__SIZEOF_INT128__) && (__SIZEOF_INT128__ == 16))
 
 u128::u128(const u64 value) {
 	u128* t = this;
@@ -63,6 +86,21 @@ inline u64 u128::Bottom64() const {
 #endif
 }
 
+inline u64& u128::Top64Ref() {
+#ifdef LITTLE_ENDIAN
+	return this->_64[1];
+#else
+	return this->_64[0];
+#endif
+}
+inline u64& u128::Bottom64Ref() {
+#ifdef LITTLE_ENDIAN
+	return this->_64[0];
+#else
+	return this->_64[1];
+#endif
+}
+
 inline const bool u128::operator<(u64 other) const {
 	return Bottom64() < other && Top64() == 0;
 }
@@ -105,7 +143,7 @@ inline const bool u128::operator>=(u128 other) const {
 
 
 inline const bool u128::operator==(const u128 other) const {
-	return this->_64[0] == other._64[0] && this->_64[1] == other._64[1];
+	return this->Bottom64() == other.Bottom64() && this->Top64() == other.Top64();
 }
 inline const bool u128::operator!=(const u128 other) const {
 	return !(*this == other);
@@ -119,29 +157,25 @@ inline const bool u128::operator!=(const u64 other) const {
 }
 
 inline u128 u128::operator=(const u128 other) {
-	this->_64[0] = other._64[0];
-	this->_64[1] = other._64[1];
+	this->Bottom64Ref() = other.Bottom64();
+	this->Top64Ref() = other.Top64();
 	return *this;
 }
 
 inline u128 u128::operator=(const u64 value) {
-#ifdef LITTLE_ENDIAN
-	this->_64[0] = value;
-	this->_64[1] = 0;
-#else
-	this->_64[1] = value;
-	this->_64[0] = 0;
-#endif
+	this->Bottom64Ref() = value;
+	this->Top64Ref() = 0;
+
 	return *this;
 }
 
 //Little 00 11 22 33 44 55 66 77    88 99 AA BB CC DD EE FF - as 128 bit
 //Big    FF EE DD CC BB AA 99 88    77 66 55 44 33 22 11 00 - ad 128 bit
 void u128::ShiftLeft(u64 bits, u128& result) const {
-	result._64[0] = this->_64[0] << bits;
-	u64 lowerOfUpper = this->_64[1] >> (sizeof(u64) * 8 - bits);
-	result._64[0] |= lowerOfUpper;
-	result._64[1] = this->_64[1] << bits;
+	result.Bottom64Ref() = this->Bottom64() << bits;
+	u64 lowerOfUpper = this->Top64() >> (sizeof(u64) * 8 - bits);
+	result.Bottom64Ref() |= lowerOfUpper;
+	result.Top64Ref() = this->Top64() << bits;
 }
 const u128 u128::operator<<(u64 bits) const {
 	u128 result;
@@ -154,10 +188,10 @@ u128 u128::operator<<=(u64 bits) {
 }
 
 void u128::ShiftRight(u64 bits, u128& result) const {
-	result._64[1] = this->_64[1] >> bits;
-	u64 upperOfLower = this->_64[0] << (sizeof(u64) * 8 - bits);
-	result._64[1] |= upperOfLower;
-	result._64[0] = this->_64[0] >> bits;
+	result.Top64Ref() = this->Top64() >> bits;
+	u64 upperOfLower = this->Bottom64() << (sizeof(u64) * 8 - bits);
+	result.Top64Ref() |= upperOfLower;
+	result.Bottom64Ref() = this->Bottom64() >> bits;
 }
 const u128 u128::operator>>(u64 bits) const {
 	u128 result;
@@ -171,10 +205,18 @@ u128 u128::operator>>=(u64 bits) {
 
 void u128::Plus(const u128& other, u128& result) const {
 #if EMPIRE_ENABLE_INTEL_INTRINSICS
-	char carry = _addcarry_u64(0, this->_64[1], other._64[1], &result._64[1]);// Add low bits
-	_addcarry_u64(carry, this->_64[0], other._64[0], &result._64[0]);// Add high bits with the carry from the low bits
+	char carry = _addcarry_u64(0, this->Bottom64(), other.Bottom64(), &result.Bottom64Ref());// Add low bits
+	_addcarry_u64(carry, this->Top64(), other.Top64(), &result.Top64Ref());// Add high bits with the carry from the low bits
 #endif
 }
+
+void u128::Plus(const u64& other, u128& result) const {
+#if EMPIRE_ENABLE_INTEL_INTRINSICS
+	char carry = _addcarry_u64(0, this->Bottom64(), other, &result.Bottom64Ref());// Add low bits
+	_addcarry_u64(carry, this->Top64(), 0, &result.Top64Ref());// Add high bits with the carry from the low bits
+#endif
+}
+
 const u128 u128::operator+(const u128 other) const {
 	u128 result;
 	Plus(other, result);
@@ -184,6 +226,16 @@ u128 u128::operator+=(const u128 other) {
 	Plus(other, *this);
 	return *this;
 }
+const u128 u128::operator+(const u64 other) const {
+	u128 result;
+	Plus(other, result);
+	return result;
+}
+u128 u128::operator+=(const u64 other) {
+	Plus(other, *this);
+	return *this;
+}
+
 u128 u128::operator++() {
 	Plus(1, *this);
 	return *this;
@@ -196,8 +248,14 @@ u128 u128::operator++(int) {// Postfix
 
 void u128::Minus(const u128& other, u128& result) const {
 #if EMPIRE_ENABLE_INTEL_INTRINSICS
-	char carry = _subborrow_u64(0, this->_64[1], other._64[1], &result._64[1]);// Add low bits
-	_subborrow_u64(carry, this->_64[0], other._64[0], &result._64[0]);// Add high bits with the carry from the low bits
+	char barrow = _subborrow_u64(0, this->Bottom64(), other.Bottom64(), &result.Bottom64Ref());// Subtract the low bits
+	_subborrow_u64(barrow, this->Top64(), other.Top64(), &result.Top64Ref());// Subtract the high bits with the barrow
+#endif
+}
+void u128::Minus(const u64& other, u128& result) const {
+#if EMPIRE_ENABLE_INTEL_INTRINSICS
+	char barrow = _subborrow_u64(0, this->Bottom64(), other, &result.Bottom64Ref());// Subtract the low bits
+	_subborrow_u64(barrow, this->Top64(), 0, &result.Top64Ref());// Subtract the high bits with the barrow
 #endif
 }
 
@@ -210,6 +268,16 @@ u128 u128::operator-=(const u128 other) {
 	Minus(other, *this);
 	return *this;
 }
+const u128 u128::operator-(const u64 other) const {
+	u128 result;
+	Minus(other, result);
+	return result;
+}
+u128 u128::operator-=(const u64 other) {
+	Minus(other, *this);
+	return *this;
+}
+
 u128 u128::operator--() {
 	Minus(1, *this);
 	return *this;
@@ -221,9 +289,9 @@ u128 u128::operator--(int) {// Postfix
 }
 
 inline u32 u128::MutiplyWithCarry(u32 a, u32 b, u64& carry) const {
-	u64 total = ((u64)a) * ((u64)b) + ((u64)carry);
+	u64 total = ((u64) a) * ((u64) b) + ((u64) carry);
 	carry = total >> 32;
-	u32 result = (u32)total;
+	u32 result = (u32) total;
 	return result;
 }
 
@@ -240,7 +308,19 @@ void u128::Multiply(const u32& other, u128& result) const {
 	result._32[1] = MutiplyWithCarry(this->_32[1], other, carry);
 	result._32[0] = MutiplyWithCarry(this->_32[0], other, carry);
 #endif
+
 }
+
+inline void u128::Multiply(const u128& other, u128& result) const {
+	u64 temp = 0;
+	result.Bottom64Ref() =  _umul128(this->Bottom64(), other.Bottom64(), &result.Top64Ref());
+	result.Bottom64Ref() += _umul128(this->Bottom64(), other.Top64(), &temp);
+	result.Top64Ref() += temp;// Add the top part of the last mul
+
+	result.Top64Ref() += this->Top64() * other.Bottom64();
+	result.Top64Ref() += this->Top64() * other.Top64();
+}
+
 
 const u128 u128::operator*(const u32 other) const {
 	u128 result;
@@ -248,6 +328,15 @@ const u128 u128::operator*(const u32 other) const {
 	return result;
 }
 u128 u128::operator*=(const u32 other) {
+	Multiply(other, *this);
+	return *this;
+}
+const u128 u128::operator*(const u128 other) const {
+	u128 result;
+	Multiply(other, result);
+	return result;
+}
+u128 u128::operator*=(const u128 other) {
 	Multiply(other, *this);
 	return *this;
 }
@@ -271,6 +360,9 @@ u32 u128::Divide(const u32 other, u128& result) const {
 	result._32[3] = DivideWithRemainder(this->_32[3], other, remainder);
 #endif
 	return remainder;
+}
+inline u32 u128::Divide(const u128 other, u128& result) const {
+
 }
 
 const u128 u128::operator/(const u32 other) const {

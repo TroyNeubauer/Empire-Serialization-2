@@ -27,27 +27,31 @@ namespace Empire {
 
 typedef int ErrorCode;
 struct EmpireErrorInfo {
-	virtual void x();//So that we can use dynamic cast
+	virtual std::string ToString() = 0;
 };
 
 struct InvalidArgumentErrorData : EmpireErrorInfo {
 	std::string argumentName;
+
+	std::string ToString();
 };
 
 struct MismatchedTypeErrorData : EmpireErrorInfo {
 	//TODO
+
+	std::string ToString();
 };
 
 struct UnknownTypeErrorData : EmpireErrorInfo {
 	//TODO
+
+	std::string ToString();
 };
 
 struct InvalidTypeDefErrorData : EmpireErrorInfo {
 	//TODO
-};
 
-struct InvalidTypeDefErrorData : EmpireErrorInfo {
-	//TODO
+	std::string ToString();
 };
 
 struct InvalidCharacterErrorData : EmpireErrorInfo {
@@ -55,11 +59,15 @@ struct InvalidCharacterErrorData : EmpireErrorInfo {
 	char character;
 	unsigned long long index;
 	std::string extra;
+
+	std::string ToString();
 };
 
 struct ParseOverFlowData : EmpireErrorInfo {
 	ParseOverFlowData(std::string parseInput, std::string info) : parseInput(parseInput), info(info) {}
 	std::string parseInput, info;
+
+	std::string ToString();
 };
 
 struct EmpireError {

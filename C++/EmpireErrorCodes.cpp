@@ -6,7 +6,33 @@ std::exception CodeToException(ErrorCode code) {
 	return std::exception(ErrorCodeToString(code).c_str());
 }
 
-void EmpireErrorInfo::x() {}//Leave blank
+std::string InvalidArgumentErrorData::ToString() {
+	return "Invalid Argument Error, Argument Name: " + argumentName;
+};
+
+std::string MismatchedTypeErrorData::ToString() {
+	return "MismatchedTypeErrorData TODO";
+};
+
+std::string UnknownTypeErrorData::ToString() {
+	return "UnknownTypeErrorData TODO";
+};
+
+std::string InvalidTypeDefErrorData::ToString() {
+	return "InvalidTypeDefErrorData TODO";
+};
+
+
+std::string InvalidCharacterErrorData::ToString() {
+	return "Invalid Character Error, Character ID " + std::to_string((int) character) + " \'" + character + "\'" + 
+		", Index: " + std::to_string(index) + " - " + extra;
+};
+
+std::string ParseOverFlowData::ToString() {
+	return "ParseOver Flow, Parse Input: " + parseInput + " - " + info;
+};
+
+
 
 EmpireError::EmpireError() {
 	this->code = EMPIRE_NO_ERROR;
