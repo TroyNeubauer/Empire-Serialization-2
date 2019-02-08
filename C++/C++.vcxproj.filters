@@ -1,78 +1,84 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="serialization">
+      <UniqueIdentifier>{d176d933-b442-4dea-9df2-cb215e83ed02}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="type">
+      <UniqueIdentifier>{2ac8e856-666f-48a7-a116-4be4c3030708}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="buffer">
+      <UniqueIdentifier>{fde4efa0-37ac-440d-b11b-3de0f1022952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="main">
+      <UniqueIdentifier>{cd9c4e87-4fef-45ff-a576-f6ee8775e2bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="empire">
+      <UniqueIdentifier>{c835ce8b-bad9-4ca2-b46a-752185e6a024}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="primitive">
+      <UniqueIdentifier>{38c22d04-2901-4638-9365-891ac604e26f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TypeManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EmpireErrorCodes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="little-big-int.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Test.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="half.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="u128.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="src\buffer\Buffer.h">
+      <Filter>buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\buffer\TempBuffer.h">
+      <Filter>buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Test.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Empire.h">
+      <Filter>empire</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EmpireErrorCodes.h">
+      <Filter>empire</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EmpireException.h">
+      <Filter>empire</Filter>
+    </ClInclude>
+    <ClInclude Include="src\little-big-int.hpp">
+      <Filter>empire</Filter>
+    </ClInclude>
+    <ClInclude Include="src\type\TypeManager.h">
+      <Filter>type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serialization\Field.h">
+      <Filter>serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitive\EmpirePrimitives.h">
+      <Filter>primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitive\half.h">
+      <Filter>primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitive\s128.h">
+      <Filter>primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitive\u128.h">
+      <Filter>primitive</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Buffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TypeManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Field.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EmpireErrorCodes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EmpireException.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EmpirePrimitives.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="little-big-int.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Empire.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="u128.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="s128.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="half.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TempBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="src\main\Main.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EmpireErrorCodes.cpp">
+      <Filter>empire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\little-big-int.cpp">
+      <Filter>empire</Filter>
+    </ClCompile>
+    <ClCompile Include="src\type\TypeManager.cpp">
+      <Filter>type</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitive\half.cpp">
+      <Filter>primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitive\u128.cpp">
+      <Filter>primitive</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

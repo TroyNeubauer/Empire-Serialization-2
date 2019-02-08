@@ -1,7 +1,7 @@
 #pragma once
 
-#include "EmpireErrorCodes.h"
-#include "EmpireException.h"
+#include "../EmpireErrorCodes.h"
+#include "../EmpireException.h"
 
 #include <stdint.h>
 #include <stdlib.h>

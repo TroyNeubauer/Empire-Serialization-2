@@ -18,6 +18,29 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\buffer\Buffer.h" />
+    <ClInclude Include="src\buffer\TempBuffer.h" />
+    <ClInclude Include="src\Empire.h" />
+    <ClInclude Include="src\EmpireErrorCodes.h" />
+    <ClInclude Include="src\EmpireException.h" />
+    <ClInclude Include="src\little-big-int.hpp" />
+    <ClInclude Include="src\main\Test.h" />
+    <ClInclude Include="src\primitive\EmpirePrimitives.h" />
+    <ClInclude Include="src\primitive\half.h" />
+    <ClInclude Include="src\primitive\s128.h" />
+    <ClInclude Include="src\primitive\u128.h" />
+    <ClInclude Include="src\serialization\Field.h" />
+    <ClInclude Include="src\type\TypeManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\EmpireErrorCodes.cpp" />
+    <ClCompile Include="src\little-big-int.cpp" />
+    <ClCompile Include="src\main\Main.cpp" />
+    <ClCompile Include="src\primitive\half.cpp" />
+    <ClCompile Include="src\primitive\u128.cpp" />
+    <ClCompile Include="src\type\TypeManager.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{D7073881-08D4-4CAF-93EE-01643BF912BD}</ProjectGuid>
@@ -145,34 +168,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="EmpireErrorCodes.cpp" />
-    <ClCompile Include="half.cpp" />
-    <ClCompile Include="little-big-int.cpp" />
-    <ClCompile Include="Main.cpp">
-      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PreprocessToFile>
-      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</PreprocessToFile>
-      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</PreprocessToFile>
-      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</PreprocessToFile>
-    </ClCompile>
-    <ClCompile Include="Test.h" />
-    <ClCompile Include="TypeManager.cpp" />
-    <ClCompile Include="u128.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Buffer.h" />
-    <ClInclude Include="Empire.h" />
-    <ClInclude Include="EmpireErrorCodes.h" />
-    <ClInclude Include="EmpireException.h" />
-    <ClInclude Include="EmpirePrimitives.h" />
-    <ClInclude Include="Field.h" />
-    <ClInclude Include="half.h" />
-    <ClInclude Include="little-big-int.hpp" />
-    <ClInclude Include="s128.h" />
-    <ClInclude Include="TempBuffer.h" />
-    <ClInclude Include="TypeManager.h" />
-    <ClInclude Include="u128.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

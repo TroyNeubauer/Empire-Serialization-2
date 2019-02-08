@@ -2,12 +2,7 @@
 #include <time.h>
 #include <Windows.h>
 
-#include "Empire.h"
-#include "Test.h"
-#include "half.h"
-
-#include "TempBuffer.h"
-
+#include "../Empire.h"
 
 using namespace Empire;
 
@@ -17,6 +12,7 @@ using namespace Empire;
 int main() {
 	system("PAUSE");
 	return 0;
+
 	float array[] = { 0.0f, 292.23f, 2.2323f, 13.2387f, 278.2f, 27.5f, -1.24f, -45.46f, -0.4578134f, 0.0000001f};
 	const int elements = sizeof(array) / sizeof(float);
 	half result[elements];
