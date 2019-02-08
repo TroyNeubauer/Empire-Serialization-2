@@ -32,8 +32,8 @@ u128::u128(const u128& value) {
 	this->_64[0] = value._64[0];
 	this->_64[1] = value._64[1];
 }
-u128::u128(const char* string, u64 length, u8 base ERROR_CODE_PARAMETER) {
-	FromString(string, length, base, this ERROR_CODE_VAR);
+u128::u128(const char* string, u64 length, u8 base EMPIRE_ERROR_CODE_PARAMETER) {
+	FromString(string, length, base, this EMPIRE_ERROR_CODE_VAR);
 }
 
 inline u128::operator u64() const {
@@ -525,7 +525,7 @@ std::string to_string(u128 value, u8 base) {
 	return result;
 }
 
-void FromString(const char* string, u64 length, u8 base, u128* result ERROR_CODE_PARAMETER) {
+void FromString(const char* string, u64 length, u8 base, u128* result EMPIRE_ERROR_CODE_PARAMETER) {
 	u128 temp = 0;
 	u128* prt = &temp;
 	u128 multiplier = 1;
@@ -546,11 +546,11 @@ void FromString(const char* string, u64 length, u8 base, u128* result ERROR_CODE
 		}
 #if EMPIRE_ENABLE_TEXT_PARSE_ERROR_CHECKING
 		else {
-			ERROR(EMPIRE_INVALID_CHARACTER, new InvalidCharacterErrorData(c, i, ""), EMPIRE_VOID_FUNCTION);
+			EMPIRE_ERROR(EMPIRE_INVALID_CHARACTER, new InvalidCharacterErrorData(c, i, ""), EMPIRE_VOID_FUNCTION);
 		}
 
 		if (digit > base) {
-			ERROR(EMPIRE_INVALID_CHARACTER, new InvalidCharacterErrorData(c, i, "Numeric character larger then base"), EMPIRE_VOID_FUNCTION);
+			EMPIRE_ERROR(EMPIRE_INVALID_CHARACTER, new InvalidCharacterErrorData(c, i, "Numeric character larger then base"), EMPIRE_VOID_FUNCTION);
 		}
 #endif
 		temp += multiplier * digit;
@@ -561,7 +561,7 @@ void FromString(const char* string, u64 length, u8 base, u128* result ERROR_CODE
 
 #if EMPIRE_ENABLE_TEXT_PARSE_ERROR_CHECKING
 		if (lastMultiplier > multiplier && i != 0) {
-			ERROR(EMPIRE_PARSE_ERROR_OVERFLOW, new ParseOverFlowData(std::string(string), "Input too long for target size of u128"), EMPIRE_VOID_FUNCTION);
+			EMPIRE_ERROR(EMPIRE_PARSE_ERROR_OVERFLOW, new ParseOverFlowData(std::string(string), "Input too long for target size of u128"), EMPIRE_VOID_FUNCTION);
 		}
 #endif
 		if (i == 0) break;

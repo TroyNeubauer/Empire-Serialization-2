@@ -91,7 +91,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;LITTLE_ENDIAN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;EMPIRE_PLATFORM_WINDOWS;LITTLE_ENDIAN</PreprocessorDefinitions>
       <StructMemberAlignment>8Bytes</StructMemberAlignment>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -103,7 +103,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;LITTLE_ENDIAN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;EMPIRE_PLATFORM_WINDOWS;LITTLE_ENDIAN</PreprocessorDefinitions>
       <StructMemberAlignment>8Bytes</StructMemberAlignment>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -117,7 +117,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;LITTLE_ENDIAN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;EMPIRE_PLATFORM_WINDOWS;LITTLE_ENDIAN</PreprocessorDefinitions>
       <StructMemberAlignment>8Bytes</StructMemberAlignment>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -135,7 +135,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;LITTLE_ENDIAN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;EMPIRE_PLATFORM_WINDOWS;LITTLE_ENDIAN</PreprocessorDefinitions>
       <StructMemberAlignment>8Bytes</StructMemberAlignment>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -147,7 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EmpireErrorCodes.cpp" />
-    <ClCompile Include="EmpirePrimitives.cpp" />
+    <ClCompile Include="half.cpp" />
     <ClCompile Include="little-big-int.cpp" />
     <ClCompile Include="Main.cpp">
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PreprocessToFile>
@@ -155,8 +155,10 @@
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</PreprocessToFile>
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</PreprocessToFile>
     </ClCompile>
+    <ClCompile Include="TempBuffer.cpp" />
     <ClCompile Include="Test.h" />
     <ClCompile Include="TypeManager.cpp" />
+    <ClCompile Include="u128.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffer.h" />
@@ -165,8 +167,12 @@
     <ClInclude Include="EmpireException.h" />
     <ClInclude Include="EmpirePrimitives.h" />
     <ClInclude Include="Field.h" />
+    <ClInclude Include="half.h" />
     <ClInclude Include="little-big-int.hpp" />
+    <ClInclude Include="s128.h" />
+    <ClInclude Include="TempBuffer.h" />
     <ClInclude Include="TypeManager.h" />
+    <ClInclude Include="u128.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

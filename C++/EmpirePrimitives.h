@@ -39,10 +39,13 @@ const int MAX_BASE = sizeof(DIGITS);
 
 #ifdef __AVX2__
 	#define EMPIRE_AVX2
+	#define EMPIRE_AVX_GENERAL
 #elif defined ( __AVX__ )
 	#define EMPIRE_AVX
+	#define EMPIRE_AVX_GENERAL
 #elif (defined(_M_AMD64) || defined(_M_X64))
 	#define EMPIRE_AVX2_SSE2_X64
+	#define EMPIRE_AVX_GENERAL
 #elif _M_IX86_FP == 2
 	#define EMPIRE_AVX2_SSE2_X32
 #elif _M_IX86_FP == 1

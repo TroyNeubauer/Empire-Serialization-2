@@ -27,11 +27,17 @@
     <ClCompile Include="little-big-int.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EmpirePrimitives.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Test.h">
       <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="half.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="u128.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TempBuffer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +63,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Empire.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="u128.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="s128.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="half.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TempBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

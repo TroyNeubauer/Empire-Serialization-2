@@ -10,7 +10,7 @@ typedef unsigned __int128 u128;
 #endif
 
 std::string to_string(u128 value, u8 base = 10);
-void FromString(const char* string, u64 length, u8 base, u128* result ERROR_CODE_PARAMETER);
+void FromString(const char* string, u64 length, u8 base, u128* result EMPIRE_ERROR_CODE_PARAMETER);
 
 u64 log10(u128 value);
 u64 log2(u128 value);
@@ -28,9 +28,9 @@ union u128 {
 	u128(const u64 high, u64 low);
 
 	u128(const u128& value);
-	u128(const char* string, u64 length, u8 base ERROR_CODE_PARAMETER);
+	u128(const char* string, u64 length, u8 base EMPIRE_ERROR_CODE_PARAMETER);
 
-	u128(std::string string ERROR_CODE_PARAMETER, u8 base = 10) : u128(string.c_str(), string.length(), base ERROR_CODE_VAR) {}
+	u128(std::string string EMPIRE_ERROR_CODE_PARAMETER, u8 base = 10) : u128(string.c_str(), string.length(), base EMPIRE_ERROR_CODE_VAR) {}
 
 	inline explicit operator u64() const;
 	inline u64 Top64() const;
