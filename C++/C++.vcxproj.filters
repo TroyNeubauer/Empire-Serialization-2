@@ -36,9 +36,6 @@
     <ClCompile Include="u128.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TempBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffer.h">

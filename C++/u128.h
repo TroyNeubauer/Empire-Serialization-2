@@ -4,9 +4,9 @@
 namespace Empire {
 
 #if EMPIRE_SOFTWARE_U128
-union u128;
+	union u128;
 #else
-typedef unsigned __int128 u128;
+	typedef unsigned __int128 u128;
 #endif
 
 std::string to_string(u128 value, u8 base = 10);
