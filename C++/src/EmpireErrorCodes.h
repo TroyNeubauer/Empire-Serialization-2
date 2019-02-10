@@ -28,10 +28,27 @@
 
 namespace Empire {
 
-typedef u32 ErrorCode;
 struct EmpireErrorInfo {
 	virtual std::string ToString() = 0;
 };
+
+struct EmpireError {
+	//Initalizes an error object to hold no error
+	EmpireError();
+	EmpireError(ErrorCode code, EmpireErrorInfo* errorInfo) : code(code), errorInfo(errorInfo) {}
+
+	ErrorCode code;
+	EmpireErrorInfo* errorInfo;
+
+};
+
+void clearError(EmpireError& error);
+
+std::exception ErrorCodeToException(ErrorCode code);
+std::exception ErrorToException(EmpireError& code);
+
+std::string ErrorCodeToString(ErrorCode code);
+std::string ErrorToString(EmpireError& error);
 
 struct InvalidArgumentErrorData : EmpireErrorInfo {
 	std::string argumentName;
@@ -81,21 +98,6 @@ struct AlreadyKnownTypeData : EmpireErrorInfo {
 
 	virtual std::string ToString() override;
 };
-
-struct EmpireError {
-	//Initalizes an error object to hold no error
-	EmpireError();
-	EmpireError(ErrorCode code, EmpireErrorInfo* errorInfo) : code(code), errorInfo(errorInfo){}
-
-	ErrorCode code;
-	EmpireErrorInfo* errorInfo;
-
-};
-
-void clearError(EmpireError& error);
-
-std::exception CodeToException(ErrorCode code);
-std::string ErrorCodeToString(ErrorCode code);
 
 
 }//namespace

@@ -27,21 +27,25 @@
     <ClInclude Include="src\little-big-int.hpp" />
     <ClInclude Include="src\main\Test.h" />
     <ClInclude Include="src\primitive\EmpirePrimitives.h" />
+    <ClInclude Include="src\primitive\EmpirePrimitivesConfig.h" />
     <ClInclude Include="src\primitive\FloatUtil.h" />
-    <ClInclude Include="src\primitive\half.h" />
-    <ClInclude Include="src\primitive\s128.h" />
-    <ClInclude Include="src\primitive\u128.h" />
+    <ClInclude Include="src\primitive\float16.h" />
+    <ClInclude Include="src\primitive\int128_t.h" />
+    <ClInclude Include="src\primitive\uint128_t.h" />
     <ClInclude Include="src\serialization\Field.h" />
     <ClInclude Include="src\serialization\Serializer.h" />
+    <ClInclude Include="src\type\EmpireTypes.h" />
     <ClInclude Include="src\type\TypeManager.h" />
+    <ClInclude Include="src\util\ToStringUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EmpireErrorCodes.cpp" />
     <ClCompile Include="src\little-big-int.cpp" />
     <ClCompile Include="src\main\Main.cpp" />
     <ClCompile Include="src\primitive\FloatUtil.cpp" />
-    <ClCompile Include="src\primitive\half.cpp" />
-    <ClCompile Include="src\primitive\u128.cpp" />
+    <ClCompile Include="src\primitive\float16.cpp" />
+    <ClCompile Include="src\primitive\uint128_t.cpp" />
+    <ClCompile Include="src\serialization\PrimitiveSerializers.cpp" />
     <ClCompile Include="src\serialization\Serializer.cpp" />
     <ClCompile Include="src\type\TypeManager.cpp" />
   </ItemGroup>

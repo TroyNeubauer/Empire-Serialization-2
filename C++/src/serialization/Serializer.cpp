@@ -15,7 +15,7 @@ Serializer::~Serializer() {
 	delete serializers;
 }
 
-void Serializer::AddSerializer(EmpireType type, SerializeFunction function EMPIRE_ERROR_CODE_PARAMETER) {
+void Serializer::AddSerializer(EmpireType type, SerializeFunction function EMPIRE_ERROR_PARAMETER) {
 	if (type >= serializersSize) {
 		EmpireType oldSize = serializersSize;
 		EmpireType newSize = serializersSize;

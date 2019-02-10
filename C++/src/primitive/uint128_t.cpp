@@ -1,17 +1,18 @@
-#include "u128.h"
+#include "uint128_t.h"
 
 #include <intrin.h>
 #include <sstream>
 #include <assert.h>
 
 #include "../EmpireErrorCodes.h"
+#include "../util/ToStringUtil.h"
+#include "EmpirePrimitives.h"
 
-namespace Empire {
 
-#if EMPIRE_SOFTWARE_U128
+#if EMPIRE_SOFTWARE_UINT_128
 
-u128::u128(const u64 value) {
-	u128* t = this;
+uint128_t::uint128_t(const uint64_t value) {
+	uint128_t* t = this;
 #ifdef LITTLE_ENDIAN
 	this->_64[0] = value;
 	this->_64[1] = 0;
@@ -21,8 +22,8 @@ u128::u128(const u64 value) {
 #endif
 }
 
-u128::u128(const u64 high, u64 low) {
-	u128* t = this;
+uint128_t::uint128_t(const uint64_t high, uint64_t low) {
+	uint128_t* t = this;
 #ifdef LITTLE_ENDIAN
 	this->_64[1] = high;
 	this->_64[0] = low;
@@ -32,16 +33,16 @@ u128::u128(const u64 high, u64 low) {
 #endif
 }
 
-u128::u128(const u128& value) {
-	u128* t = this;
+uint128_t::uint128_t(const uint128_t& value) {
+	uint128_t* t = this;
 	this->_64[0] = value._64[0];
 	this->_64[1] = value._64[1];
 }
-u128::u128(const char* string, u64 length, u8 base EMPIRE_ERROR_CODE_PARAMETER) {
-	FromString(string, length, base, this EMPIRE_ERROR_CODE_VAR);
+uint128_t::uint128_t(const char* string, uint64_t length, u8 base EMPIRE_ERROR_PARAMETER) {
+	FromString(string, length, base, this EMPIRE_ERROR_VAR);
 }
 
-inline u128::operator u64() const {
+inline uint128_t::operator uint64_t() const {
 #ifdef LITTLE_ENDIAN
 	return this->_64[0];
 #else
@@ -50,7 +51,7 @@ inline u128::operator u64() const {
 }
 
 
-inline u64 u128::Top64() const {
+inline uint64_t uint128_t::Top64() const {
 #ifdef LITTLE_ENDIAN
 	return this->_64[1];
 #else
@@ -58,7 +59,7 @@ inline u64 u128::Top64() const {
 #endif
 }
 
-inline u64 u128::Bottom64() const {
+inline uint64_t uint128_t::Bottom64() const {
 #ifdef LITTLE_ENDIAN
 	return this->_64[0];
 #else
@@ -66,14 +67,14 @@ inline u64 u128::Bottom64() const {
 #endif
 }
 
-inline u64& u128::Top64Ref() {
+inline uint64_t& uint128_t::Top64Ref() {
 #ifdef LITTLE_ENDIAN
 	return this->_64[1];
 #else
 	return this->_64[0];
 #endif
 }
-inline u64& u128::Bottom64Ref() {
+inline uint64_t& uint128_t::Bottom64Ref() {
 #ifdef LITTLE_ENDIAN
 	return this->_64[0];
 #else
@@ -81,20 +82,20 @@ inline u64& u128::Bottom64Ref() {
 #endif
 }
 
-inline const bool u128::operator<(u64 other) const {
+inline const bool uint128_t::operator<(uint64_t other) const {
 	return Bottom64() < other && Top64() == 0;
 }
-inline const bool u128::operator>(u64 other) const {
+inline const bool uint128_t::operator>(uint64_t other) const {
 	return Bottom64() > other || Top64() > 0;
 }
-inline const bool u128::operator<=(u64 other) const {
+inline const bool uint128_t::operator<=(uint64_t other) const {
 	return Bottom64() <= other && Top64() == 0;
 }
-inline const bool u128::operator>=(u64 other) const {
+inline const bool uint128_t::operator>=(uint64_t other) const {
 	return Bottom64() >= other || Top64() > 0;
 }
 
-inline const bool u128::operator<(u128 other) const {
+inline const bool uint128_t::operator<(uint128_t other) const {
 	if (this->Top64() == other.Top64()) {
 		return this->Bottom64() < other.Bottom64();
 	}
@@ -105,7 +106,7 @@ inline const bool u128::operator<(u128 other) const {
 		return false;
 	}
 }
-inline const bool u128::operator>(u128 other) const {
+inline const bool uint128_t::operator>(uint128_t other) const {
 	if (this->Top64() == other.Top64()) {
 		return this->Bottom64() > other.Bottom64();
 	}
@@ -116,37 +117,37 @@ inline const bool u128::operator>(u128 other) const {
 		return false;
 	}
 }
-inline const bool u128::operator<=(u128 other) const {
+inline const bool uint128_t::operator<=(uint128_t other) const {
 	if (*this == other) return true;
 	return *this < other;
 }
-inline const bool u128::operator>=(u128 other) const {
+inline const bool uint128_t::operator>=(uint128_t other) const {
 	if (*this == other) return true;
 	return *this > other;
 }
 
 
-inline const bool u128::operator==(const u128 other) const {
+inline const bool uint128_t::operator==(const uint128_t other) const {
 	return this->Bottom64() == other.Bottom64() && this->Top64() == other.Top64();
 }
-inline const bool u128::operator!=(const u128 other) const {
+inline const bool uint128_t::operator!=(const uint128_t other) const {
 	return !(*this == other);
 }
 
-inline const bool u128::operator==(const u64 other) const {
+inline const bool uint128_t::operator==(const uint64_t other) const {
 	return this->Top64() == 0 && (this->Bottom64() == other);
 }
-inline const bool u128::operator!=(const u64 other) const {
+inline const bool uint128_t::operator!=(const uint64_t other) const {
 	return !(*this == other);
 }
 
-inline u128 u128::operator=(const u128 other) {
+inline uint128_t uint128_t::operator=(const uint128_t other) {
 	this->Bottom64Ref() = other.Bottom64();
 	this->Top64Ref() = other.Top64();
 	return *this;
 }
 
-inline u128 u128::operator=(const u64 value) {
+inline uint128_t uint128_t::operator=(const uint64_t value) {
 	this->Bottom64Ref() = value;
 	this->Top64Ref() = 0;
 
@@ -155,132 +156,132 @@ inline u128 u128::operator=(const u64 value) {
 
 //Little 00 11 22 33 44 55 66 77    88 99 AA BB CC DD EE FF - as 128 bit
 //Big    FF EE DD CC BB AA 99 88    77 66 55 44 33 22 11 00 - ad 128 bit
-void u128::ShiftLeft(u64 bits, u128& result) const {
+void uint128_t::ShiftLeft(uint64_t bits, uint128_t& result) const {
 	result.Bottom64Ref() = this->Bottom64() << bits;
-	u64 lowerOfUpper = this->Top64() >> (sizeof(u64) * 8 - bits);
+	uint64_t lowerOfUpper = this->Top64() >> (sizeof(uint64_t) * 8 - bits);
 	result.Bottom64Ref() |= lowerOfUpper;
 	result.Top64Ref() = this->Top64() << bits;
 }
-const u128 u128::operator<<(u64 bits) const {
-	u128 result;
+const uint128_t uint128_t::operator<<(uint64_t bits) const {
+	uint128_t result;
 	ShiftLeft(bits, result);
 	return result;
 }
-u128 u128::operator<<=(u64 bits) {
+uint128_t uint128_t::operator<<=(uint64_t bits) {
 	ShiftLeft(bits, *this);
 	return *this;
 }
 
-void u128::ShiftRight(u64 bits, u128& result) const {
+void uint128_t::ShiftRight(uint64_t bits, uint128_t& result) const {
 	result.Top64Ref() = this->Top64() >> bits;
-	u64 upperOfLower = this->Bottom64() << (sizeof(u64) * 8 - bits);
+	uint64_t upperOfLower = this->Bottom64() << (sizeof(uint64_t) * 8 - bits);
 	result.Top64Ref() |= upperOfLower;
 	result.Bottom64Ref() = this->Bottom64() >> bits;
 }
-const u128 u128::operator>>(u64 bits) const {
-	u128 result;
+const uint128_t uint128_t::operator>>(uint64_t bits) const {
+	uint128_t result;
 	ShiftRight(bits, result);
 	return result;
 }
-u128 u128::operator>>=(u64 bits) {
+uint128_t uint128_t::operator>>=(uint64_t bits) {
 	ShiftRight(bits, *this);
 	return *this;
 }
 
-void u128::Plus(const u128& other, u128& result) const {
+void uint128_t::Plus(const uint128_t& other, uint128_t& result) const {
 #if EMPIRE_ENABLE_INTEL_INTRINSICS
 	char carry = _addcarry_u64(0, this->Bottom64(), other.Bottom64(), &result.Bottom64Ref());// Add low bits
 	_addcarry_u64(carry, this->Top64(), other.Top64(), &result.Top64Ref());// Add high bits with the carry from the low bits
 #endif
 }
 
-void u128::Plus(const u64& other, u128& result) const {
+void uint128_t::Plus(const uint64_t& other, uint128_t& result) const {
 #if EMPIRE_ENABLE_INTEL_INTRINSICS
 	char carry = _addcarry_u64(0, this->Bottom64(), other, &result.Bottom64Ref());// Add low bits
 	_addcarry_u64(carry, this->Top64(), 0, &result.Top64Ref());// Add high bits with the carry from the low bits
 #endif
 }
 
-const u128 u128::operator+(const u128 other) const {
-	u128 result;
+const uint128_t uint128_t::operator+(const uint128_t other) const {
+	uint128_t result;
 	Plus(other, result);
 	return result;
 }
-u128 u128::operator+=(const u128 other) {
+uint128_t uint128_t::operator+=(const uint128_t other) {
 	Plus(other, *this);
 	return *this;
 }
-const u128 u128::operator+(const u64 other) const {
-	u128 result;
+const uint128_t uint128_t::operator+(const uint64_t other) const {
+	uint128_t result;
 	Plus(other, result);
 	return result;
 }
-u128 u128::operator+=(const u64 other) {
+uint128_t uint128_t::operator+=(const uint64_t other) {
 	Plus(other, *this);
 	return *this;
 }
 
-u128 u128::operator++() {
+uint128_t uint128_t::operator++() {
 	Plus(1, *this);
 	return *this;
 }
-u128 u128::operator++(int) {// Postfix
-	u128 temp = *this;
+uint128_t uint128_t::operator++(int) {// Postfix
+	uint128_t temp = *this;
 	++(*this);
 	return temp;
 }
 
-void u128::Minus(const u128& other, u128& result) const {
+void uint128_t::Minus(const uint128_t& other, uint128_t& result) const {
 #if EMPIRE_ENABLE_INTEL_INTRINSICS
 	char barrow = _subborrow_u64(0, this->Bottom64(), other.Bottom64(), &result.Bottom64Ref());// Subtract the low bits
 	_subborrow_u64(barrow, this->Top64(), other.Top64(), &result.Top64Ref());// Subtract the high bits with the barrow
 #endif
 }
-void u128::Minus(const u64& other, u128& result) const {
+void uint128_t::Minus(const uint64_t& other, uint128_t& result) const {
 #if EMPIRE_ENABLE_INTEL_INTRINSICS
 	char barrow = _subborrow_u64(0, this->Bottom64(), other, &result.Bottom64Ref());// Subtract the low bits
 	_subborrow_u64(barrow, this->Top64(), 0, &result.Top64Ref());// Subtract the high bits with the barrow
 #endif
 }
 
-const u128 u128::operator-(const u128 other) const {
-	u128 result;
+const uint128_t uint128_t::operator-(const uint128_t other) const {
+	uint128_t result;
 	Minus(other, result);
 	return result;
 }
-u128 u128::operator-=(const u128 other) {
+uint128_t uint128_t::operator-=(const uint128_t other) {
 	Minus(other, *this);
 	return *this;
 }
-const u128 u128::operator-(const u64 other) const {
-	u128 result;
+const uint128_t uint128_t::operator-(const uint64_t other) const {
+	uint128_t result;
 	Minus(other, result);
 	return result;
 }
-u128 u128::operator-=(const u64 other) {
+uint128_t uint128_t::operator-=(const uint64_t other) {
 	Minus(other, *this);
 	return *this;
 }
 
-u128 u128::operator--() {
+uint128_t uint128_t::operator--() {
 	Minus(1, *this);
 	return *this;
 }
-u128 u128::operator--(int) {// Postfix
-	u128 temp = *this;
+uint128_t uint128_t::operator--(int) {// Postfix
+	uint128_t temp = *this;
 	--(*this);
 	return temp;
 }
 
-inline u32 u128::MutiplyWithCarry(u32 a, u32 b, u64& carry) const {
-	u64 total = ((u64)a) * ((u64)b) + ((u64)carry);
+inline uint32_t uint128_t::MutiplyWithCarry(uint32_t a, uint32_t b, uint64_t& carry) const {
+	uint64_t total = ((uint64_t)a) * ((uint64_t)b) + ((uint64_t)carry);
 	carry = total >> 32;
-	u32 result = (u32)total;
+	uint32_t result = (uint32_t)total;
 	return result;
 }
 
-void u128::Multiply(const u32& other, u128& result) const {
-	u64 carry = 0;
+void uint128_t::Multiply(const uint32_t& other, uint128_t& result) const {
+	uint64_t carry = 0;
 #ifdef LITTLE_ENDIAN //Start from lower addresses since thats where the lower values are
 	result._32[0] = MutiplyWithCarry(this->_32[0], other, carry);
 	result._32[1] = MutiplyWithCarry(this->_32[1], other, carry);
@@ -295,8 +296,8 @@ void u128::Multiply(const u32& other, u128& result) const {
 
 }
 
-inline void u128::Multiply(const u128& other, u128& result) const {
-	u64 temp = 0;
+inline void uint128_t::Multiply(const uint128_t& other, uint128_t& result) const {
+	uint64_t temp = 0;
 	result.Bottom64Ref() = _umul128(this->Bottom64(), other.Bottom64(), &result.Top64Ref());
 	result.Bottom64Ref() += _umul128(this->Bottom64(), other.Top64(), &temp);
 	result.Top64Ref() += temp;// Add the top part of the last mul
@@ -306,32 +307,32 @@ inline void u128::Multiply(const u128& other, u128& result) const {
 }
 
 
-const u128 u128::operator*(const u32 other) const {
-	u128 result;
+const uint128_t uint128_t::operator*(const uint32_t other) const {
+	uint128_t result;
 	Multiply(other, result);
 	return result;
 }
-u128 u128::operator*=(const u32 other) {
+uint128_t uint128_t::operator*=(const uint32_t other) {
 	Multiply(other, *this);
 	return *this;
 }
-const u128 u128::operator*(const u128 other) const {
-	u128 result;
+const uint128_t uint128_t::operator*(const uint128_t other) const {
+	uint128_t result;
 	Multiply(other, result);
 	return result;
 }
-u128 u128::operator*=(const u128 other) {
+uint128_t uint128_t::operator*=(const uint128_t other) {
 	Multiply(other, *this);
 	return *this;
 }
 
-inline u32 u128::DivideWithRemainder(const u32 a, const u32 b, u32& remainder) const {
-	u64 helper = (((u64)remainder) << 32UL) | a;
+inline uint32_t uint128_t::DivideWithRemainder(const uint32_t a, const uint32_t b, uint32_t& remainder) const {
+	uint64_t helper = (((uint64_t)remainder) << 32UL) | a;
 	remainder = helper % b;
-	return (u32)(helper / b);
+	return (uint32_t)(helper / b);
 }
-u32 u128::Divide(const u32 other, u128& result) const {
-	u32 remainder = 0;
+uint32_t uint128_t::Divide(const uint32_t other, uint128_t& result) const {
+	uint32_t remainder = 0;
 #ifdef LITTLE_ENDIAN//Start from higher addresses since thats where the higher values are
 	result._32[3] = DivideWithRemainder(this->_32[3], other, remainder);
 	result._32[2] = DivideWithRemainder(this->_32[2], other, remainder);
@@ -345,25 +346,25 @@ u32 u128::Divide(const u32 other, u128& result) const {
 #endif
 	return remainder;
 }
-inline u32 u128::Divide(const u128 other, u128& result) const {
+inline uint32_t uint128_t::Divide(const uint128_t other, uint128_t& result) const {
 
 }
 
-const u128 u128::operator/(const u32 other) const {
-	u128 result;
+const uint128_t uint128_t::operator/(const uint32_t other) const {
+	uint128_t result;
 	Divide(other, result);
 	return result;
 }
-u128 u128::operator/=(const u32 other) {
+uint128_t uint128_t::operator/=(const uint32_t other) {
 	Divide(other, *this);
 	return *this;
 }
-const u64 u128::operator%(const u32 other) const {
-	u128 result;
+const uint64_t uint128_t::operator%(const uint32_t other) const {
+	uint128_t result;
 	return Divide(other, result);
 }
 
-std::string u128::ToString(u8 base) const {
+std::string uint128_t::ToString(u8 base) const {
 	return to_string(*this, base);
 }
 
@@ -379,7 +380,7 @@ static const u8 LogTable256[256] =
 	LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7)
 };
 
-u64 log10(u128 value) {
+uint64_t log10(uint128_t value) {
 	if (value < 10)					return  0;
 	else if (value < 100)					return  1;
 	else if (value < 1000)					return  2;
@@ -399,61 +400,61 @@ u64 log10(u128 value) {
 	else if (value < 100000000000000000)	return 16;
 	else if (value < 1000000000000000000)	return 17;
 	else if (value < 10000000000000000000)	return 18;
-	else if (value < u128(0x5, 0x6BC75E2D63100000)) {//56BC75E2D63100000 == 100000000000000000000
+	else if (value < uint128_t(0x5, 0x6BC75E2D63100000)) {//56BC75E2D63100000 == 100000000000000000000
 		return 19;
 	}
-	else if (value < u128(0x36, 0x35C9ADC5DEA00000)) {//3635C9ADC5DEA00000 == 1000000000000000000000
+	else if (value < uint128_t(0x36, 0x35C9ADC5DEA00000)) {//3635C9ADC5DEA00000 == 1000000000000000000000
 		return 20;
 	}
-	else if (value < u128(0x21E, 0x19E0C9BAB2400000)) {//21E19E0C9BAB2400000 == 10000000000000000000000
+	else if (value < uint128_t(0x21E, 0x19E0C9BAB2400000)) {//21E19E0C9BAB2400000 == 10000000000000000000000
 		return 21;
 	}
-	else if (value < u128(0x152D, 0x02C7E14AF6800000)) {//152D02C7E14AF6800000 == 100000000000000000000000
+	else if (value < uint128_t(0x152D, 0x02C7E14AF6800000)) {//152D02C7E14AF6800000 == 100000000000000000000000
 		return 22;
 	}
-	else if (value < u128(0xD3C2, 0x1BCECCEDA1000000)) {//D3C21BCECCEDA1000000 == 1000000000000000000000000
+	else if (value < uint128_t(0xD3C2, 0x1BCECCEDA1000000)) {//D3C21BCECCEDA1000000 == 1000000000000000000000000
 		return 23;
 	}
-	else if (value < u128(0x84595, 0x161401484A000000)) {//84595161401484A000000 == 10000000000000000000000000
+	else if (value < uint128_t(0x84595, 0x161401484A000000)) {//84595161401484A000000 == 10000000000000000000000000
 		return 24;
 	}
-	else if (value < u128(0x52B7D2, 0xDCC80CD2E4000000)) {//52B7D2DCC80CD2E4000000 == 100000000000000000000000000
+	else if (value < uint128_t(0x52B7D2, 0xDCC80CD2E4000000)) {//52B7D2DCC80CD2E4000000 == 100000000000000000000000000
 		return 25;
 	}
-	else if (value < u128(0x33B2E3C, 0x9FD0803CE8000000)) {//33B2E3C9FD0803CE8000000 == 1000000000000000000000000000
+	else if (value < uint128_t(0x33B2E3C, 0x9FD0803CE8000000)) {//33B2E3C9FD0803CE8000000 == 1000000000000000000000000000
 		return 26;
 	}
-	else if (value < u128(0x204FCE5E, 0x3E25026110000000)) {//204FCE5E3E25026110000000 == 10000000000000000000000000000
+	else if (value < uint128_t(0x204FCE5E, 0x3E25026110000000)) {//204FCE5E3E25026110000000 == 10000000000000000000000000000
 		return 27;
 	}
-	else if (value < u128(0x1431E0FAE, 0x6D7217CAA0000000)) {//1431E0FAE6D7217CAA0000000 == 100000000000000000000000000000
+	else if (value < uint128_t(0x1431E0FAE, 0x6D7217CAA0000000)) {//1431E0FAE6D7217CAA0000000 == 100000000000000000000000000000
 		return 28;
 	}
-	else if (value < u128(0xC9F2C9CD0, 0x4674EDEA40000000)) {//C9F2C9CD04674EDEA40000000 == 1000000000000000000000000000000
+	else if (value < uint128_t(0xC9F2C9CD0, 0x4674EDEA40000000)) {//C9F2C9CD04674EDEA40000000 == 1000000000000000000000000000000
 		return 29;
 	}
-	else if (value < u128(0x7E37BE2022, 0xC0914B2680000000)) {//7E37BE2022C0914B2680000000 == 10000000000000000000000000000000
+	else if (value < uint128_t(0x7E37BE2022, 0xC0914B2680000000)) {//7E37BE2022C0914B2680000000 == 10000000000000000000000000000000
 		return 30;
 	}
-	else if (value < u128(0x4EE2D6D415B, 0x85ACEF8100000000)) {//4EE2D6D415B85ACEF8100000000 == 100000000000000000000000000000000
+	else if (value < uint128_t(0x4EE2D6D415B, 0x85ACEF8100000000)) {//4EE2D6D415B85ACEF8100000000 == 100000000000000000000000000000000
 		return 31;
 	}
-	else if (value < u128(0x314DC6448D93, 0x38C15B0A00000000)) {//314DC6448D9338C15B0A00000000 == 1000000000000000000000000000000000
+	else if (value < uint128_t(0x314DC6448D93, 0x38C15B0A00000000)) {//314DC6448D9338C15B0A00000000 == 1000000000000000000000000000000000
 		return 32;
 	}
-	else if (value < u128(0x1ED09BEAD87C0, 0x378D8E6400000000)) {//1ED09BEAD87C0378D8E6400000000 == 10000000000000000000000000000000000
+	else if (value < uint128_t(0x1ED09BEAD87C0, 0x378D8E6400000000)) {//1ED09BEAD87C0378D8E6400000000 == 10000000000000000000000000000000000
 		return 33;
 	}
-	else if (value < u128(0x13426172C74D82, 0x2B878FE800000000)) {//13426172C74D822B878FE800000000 == 100000000000000000000000000000000000
+	else if (value < uint128_t(0x13426172C74D82, 0x2B878FE800000000)) {//13426172C74D822B878FE800000000 == 100000000000000000000000000000000000
 		return 34;
 	}
-	else if (value < u128(0xC097CE7BC90715, 0xB34B9F1000000000)) {//C097CE7BC90715B34B9F1000000000 == 1000000000000000000000000000000000000
+	else if (value < uint128_t(0xC097CE7BC90715, 0xB34B9F1000000000)) {//C097CE7BC90715B34B9F1000000000 == 1000000000000000000000000000000000000
 		return 35;
 	}
-	else if (value < u128(0x785EE10D5DA46D9, 0x00F436A000000000)) {//785EE10D5DA46D900F436A000000000 == 10000000000000000000000000000000000000
+	else if (value < uint128_t(0x785EE10D5DA46D9, 0x00F436A000000000)) {//785EE10D5DA46D900F436A000000000 == 10000000000000000000000000000000000000
 		return 36;
 	}
-	else if (value < u128(0x4B3B4CA85A86C47A, 0x098A224000000000)) {//4B3B4CA85A86C47A098A224000000000 == 100000000000000000000000000000000000000
+	else if (value < uint128_t(0x4B3B4CA85A86C47A, 0x098A224000000000)) {//4B3B4CA85A86C47A098A224000000000 == 100000000000000000000000000000000000000
 		return 37;
 	}
 	else {
@@ -461,8 +462,8 @@ u64 log10(u128 value) {
 	}
 }
 
-u64 log2(u128 value) {//About 30 instructions to compute
-	register u64 t, tt, ttt, tttt; // temporaries
+uint64_t log2(uint128_t value) {//About 30 instructions to compute
+	register uint64_t t, tt, ttt, tttt; // temporaries
 	if (tttt = value.Top64()) {
 		if (ttt = tttt >> 32) {//upper 32
 			if (tt = ttt >> 16) {//upper 16
@@ -475,14 +476,14 @@ u64 log2(u128 value) {//About 30 instructions to compute
 			}
 		}
 		else {//lower 32
-			if (tt = static_cast<u64>(value >> 16UL)) {
+			if (tt = static_cast<uint64_t>(value >> 16UL)) {
 				if (t = tt >> 8)	return 88 + LogTable256[t];
 				else				return 80 + LogTable256[tt];
 			}
 			else {
-				if (t = static_cast<u64>(value >> 8UL))
+				if (t = static_cast<uint64_t>(value >> 8UL))
 					return 72 + LogTable256[t];
-				else				return 64 + LogTable256[static_cast<u64>(value)];
+				else				return 64 + LogTable256[static_cast<uint64_t>(value)];
 			}
 		}
 	}
@@ -499,21 +500,21 @@ u64 log2(u128 value) {//About 30 instructions to compute
 			}
 		}
 		else {
-			if (tt = static_cast<u64>(value >> 16UL)) {
+			if (tt = static_cast<uint64_t>(value >> 16UL)) {
 				if (t = tt >> 8)	return 24 + LogTable256[t];
 				else				return 16 + LogTable256[tt];
 			}
 			else {
-				if (t = static_cast<u64>(value >> 8UL))
+				if (t = static_cast<uint64_t>(value >> 8UL))
 					return 8 + LogTable256[t];
-				else				return LogTable256[static_cast<u64>(value)];
+				else				return LogTable256[static_cast<uint64_t>(value)];
 			}
 		}
 	}
 }
 
 
-std::string to_string(u128 value, u8 base) {
+std::string to_string(uint128_t value, u8 base) {
 	std::stringstream ss;
 	if (value == 0) {
 		ss << '0';
@@ -530,14 +531,14 @@ std::string to_string(u128 value, u8 base) {
 	return result;
 }
 
-void FromString(const char* string, u64 length, u8 base, u128* result EMPIRE_ERROR_CODE_PARAMETER) {
-	u128 temp = 0;
-	u128* prt = &temp;
-	u128 multiplier = 1;
+void FromString(const char* string, uint64_t length, u8 base, uint128_t* result EMPIRE_ERROR_PARAMETER) {
+	uint128_t temp = 0;
+	uint128_t* prt = &temp;
+	uint128_t multiplier = 1;
 #if EMPIRE_ENABLE_TEXT_PARSE_ERROR_CHECKING
-	u128 lastMultiplier = multiplier;
+	uint128_t lastMultiplier = multiplier;
 #endif
-	for (u64 i = length - 1; /*Condition Later on to avoid 0UL -1 = big number*/; i--) {// Go backwards since the last place is ther ones place
+	for (uint64_t i = length - 1; /*Condition Later on to avoid 0UL -1 = big number*/; i--) {// Go backwards since the last place is ther ones place
 		char c = string[i];
 		int digit;
 		if (c >= '0' && c <= '9') {
@@ -566,7 +567,7 @@ void FromString(const char* string, u64 length, u8 base, u128* result EMPIRE_ERR
 
 #if EMPIRE_ENABLE_TEXT_PARSE_ERROR_CHECKING
 		if (lastMultiplier > multiplier && i != 0) {
-			EMPIRE_ERROR(EMPIRE_PARSE_ERROR_OVERFLOW, new ParseOverFlowData(std::string(string), "Input too long for target size of u128"), EMPIRE_VOID_FUNCTION);
+			EMPIRE_ERROR(EMPIRE_PARSE_ERROR_OVERFLOW, new ParseOverFlowData(std::string(string), "Input too long for target size of uint128_t"), EMPIRE_VOID_FUNCTION);
 		}
 #endif
 		if (i == 0) break;
@@ -577,22 +578,22 @@ void FromString(const char* string, u64 length, u8 base, u128* result EMPIRE_ERR
 
 #endif// Use Foftware Implementation
 
-std::ostream& operator<<(std::ostream& os, const u128 value) noexcept
+std::ostream& operator<<(std::ostream& os, const uint128_t value) noexcept
 {
 	if (os.flags() & std::ios_base::hex) {
 		char buffer[36];
 		int index = 0;
-		for (int i = 0; i < sizeof(u128); i++) {
-			if ((i != 0) && (i % (sizeof(u128) / 2)) == 0) {// Put an extra space half way through
+		for (int i = 0; i < sizeof(uint128_t); i++) {
+			if ((i != 0) && (i % (sizeof(uint128_t) / 2)) == 0) {// Put an extra space half way through
 				buffer[index++] = ' ';
 			}
-			if ((i != 0) && (i % (sizeof(u128) / 4)) == 0) {// Put a space every 32 bits
+			if ((i != 0) && (i % (sizeof(uint128_t) / 4)) == 0) {// Put a space every 32 bits
 				buffer[index++] = ' ';
 			}
 
 			char part;// We put the higher chars in the buffer first...
 #ifdef LITTLE_ENDIAN
-			part = value._8[sizeof(u128) - 1 - i];// The higher parts start at higher indices
+			part = value._8[sizeof(uint128_t) - 1 - i];// The higher parts start at higher indices
 #else
 			part = value._8[i];// The higher parts start at lower indices
 #endif
@@ -605,17 +606,17 @@ std::ostream& operator<<(std::ostream& os, const u128 value) noexcept
 	else if (os.flags() & std::ios_base::oct) {//Print binary instead of oct
 		char buffer[148];
 		int index = 0;
-		for (int i = 0; i < sizeof(u128); i++) {
-			if ((i != 0) && (i % (sizeof(u128) / 2)) == 0) {// Put an extra space half way through
+		for (int i = 0; i < sizeof(uint128_t); i++) {
+			if ((i != 0) && (i % (sizeof(uint128_t) / 2)) == 0) {// Put an extra space half way through
 				buffer[index++] = ' ';
 			}
-			if ((i != 0) && (i % (sizeof(u128) / 4)) == 0) {// Put a space every 32 bits
+			if ((i != 0) && (i % (sizeof(uint128_t) / 4)) == 0) {// Put a space every 32 bits
 				buffer[index++] = ' ';
 			}
 
 			char part;// We put the higher chars in the buffer first...
 #ifdef LITTLE_ENDIAN
-			part = value._8[sizeof(u128) - 1 - i];// The higher parts start at higher indices
+			part = value._8[sizeof(uint128_t) - 1 - i];// The higher parts start at higher indices
 #else
 			part = value._8[i];// The higher parts start at lower indices
 #endif
@@ -629,7 +630,3 @@ std::ostream& operator<<(std::ostream& os, const u128 value) noexcept
 	}
 	return os;
 }
-
-
-
-}//namespace

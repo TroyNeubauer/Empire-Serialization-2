@@ -1,51 +1,21 @@
 #pragma once
 
 #include <stdint.h>
+#include "EmpirePrimitivesConfig.h"
 
 
-const char DIGITS[36] = { 
-						  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 
-						  'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 
-						  'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
-						};
-
-const int MAX_BASE = sizeof(DIGITS);
-
-
-#define EMPIRE_ENABLE_INTEL_INTRINSICS 1
-#define EMPIRE_ENABLE_TEXT_PARSE_ERROR_CHECKING 1
-
-#if !EMPIRE_ENABLE_INTEL_INTRINSICS
-	#error Cannot compile without intrinsics! intrinsics needed for addition and subtraction
+#if EMPIRE_SOFTWARE_UINT_128
+	union uint128_t;
+	union int128_t;
+#else
+	typedef unsigned __int128 uint128_t;
+	typedef signed __int128 int128_t;
 #endif
 
-#if defined(__SIZEOF_INT128__) && (__SIZEOF_INT128__ == 16)
-	#define EMPIRE_SOFTWARE_U128 0
-	#define EMPIRE_SOFTWARE_S128 0
+#if EMPIRE_SOFTWARE_FLOAT_16
+	struct float16;
 #else
-	#define EMPIRE_SOFTWARE_U128 1
-	#define EMPIRE_SOFTWARE_S128 1
-#endif
-
-
-#define DISABLE_SIMD 0
-#if defined(__AVX2__) && !DISABLE_SIMD
-	#define EMPIRE_AVX2
-	#define EMPIRE_AVX_GENERAL
-#elif defined ( __AVX__ ) && !DISABLE_SIMD
-	#define EMPIRE_AVX
-	#define EMPIRE_AVX_GENERAL
-#elif (defined(_M_AMD64) || defined(_M_X64)) && !DISABLE_SIMD
-	#define EMPIRE_AVX2_SSE2_X64
-	#define EMPIRE_AVX_GENERAL
-#elif _M_IX86_FP == 2 && !DISABLE_SIMD
-	#define EMPIRE_AVX2_SSE2_X32
-	#define EMPIRE_AVX_GENERAL
-#elif _M_IX86_FP == 1 && !DISABLE_SIMD
-	#define EMPIRE_AVX2_SSE_X32
-	#define EMPIRE_AVX_GENERAL
-#else
-	#define EMPIRE_NO_FP_EXTENSIONS
+	typedef __fp16 float16;
 #endif
 
 
@@ -61,5 +31,25 @@ typedef uint32_t u32;
 typedef int64_t s64;
 typedef uint64_t u64;
 
-typedef u32 EmpireType;
+typedef uint128_t u128;
+typedef int128_t s128;
+
+
+
+
+typedef float16 f16;
+typedef float16 half;
+
+typedef float f32;
+typedef double f64;
+
+
+//typedef f128 float128;
+//typedef f256 float256;
+namespace Empire {
+	struct EmpireError;
+	typedef u32 ErrorCode;
+	typedef u32 EmpireType;
+}
+
 

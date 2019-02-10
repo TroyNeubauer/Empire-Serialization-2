@@ -2,13 +2,11 @@
 #include <stdio.h>
 
 #include "../Empire.h"
-#include "../serialization/Serializer.h"
-#include "../buffer/Buffer.h"
 
 
 using namespace Empire;
 
-void SerializeInt(void* value, Buffer& buf) {
+void SerializeInt(void* value, Buffer& buf EMPIRE_ERROR_PARAMETER) {
 	int x = *((int*) value);
 	buf.Write(x);
 }
@@ -17,10 +15,14 @@ void SerializeInt(void* value, Buffer& buf) {
 int main() {
 	Serializer s;
 	Buffer buf(8);
+	EmpireError error;
+	s.AddSerializer(300, &SerializeInt, error);
 	int x = 0;
 	while(x != -1) {
 		std::cin >> x;
-		s.SerializeNamed(300, &x, buf);
+		EmpireError error;
+		s.SerializeNamed(300, &x, buf, error);
+		std::cout << ErrorToString(error) << std::endl;
 	}
 	FILE* file = fopen("out.dat", "wb");
 	if (file) {
@@ -59,7 +61,7 @@ void floatTest() {
 	for (int i = 0; i < elements; i++) {
 		half h = result[i];
 		for (int j = 8 * sizeof(half) - 1; j >= 0; j--) {
-			std::cout << ((h.value >> j) & 0x01);
+			std::cout << ((h.m_Value >> j) & 0x01);
 		}
 		std::cout << std::endl;
 	}//0001110111

@@ -19,6 +19,9 @@
     <Filter Include="primitive">
       <UniqueIdentifier>{38c22d04-2901-4638-9365-891ac604e26f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{e6efbcbb-7619-4b0a-9bca-a155680b8328}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\buffer\Buffer.h">
@@ -51,19 +54,28 @@
     <ClInclude Include="src\primitive\EmpirePrimitives.h">
       <Filter>primitive</Filter>
     </ClInclude>
-    <ClInclude Include="src\primitive\half.h">
-      <Filter>primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="src\primitive\s128.h">
-      <Filter>primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="src\primitive\u128.h">
-      <Filter>primitive</Filter>
-    </ClInclude>
     <ClInclude Include="src\serialization\Serializer.h">
       <Filter>serialization</Filter>
     </ClInclude>
     <ClInclude Include="src\primitive\FloatUtil.h">
+      <Filter>primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\type\EmpireTypes.h">
+      <Filter>type</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitive\EmpirePrimitivesConfig.h">
+      <Filter>primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitive\uint128_t.h">
+      <Filter>primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\ToStringUtil.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitive\float16.h">
+      <Filter>primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitive\int128_t.h">
       <Filter>primitive</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,17 +92,20 @@
     <ClCompile Include="src\type\TypeManager.cpp">
       <Filter>type</Filter>
     </ClCompile>
-    <ClCompile Include="src\primitive\half.cpp">
-      <Filter>primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="src\primitive\u128.cpp">
-      <Filter>primitive</Filter>
-    </ClCompile>
     <ClCompile Include="src\primitive\FloatUtil.cpp">
       <Filter>primitive</Filter>
     </ClCompile>
     <ClCompile Include="src\serialization\Serializer.cpp">
       <Filter>serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serialization\PrimitiveSerializers.cpp">
+      <Filter>serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitive\uint128_t.cpp">
+      <Filter>primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitive\float16.cpp">
+      <Filter>primitive</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

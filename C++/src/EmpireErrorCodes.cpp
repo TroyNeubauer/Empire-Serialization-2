@@ -2,24 +2,28 @@
 
 namespace Empire {
 
-std::exception CodeToException(ErrorCode code) {
+std::exception ErrorCodeToException(ErrorCode code) {
 	return std::exception(ErrorCodeToString(code).c_str());
 }
 
+std::exception ErrorToException(EmpireError& error) {
+	return std::exception(error.errorInfo->ToString().c_str());
+}
+
 std::string InvalidArgumentErrorData::ToString() {
-	return std::string("Invalid Argument Error, Argument Name: " + argumentName);
+	return std::string("Invalid Argument, Argument Name: " + argumentName);
 };
 
 std::string MismatchedTypeErrorData::ToString() {
-	return std::string("MismatchedTypeErrorData TODO");
+	return std::string("Mismatched Type Error TODO");
 };
 
 std::string UnknownTypeErrorData::ToString() {
-	return std::string("UnknownTypeErrorData, Type ID: " + std::to_string(type));
+	return std::string("Unknown Type Error, Type ID: " + std::to_string(type));
 };
 
 std::string InvalidTypeDefErrorData::ToString() {
-	return std::string("InvalidTypeDefErrorData TODO");
+	return std::string("Invalid Type Def Error TODO");
 };
 
 
@@ -83,5 +87,10 @@ std::string ErrorCodeToString(ErrorCode code) {
 		return "Unknown Error";
 	}
 }
+
+std::string ErrorToString(EmpireError& error) {
+	return std::string("Error Code ") + std::to_string(error.code) + ": " + ((error.errorInfo == nullptr) ? "No Error Info" : error.errorInfo->ToString());
+}
+
 
 }//namesapce
