@@ -4,26 +4,25 @@
 #include "../Empire.h"
 
 
-using namespace Empire;
-
-void SerializeInt(void* value, Buffer& buf EMPIRE_ERROR_PARAMETER) {
-	int x = *((int*) value);
-	buf.Write(x);
-}
-
-
 int main() {
 	Serializer s;
-	Buffer buf(8);
+	Buffer buf(1);
+	buf.WriteVLE(0);
+	buf.WriteVLE(0x1F);
+	buf.WriteVLE(0);
+	buf.WriteVLE(0b101010101010101010101010UL);
+
+	/*
 	EmpireError error;
-	s.AddSerializer(300, &SerializeInt, error);
 	int x = 0;
 	while(x != -1) {
 		std::cin >> x;
 		EmpireError error;
-		s.SerializeNamed(300, &x, buf, error);
-		std::cout << ErrorToString(error) << std::endl;
-	}
+		s.Write(x, buf, error);
+		if (error) {
+			throw ErrorToException(error);
+		}
+	}*/
 	FILE* file = fopen("out.dat", "wb");
 	if (file) {
 		fwrite(buf.GetStart(), 1, buf.Offset(), file);

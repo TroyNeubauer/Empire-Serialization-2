@@ -33,6 +33,7 @@
     <ClInclude Include="src\primitive\int128_t.h" />
     <ClInclude Include="src\primitive\uint128_t.h" />
     <ClInclude Include="src\serialization\Field.h" />
+    <ClInclude Include="src\serialization\PrimitiveSerializers.h" />
     <ClInclude Include="src\serialization\Serializer.h" />
     <ClInclude Include="src\type\EmpireTypes.h" />
     <ClInclude Include="src\type\TypeManager.h" />

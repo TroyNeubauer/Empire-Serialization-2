@@ -2,6 +2,11 @@
 
 #include <stdint.h>
 
+#define VLE_DATA_MASK				0b01111111
+#define VLE_STATUS_MASK				0b10000000
+#define VLE_HAS_NEXT_BYTE			VLE_STATUS_MASK
+#define VLE_DOESNT_HAVE_NEXT_BYTE   0
+
 namespace Empire {
 
 template <typename MEMBER_TYPE>
@@ -32,6 +37,21 @@ public:
 			}
 			Resize(newCapacity);
 		}
+	}
+
+	template<typename T>
+	inline void WriteVLE(T value) {
+		EnsureCapacity(sizeof(T) * 8 / 7 + 1);
+		do {
+			u8 byte = static_cast<u8>(value & VLE_DATA_MASK);// Bottom 7 bits
+
+			if (value >> 7) byte |= VLE_HAS_NEXT_BYTE;
+			else			byte |= VLE_DOESNT_HAVE_NEXT_BYTE;
+
+			m_Buffer[m_Offset++] = byte;
+			value >>= 7;// Get next 7 bits
+		} while (value);
+		
 	}
 
 	template<typename T>

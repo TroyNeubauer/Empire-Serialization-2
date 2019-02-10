@@ -36,6 +36,7 @@ struct EmpireError {
 	//Initalizes an error object to hold no error
 	EmpireError();
 	EmpireError(ErrorCode code, EmpireErrorInfo* errorInfo) : code(code), errorInfo(errorInfo) {}
+	inline operator bool() { return code; }
 
 	ErrorCode code;
 	EmpireErrorInfo* errorInfo;
