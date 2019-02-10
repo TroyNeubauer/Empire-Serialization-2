@@ -81,6 +81,12 @@
     <ClInclude Include="src\serialization\PrimitiveSerializers.h">
       <Filter>serialization</Filter>
     </ClInclude>
+    <ClInclude Include="src\buffer\Input.h">
+      <Filter>buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\buffer\Output.h">
+      <Filter>buffer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main\Main.cpp">
@@ -109,6 +115,9 @@
     </ClCompile>
     <ClCompile Include="src\serialization\PrimitiveSerializers.cpp">
       <Filter>serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffer\Output.cpp">
+      <Filter>buffer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

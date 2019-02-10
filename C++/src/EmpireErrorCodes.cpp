@@ -14,6 +14,12 @@ std::string InvalidArgumentErrorData::ToString() {
 	return std::string("Invalid Argument, Argument Name: " + argumentName);
 };
 
+std::string BufferOverflowErrorData::ToString() {
+	return std::string("Buffer Overflow, Bytes Requested: " + std::to_string(bytesRequested) + 
+		", Accessing Index: " + std::to_string(lastIndex) + ", Buffer Capacity: " + std::to_string(capacity));
+}
+
+
 std::string MismatchedTypeErrorData::ToString() {
 	return std::string("Mismatched Type Error TODO");
 };
@@ -83,6 +89,9 @@ std::string ErrorCodeToString(ErrorCode code) {
 
 	case EMPIRE_ALREADY_KNOWN_TYPE:
 		return EMPIRE_ALREADY_KNOWN_TYPE_TEXT;
+
+	case EMPIRE_BUFFER_OVERFLOW:
+		return EMPIRE_BUFFER_OVERFLOW_TEXT;
 	default:
 		return "Unknown Error";
 	}

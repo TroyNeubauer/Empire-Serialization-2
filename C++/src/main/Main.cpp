@@ -1,35 +1,48 @@
 #include <iostream>
 #include <stdio.h>
+#include <exception>
 
 #include "../Empire.h"
 
 
 int main() {
-	Serializer s;
-	Buffer buf(1);
-	buf.WriteVLE(0);
-	buf.WriteVLE(0x1F);
-	buf.WriteVLE(0);
-	buf.WriteVLE(0b101010101010101010101010UL);
-
-	/*
-	EmpireError error;
-	int x = 0;
-	while(x != -1) {
-		std::cin >> x;
+	try {
+		Serializer s;
 		EmpireError error;
-		s.Write(x, buf, error);
-		if (error) {
-			throw ErrorToException(error);
+		Output write(30);
+		std::string line;
+		std::cin >> line;
+		u128 a(line, error);
+		write.WriteVLE(a);
+
+		Input read(write);
+		u128 result = read.ReadVLE<u128>(error);
+		std::cout << result.ToString();
+		std::cout << " - " << ErrorToString(error) << std::endl;
+
+
+
+		/*
+		int x = 0;
+		while(x != -1) {
+			std::cin >> x;
+			EmpireError error;
+			s.Write(x, buf, error);
+			if (error) {
+				throw ErrorToException(error);
+			}
+		}*/
+		FILE* file = fopen("out.dat", "wb");
+		if (file) {
+			fwrite(write.GetStart(), 1, write.Offset(), file);
 		}
-	}*/
-	FILE* file = fopen("out.dat", "wb");
-	if (file) {
-		fwrite(buf.GetStart(), 1, buf.Offset(), file);
+		fclose(file);
+	
+	} catch (const std::exception & ex) {
+		std::cerr << "ERROR: " << ex.what() << std::endl;
 	}
-	fclose(file);
-	
-	
+
+	system("PAUSE");
 }
 
 

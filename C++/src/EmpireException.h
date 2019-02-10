@@ -22,26 +22,30 @@
 
 	#if EMPIRE_DISABLE_ERROR_CODES
 		#define EMPIRE_IF_ERROR_CODES(code)
-		#define EMPIRE_ERROR_PARAMETER//Error code not used
+		#define EMPIRE_ERROR_PARAMETER1
+		#define EMPIRE_ERROR_PARAMETER
 		#define EMPIRE_ERROR_VAR
 		#define EMPIRE_ERROR(code, info, unused) throw( ErrorToException(EmpireError(code, info)) )
 	#else
 		#define EMPIRE_IF_ERROR_CODES(code) , code
-		#define EMPIRE_ERROR_PARAMETER , EmpireError& errorCode
-		#define EMPIRE_ERROR_VAR , errorCode
+		#define EMPIRE_ERROR_PARAMETER1 EmpireError& empireError
+		#define EMPIRE_ERROR_PARAMETER , EMPIRE_ERROR_PARAMETER1
+		#define EMPIRE_ERROR_VAR , empireError
 		#define EMPIRE_ERROR(code,info,unused)	\
-			errorCode = EmpireError(code, info);\
-			throw( ErrorToException(errorCode) )
+			empireError = EmpireError(code, info);\
+			throw( ErrorToException(empireError) )
 	#endif
 #else
 	#if EMPIRE_DISABLE_ERROR_CODES
 		#define EMPIRE_IF_ERROR_CODES(code)
+		#define EMPIRE_ERROR_PARAMETER1
 		#define EMPIRE_ERROR_PARAMETER
 		#define EMPIRE_ERROR_VAR
 		#define EMPIRE_ERROR(code,info,returnValue) return returnValue
 	#else
 		#define EMPIRE_IF_ERROR_CODES(code) , code
-		#define EMPIRE_ERROR_PARAMETER , EmpireError& empireError
+		#define EMPIRE_ERROR_PARAMETER1 EmpireError& empireError
+		#define EMPIRE_ERROR_PARAMETER , EMPIRE_ERROR_PARAMETER1
 		#define EMPIRE_ERROR_VAR , empireError
 		#define EMPIRE_ERROR(code, info, returnValue)	\
 			empireError = EmpireError(code, info);		\

@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\buffer\Buffer.h" />
+    <ClInclude Include="src\buffer\Input.h" />
+    <ClInclude Include="src\buffer\Output.h" />
     <ClInclude Include="src\buffer\TempBuffer.h" />
     <ClInclude Include="src\Empire.h" />
     <ClInclude Include="src\EmpireErrorCodes.h" />
@@ -40,6 +42,7 @@
     <ClInclude Include="src\util\ToStringUtil.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\buffer\Output.cpp" />
     <ClCompile Include="src\EmpireErrorCodes.cpp" />
     <ClCompile Include="src\little-big-int.cpp" />
     <ClCompile Include="src\main\Main.cpp" />

@@ -12,6 +12,8 @@ namespace Empire {}
 
 #include "buffer/TempBuffer.h"
 #include "buffer/Buffer.h"
+#include "buffer/Output.h"
+#include "buffer/Input.h"
 
 #include "serialization/Serializer.h"
 #include "serialization/Field.h"

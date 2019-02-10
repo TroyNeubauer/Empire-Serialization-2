@@ -13,6 +13,8 @@
 #define EMPIRE_INVALID_FLAGS		 5
 #define EMPIRE_ALREADY_KNOWN_TYPE	 6
 
+#define EMPIRE_BUFFER_OVERFLOW		10
+
 #define EMPIRE_INVALID_CHARACTER 30
 #define EMPIRE_PARSE_ERROR_OVERFLOW	31
 
@@ -22,9 +24,12 @@
 #define EMPIRE_UNKNOWN_TYPE_TEXT "Unknown Type"
 #define EMPIRE_INVALID_TYPE_DEF_TEXT "Invalid Type"
 #define EMPIRE_INVALID_FLAGS_TEXT "Invalid Flags"
+#define EMPIRE_ALREADY_KNOWN_TYPE_TEXT "Cannot override pre-existing type"
+
+#define EMPIRE_BUFFER_OVERFLOW_TEXT "Buffer Overflow"
+
 #define EMPIRE_INVALID_CHARACTER_TEXT "Invalid Character"
 #define EMPIRE_PARSE_ERROR_OVERFLOW_TEXT "Overflow while parsing. Too many digets!"
-#define EMPIRE_ALREADY_KNOWN_TYPE_TEXT "Cannot override pre-existing type"
 
 namespace Empire {
 
@@ -77,10 +82,20 @@ struct InvalidTypeDefErrorData : EmpireErrorInfo {
 	virtual std::string ToString() override;
 };
 
+struct BufferOverflowErrorData : EmpireErrorInfo {
+	BufferOverflowErrorData(u64 bytesRequested, u64 lastIndex, u64 capacity) :
+		bytesRequested(bytesRequested), lastIndex(lastIndex), capacity(capacity) {}
+
+	u64 bytesRequested;
+	u64 lastIndex, capacity;
+
+	virtual std::string ToString() override;
+};
+
 struct InvalidCharacterErrorData : EmpireErrorInfo {
-	InvalidCharacterErrorData(char character, unsigned long long index, std::string extra) : character(character), index(index), extra(extra) {}
+	InvalidCharacterErrorData(char character, u64 index, std::string extra) : character(character), index(index), extra(extra) {}
 	char character;
-	unsigned long long index;
+	u64 index;
 	std::string extra;
 
 	virtual std::string ToString() override;
