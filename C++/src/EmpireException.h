@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EmpireErrorCodes.h"
+
 
 //==========================================
 //Tempoary Build Properties!
@@ -7,8 +9,6 @@
 #define EMPIRE_DISABLE_ERROR_CODES 1
 //==========================================
 
-
-namespace Empire {
 
 #ifndef EMPIRE_ENABLE_EXCEPTIONS
 	#define EMPIRE_ENABLE_EXCEPTIONS 1
@@ -18,6 +18,8 @@ namespace Empire {
 
 
 #if EMPIRE_ENABLE_EXCEPTIONS
+	#include <exception>
+
 	#if EMPIRE_DISABLE_ERROR_CODES
 		#define EMPIRE_ERROR_CODE_PARAMETER//Error code not used
 		#define EMPIRE_ERROR_CODE_VAR
@@ -44,8 +46,3 @@ namespace Empire {
 
 #endif
 
-
-
-
-
-}//namesapce

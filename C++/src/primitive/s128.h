@@ -1,6 +1,8 @@
 #pragma once
 #include "EmpirePrimitives.h"
+#include "../EmpireException.h"
 
+#include <string>
 
 namespace Empire {
 #if EMPIRE_SOFTWARE_S128
@@ -10,7 +12,7 @@ namespace Empire {
 #endif
 
 std::string to_string(s128 value, u8 base = 10);
-void FromString(const char* string, u64 length, u8 base, s128* result ERROR_CODE_PARAMETER);
+void FromString(const char* string, u64 length, u8 base, s128* result EMPIRE_ERROR_CODE_PARAMETER);
 
 u64 log10(s128 value);
 u64 log2(s128 value);

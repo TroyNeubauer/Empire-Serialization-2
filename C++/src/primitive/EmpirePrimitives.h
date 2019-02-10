@@ -1,17 +1,7 @@
 #pragma once
 
-#include "../EmpireErrorCodes.h"
-#include "../EmpireException.h"
-
 #include <stdint.h>
-#include <stdlib.h>
-#include <iostream>
-#include <ios>
-#include <string>
-#include <sstream>
 
-#include <assert.h>
-#include <intrin.h>
 
 const char DIGITS[36] = { 
 						  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 
@@ -37,19 +27,23 @@ const int MAX_BASE = sizeof(DIGITS);
 	#define EMPIRE_SOFTWARE_S128 1
 #endif
 
-#ifdef __AVX2__
+
+#define DISABLE_SIMD 0
+#if defined(__AVX2__) && !DISABLE_SIMD
 	#define EMPIRE_AVX2
 	#define EMPIRE_AVX_GENERAL
-#elif defined ( __AVX__ )
+#elif defined ( __AVX__ ) && !DISABLE_SIMD
 	#define EMPIRE_AVX
 	#define EMPIRE_AVX_GENERAL
-#elif (defined(_M_AMD64) || defined(_M_X64))
+#elif (defined(_M_AMD64) || defined(_M_X64)) && !DISABLE_SIMD
 	#define EMPIRE_AVX2_SSE2_X64
 	#define EMPIRE_AVX_GENERAL
-#elif _M_IX86_FP == 2
+#elif _M_IX86_FP == 2 && !DISABLE_SIMD
 	#define EMPIRE_AVX2_SSE2_X32
-#elif _M_IX86_FP == 1
+	#define EMPIRE_AVX_GENERAL
+#elif _M_IX86_FP == 1 && !DISABLE_SIMD
 	#define EMPIRE_AVX2_SSE_X32
+	#define EMPIRE_AVX_GENERAL
 #else
 	#define EMPIRE_NO_FP_EXTENSIONS
 #endif
@@ -66,4 +60,6 @@ typedef uint32_t u32;
 
 typedef int64_t s64;
 typedef uint64_t u64;
+
+typedef u32 EmpireType;
 

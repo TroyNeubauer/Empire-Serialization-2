@@ -1,9 +1,9 @@
 #pragma once
 
-#include <exception>
 #include <string>
 
-namespace Empire {
+#include "primitive/EmpirePrimitives.h"
+
 
 #define EMPIRE_NO_ERROR				 0
 #define EMPIRE_INVALID_ARGUMENT		 1
@@ -11,6 +11,7 @@ namespace Empire {
 #define EMPIRE_UNKNOWN_TYPE			 3
 #define EMPIRE_INVALID_TYPE_DEF		 4
 #define EMPIRE_INVALID_FLAGS		 5
+#define EMPIRE_ALREADY_KNOWN_TYPE	 6
 
 #define EMPIRE_INVALID_CHARACTER 30
 #define EMPIRE_PARSE_ERROR_OVERFLOW	31
@@ -23,9 +24,11 @@ namespace Empire {
 #define EMPIRE_INVALID_FLAGS_TEXT "Invalid Flags"
 #define EMPIRE_INVALID_CHARACTER_TEXT "Invalid Character"
 #define EMPIRE_PARSE_ERROR_OVERFLOW_TEXT "Overflow while parsing. Too many digets!"
+#define EMPIRE_ALREADY_KNOWN_TYPE_TEXT "Cannot override pre-existing type"
 
+namespace Empire {
 
-typedef int ErrorCode;
+typedef u32 ErrorCode;
 struct EmpireErrorInfo {
 	virtual std::string ToString() = 0;
 };
@@ -33,25 +36,27 @@ struct EmpireErrorInfo {
 struct InvalidArgumentErrorData : EmpireErrorInfo {
 	std::string argumentName;
 
-	std::string ToString();
+	virtual std::string ToString() override;
 };
 
 struct MismatchedTypeErrorData : EmpireErrorInfo {
 	//TODO
 
-	std::string ToString();
+	virtual std::string ToString() override;
 };
 
 struct UnknownTypeErrorData : EmpireErrorInfo {
-	//TODO
+	EmpireType type;
 
-	std::string ToString();
+	UnknownTypeErrorData(EmpireType type) : type(type) {}
+
+	virtual std::string ToString() override;
 };
 
 struct InvalidTypeDefErrorData : EmpireErrorInfo {
 	//TODO
 
-	std::string ToString();
+	virtual std::string ToString() override;
 };
 
 struct InvalidCharacterErrorData : EmpireErrorInfo {
@@ -60,14 +65,21 @@ struct InvalidCharacterErrorData : EmpireErrorInfo {
 	unsigned long long index;
 	std::string extra;
 
-	std::string ToString();
+	virtual std::string ToString() override;
 };
 
 struct ParseOverFlowData : EmpireErrorInfo {
 	ParseOverFlowData(std::string parseInput, std::string info) : parseInput(parseInput), info(info) {}
 	std::string parseInput, info;
 
-	std::string ToString();
+	virtual std::string ToString() override;
+};
+
+struct AlreadyKnownTypeData : EmpireErrorInfo {
+	AlreadyKnownTypeData(EmpireType name) : name(name) {}
+	EmpireType name;
+
+	virtual std::string ToString() override;
 };
 
 struct EmpireError {

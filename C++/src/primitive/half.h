@@ -1,11 +1,26 @@
 #pragma once
 #include "EmpirePrimitives.h"
+
 namespace Empire {
+
+struct half;
+
+half FloatToHalf(float value);
+float HalfToFloat(half value);
+
+void FloatsToHalves(half* dest, float* src, size_t elements);
+void HalvesToFloats(float* dest, half* src, size_t elements);
 
 struct half {
 	uint16_t value;
 	half() {}
 	half(uint16_t value) : value(value) {}
+	half(float value) : value(FloatToHalf(value)) {}
+	half(double value) : half((float) value) {}
+
+	operator float() const { return HalfToFloat(*this); };
+	operator double() const { return (double) HalfToFloat(*this); };
+	operator uint16_t() const { return value; };
 };
 
 union FloatBits {
@@ -36,15 +51,6 @@ static int32_t const norC = 0x00400; // min float normal down shifted
 
 static int32_t const maxD = infC - maxC - 1;
 static int32_t const minD = minC - subC - 1;
-
-
-half FloatToHalf(float value);
-float HalfToFloat(half value);
-
-void FloatsToHalves(half* dest, float* src, size_t elements);
-void HalvesToFloats(float* dest, half* src, size_t elements);
-
-void FloatsToDoubles(double* dest, float* src, size_t elements);
 
 
 }

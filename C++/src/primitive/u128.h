@@ -1,5 +1,11 @@
 #pragma once
+
+#include <string>
+
 #include "EmpirePrimitives.h"
+#include "../EmpireException.h"
+
+
 
 namespace Empire {
 

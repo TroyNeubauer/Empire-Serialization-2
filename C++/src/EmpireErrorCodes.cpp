@@ -7,29 +7,33 @@ std::exception CodeToException(ErrorCode code) {
 }
 
 std::string InvalidArgumentErrorData::ToString() {
-	return "Invalid Argument Error, Argument Name: " + argumentName;
+	return std::string("Invalid Argument Error, Argument Name: " + argumentName);
 };
 
 std::string MismatchedTypeErrorData::ToString() {
-	return "MismatchedTypeErrorData TODO";
+	return std::string("MismatchedTypeErrorData TODO");
 };
 
 std::string UnknownTypeErrorData::ToString() {
-	return "UnknownTypeErrorData TODO";
+	return std::string("UnknownTypeErrorData, Type ID: " + std::to_string(type));
 };
 
 std::string InvalidTypeDefErrorData::ToString() {
-	return "InvalidTypeDefErrorData TODO";
+	return std::string("InvalidTypeDefErrorData TODO");
 };
 
 
 std::string InvalidCharacterErrorData::ToString() {
-	return "Invalid Character Error, Character ID " + std::to_string((int) character) + " \'" + character + "\'" + 
+	return std::string("Invalid Character Error, Character ID ") + std::to_string((int) character) + " \'" + character + "\'" +
 		", Index: " + std::to_string(index) + " - " + extra;
 };
 
 std::string ParseOverFlowData::ToString() {
-	return "ParseOver Flow, Parse Input: " + parseInput + " - " + info;
+	return std::string("ParseOver Flow, Parse Input: ") + parseInput + " - " + info;
+};
+
+std::string AlreadyKnownTypeData::ToString() {
+	return  std::string("Already Known Type, ID: ")  + std::to_string(name);
 };
 
 
@@ -43,6 +47,7 @@ void clearError(EmpireError& error) {
 	error.code = EMPIRE_NO_ERROR;
 	if (error.errorInfo != nullptr) {
 		delete error.errorInfo;
+		error.errorInfo = nullptr;
 	}
 }
 
@@ -71,6 +76,9 @@ std::string ErrorCodeToString(ErrorCode code) {
 
 	case EMPIRE_PARSE_ERROR_OVERFLOW:
 		return EMPIRE_PARSE_ERROR_OVERFLOW_TEXT;
+
+	case EMPIRE_ALREADY_KNOWN_TYPE:
+		return EMPIRE_ALREADY_KNOWN_TYPE_TEXT;
 	default:
 		return "Unknown Error";
 	}

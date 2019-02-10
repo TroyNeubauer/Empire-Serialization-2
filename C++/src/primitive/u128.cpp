@@ -1,5 +1,10 @@
 #include "u128.h"
 
+#include <intrin.h>
+#include <sstream>
+#include <assert.h>
+
+#include "../EmpireErrorCodes.h"
 
 namespace Empire {
 

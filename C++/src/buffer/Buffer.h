@@ -1,5 +1,9 @@
 #pragma once
 
+#include <stdint.h>
+
+namespace Empire {
+
 template <typename MEMBER_TYPE>
 class AbstractBuffer {
 
@@ -29,7 +33,7 @@ public:
 			Resize(newCapacity);
 		}
 	}
-	
+
 	template<typename T>
 	inline void Write(T* value, size_t bytes) {
 		EnsureCapacity(bytes);
@@ -79,3 +83,4 @@ private:
 
 typedef AbstractBuffer<size_t> Buffer;
 
+}

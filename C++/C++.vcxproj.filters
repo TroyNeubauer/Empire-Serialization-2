@@ -60,6 +60,12 @@
     <ClInclude Include="src\primitive\u128.h">
       <Filter>primitive</Filter>
     </ClInclude>
+    <ClInclude Include="src\serialization\Serializer.h">
+      <Filter>serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitive\FloatUtil.h">
+      <Filter>primitive</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main\Main.cpp">
@@ -79,6 +85,12 @@
     </ClCompile>
     <ClCompile Include="src\primitive\u128.cpp">
       <Filter>primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitive\FloatUtil.cpp">
+      <Filter>primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serialization\Serializer.cpp">
+      <Filter>serialization</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
