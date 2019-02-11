@@ -43,8 +43,6 @@ void Serializer::AddSerializer(EmpireType type, SerializeFunction function EMPIR
 }
 
 
-
-
 void Serializer::InitSerializers() {
 	EmpireError error;//Dont bother checking error since we know we will never duplicate these serializers
 	AddSerializer(EMPIRE_UINT_8_TYPE, &Serialize_U8 EMPIRE_IF_ERROR_CODES(error));
@@ -56,6 +54,10 @@ void Serializer::InitSerializers() {
 	AddSerializer(EMPIRE_SINT_16_TYPE, &Serialize_S16 EMPIRE_IF_ERROR_CODES(error));
 	AddSerializer(EMPIRE_SINT_32_TYPE, &Serialize_S32 EMPIRE_IF_ERROR_CODES(error));
 	AddSerializer(EMPIRE_SINT_64_TYPE, &Serialize_S64 EMPIRE_IF_ERROR_CODES(error));
+
+	AddSerializer(EMPIRE_FLOAT_16_TYPE, &Serialize_F16 EMPIRE_IF_ERROR_CODES(error));
+	AddSerializer(EMPIRE_FLOAT_32_TYPE, &Serialize_F32 EMPIRE_IF_ERROR_CODES(error));
+	AddSerializer(EMPIRE_FLOAT_64_TYPE, &Serialize_F64 EMPIRE_IF_ERROR_CODES(error));
 }
 
 }//namespace

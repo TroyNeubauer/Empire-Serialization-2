@@ -19,7 +19,7 @@ public:
 	/*
 	* Returns true if there is enough space in the buffer to read x bytes, false if a buffer overflow will occur by reading x bytes
 	*/
-	inline bool EnsureCapacityRead(u64 bytes EMPIRE_ERROR_PARAMETER) {
+	inline bool EnsureCapacity(u64 bytes EMPIRE_ERROR_PARAMETER) {
 		if (bytes + m_Offset > m_Limit) {
 			EMPIRE_ERROR(EMPIRE_BUFFER_OVERFLOW, new BufferOverflowErrorData(bytes, m_Offset, m_Limit), false);
 		}
@@ -32,7 +32,7 @@ public:
 		u32 shift = 0;
 		u8 byte;
 		do {
-			if (!EnsureCapacityRead(1 EMPIRE_ERROR_VAR)) return 0;
+			if (!EnsureCapacity(1 EMPIRE_ERROR_VAR)) return 0;
 			byte = m_Buffer[m_Offset++];
 			u8 data = byte & VLE_DATA_MASK;
 			T next = static_cast<T>(data) << shift;
@@ -43,9 +43,23 @@ public:
 
 		return result;
 	}
+	template<typename T>
+	T Read(EMPIRE_ERROR_PARAMETER1) {
+		EnsureCapacity(sizeof(T) EMPIRE_ERROR_VAR);
+		T result;
+		ReadRaw(&result, sizeof(T));
+		return result;
+	}
+
+	template<typename T>
+	void Read(T* dest, u64 bytes EMPIRE_ERROR_PARAMETER) {
+		EnsureCapacity(bytes EMPIRE_ERROR_VAR);
+		ReadRaw(dest, bytes);
+	}
+
 private:
 	template<typename T>
-	void ReadRaw(T* dest, u64 bytes) {
+	inline void ReadRaw(T* dest, u64 bytes) {
 		std::memcpy(dest, GetPointer(), bytes);
 		m_Offset += bytes;
 	}

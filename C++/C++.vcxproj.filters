@@ -48,9 +48,6 @@
     <ClInclude Include="src\type\TypeManager.h">
       <Filter>type</Filter>
     </ClInclude>
-    <ClInclude Include="src\serialization\Field.h">
-      <Filter>serialization</Filter>
-    </ClInclude>
     <ClInclude Include="src\primitive\EmpirePrimitives.h">
       <Filter>primitive</Filter>
     </ClInclude>
@@ -81,6 +78,12 @@
     <ClInclude Include="src\buffer\Output.h">
       <Filter>buffer</Filter>
     </ClInclude>
+    <ClInclude Include="src\serialization\Deserializer.h">
+      <Filter>serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="src\serialization\PrimitiveDeserializers.h">
+      <Filter>serialization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main\Main.cpp">
@@ -104,11 +107,11 @@
     <ClCompile Include="src\primitive\float16.cpp">
       <Filter>primitive</Filter>
     </ClCompile>
-    <ClCompile Include="src\serialization\PrimitiveSerializers.cpp">
-      <Filter>serialization</Filter>
-    </ClCompile>
     <ClCompile Include="src\buffer\Output.cpp">
       <Filter>buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\serialization\Deserializer.cpp">
+      <Filter>serialization</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

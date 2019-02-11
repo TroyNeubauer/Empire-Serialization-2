@@ -63,7 +63,11 @@ struct InvalidArgumentErrorData : EmpireErrorInfo {
 };
 
 struct MismatchedTypeErrorData : EmpireErrorInfo {
-	//TODO
+	EmpireType expected, encoded;
+	u64 offset;
+
+	MismatchedTypeErrorData(EmpireType expected, EmpireType encoded, u64 offset) :
+		expected(expected), encoded(encoded), offset(offset) {}
 
 	virtual std::string ToString() override;
 };

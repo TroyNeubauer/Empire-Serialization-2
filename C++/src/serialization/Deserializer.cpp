@@ -5,6 +5,7 @@
 #include "../EmpireErrorCodes.h"
 #include "../type/EmpireTypes.h"
 #include "PrimitiveDeserializers.h"
+#include "../buffer/TempBuffer.h"
 
 namespace Empire {
 
@@ -42,6 +43,17 @@ void Deserializer::AddDeserializer(EmpireType type, DeserializeFunction function
 	}
 }
 
+#define STRICT_TYPES true
+
+void Deserializer::OnTypeDifference(Input& input, EmpireType expected, EmpireType encoded EMPIRE_ERROR_PARAMETER) {
+	if (STRICT_TYPES) {
+		EMPIRE_ERROR(EMPIRE_MISMATCHED_TYPE, new MismatchedTypeErrorData(expected, encoded, input.Offset()), EMPIRE_VOID_FUNCTION);
+	} else {
+		void* temp = AllocateTempBuffer(0 /*GetSizeOf(encoded)*/);
+		DeserializeUnnamed(encoded, temp, input EMPIRE_ERROR_VAR);
+	}
+}
+
 
 void Deserializer::InitDeserializers() {
 	EmpireError error;//Dont bother checking error since we know we will never duplicate these serializers
@@ -54,6 +66,10 @@ void Deserializer::InitDeserializers() {
 	AddDeserializer(EMPIRE_SINT_16_TYPE, &Deserialize_S16 EMPIRE_IF_ERROR_CODES(error));
 	AddDeserializer(EMPIRE_SINT_32_TYPE, &Deserialize_S32 EMPIRE_IF_ERROR_CODES(error));
 	AddDeserializer(EMPIRE_SINT_64_TYPE, &Deserialize_S64 EMPIRE_IF_ERROR_CODES(error));
+
+	AddDeserializer(EMPIRE_FLOAT_16_TYPE, &Deserialize_F16 EMPIRE_IF_ERROR_CODES(error));
+	AddDeserializer(EMPIRE_FLOAT_32_TYPE, &Deserialize_F32 EMPIRE_IF_ERROR_CODES(error));
+	AddDeserializer(EMPIRE_FLOAT_64_TYPE, &Deserialize_F64 EMPIRE_IF_ERROR_CODES(error));
 }
 
 }//namespace

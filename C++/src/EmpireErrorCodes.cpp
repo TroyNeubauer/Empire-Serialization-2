@@ -21,7 +21,8 @@ std::string BufferOverflowErrorData::ToString() {
 
 
 std::string MismatchedTypeErrorData::ToString() {
-	return std::string("Mismatched Type Error TODO");
+	return std::string("Mismatched Type Error, Expected Type ID " + std::to_string(expected) + 
+		", Encoded Type ID: " + std::to_string(encoded) + ", Offset " + std::to_string(offset));
 };
 
 std::string UnknownTypeErrorData::ToString() {

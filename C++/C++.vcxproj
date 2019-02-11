@@ -32,7 +32,8 @@
     <ClInclude Include="src\primitive\EmpirePrimitivesConfig.h" />
     <ClInclude Include="src\primitive\FloatUtil.h" />
     <ClInclude Include="src\primitive\float16.h" />
-    <ClInclude Include="src\serialization\Field.h" />
+    <ClInclude Include="src\serialization\Deserializer.h" />
+    <ClInclude Include="src\serialization\PrimitiveDeserializers.h" />
     <ClInclude Include="src\serialization\PrimitiveSerializers.h" />
     <ClInclude Include="src\serialization\Serializer.h" />
     <ClInclude Include="src\type\EmpireTypes.h" />
@@ -43,10 +44,15 @@
     <ClCompile Include="src\buffer\Output.cpp" />
     <ClCompile Include="src\EmpireErrorCodes.cpp" />
     <ClCompile Include="src\little-big-int.cpp" />
-    <ClCompile Include="src\main\Main.cpp" />
+    <ClCompile Include="src\main\Main.cpp">
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</PreprocessToFile>
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</PreprocessToFile>
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</PreprocessToFile>
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</PreprocessToFile>
+    </ClCompile>
     <ClCompile Include="src\primitive\FloatUtil.cpp" />
     <ClCompile Include="src\primitive\float16.cpp" />
-    <ClCompile Include="src\serialization\PrimitiveSerializers.cpp" />
+    <ClCompile Include="src\serialization\Deserializer.cpp" />
     <ClCompile Include="src\serialization\Serializer.cpp" />
     <ClCompile Include="src\type\TypeManager.cpp" />
   </ItemGroup>

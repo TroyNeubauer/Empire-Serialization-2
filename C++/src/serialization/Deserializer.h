@@ -21,9 +21,15 @@ public:
 
 	void AddDeserializer(EmpireType type, DeserializeFunction function EMPIRE_ERROR_PARAMETER);
 
+	void OnTypeDifference(Input& input, EmpireType expected, EmpireType encoded EMPIRE_ERROR_PARAMETER);
+
 	inline void DeserializeNamed(EmpireType type, void* dest, Input& input EMPIRE_ERROR_PARAMETER) {
 		EmpireType storedType = input.ReadVLE<EmpireType>(EMPIRE_ERROR_VAR1);
-		DeserializeUnnamed(type, dest, input EMPIRE_ERROR_VAR);
+		if (storedType != type) {
+			OnTypeDifference(input, type, storedType EMPIRE_ERROR_VAR);
+		} else {
+			DeserializeUnnamed(type, dest, input EMPIRE_ERROR_VAR);
+		}
 	}
 	inline void DeserializeUnnamed(EmpireType type, void* dest, Input& input EMPIRE_ERROR_PARAMETER) {
 		if (type >= deserializersSize || deserializers[type] == nullptr) {
