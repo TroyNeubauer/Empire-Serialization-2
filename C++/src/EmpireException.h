@@ -24,13 +24,15 @@
 		#define EMPIRE_IF_ERROR_CODES(code)
 		#define EMPIRE_ERROR_PARAMETER1
 		#define EMPIRE_ERROR_PARAMETER
+		#define EMPIRE_ERROR_VAR1
 		#define EMPIRE_ERROR_VAR
 		#define EMPIRE_ERROR(code, info, unused) throw( ErrorToException(EmpireError(code, info)) )
 	#else
 		#define EMPIRE_IF_ERROR_CODES(code) , code
 		#define EMPIRE_ERROR_PARAMETER1 EmpireError& empireError
 		#define EMPIRE_ERROR_PARAMETER , EMPIRE_ERROR_PARAMETER1
-		#define EMPIRE_ERROR_VAR , empireError
+		#define EMPIRE_ERROR_VAR1 empireError
+		#define EMPIRE_ERROR_VAR , EMPIRE_ERROR_VAR1
 		#define EMPIRE_ERROR(code,info,unused)	\
 			empireError = EmpireError(code, info);\
 			throw( ErrorToException(empireError) )
@@ -40,13 +42,15 @@
 		#define EMPIRE_IF_ERROR_CODES(code)
 		#define EMPIRE_ERROR_PARAMETER1
 		#define EMPIRE_ERROR_PARAMETER
+		#define EMPIRE_ERROR_VAR1
 		#define EMPIRE_ERROR_VAR
 		#define EMPIRE_ERROR(code,info,returnValue) return returnValue
 	#else
 		#define EMPIRE_IF_ERROR_CODES(code) , code
 		#define EMPIRE_ERROR_PARAMETER1 EmpireError& empireError
 		#define EMPIRE_ERROR_PARAMETER , EMPIRE_ERROR_PARAMETER1
-		#define EMPIRE_ERROR_VAR , empireError
+		#define EMPIRE_ERROR_VAR1 empireError
+		#define EMPIRE_ERROR_VAR , EMPIRE_ERROR_VAR1
 		#define EMPIRE_ERROR(code, info, returnValue)	\
 			empireError = EmpireError(code, info);		\
 			return returnValue// No ; here on purpose to force the caller to include one

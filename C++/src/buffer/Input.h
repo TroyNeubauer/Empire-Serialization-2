@@ -43,6 +43,13 @@ public:
 
 		return result;
 	}
+private:
+	template<typename T>
+	void ReadRaw(T* dest, u64 bytes) {
+		std::memcpy(dest, GetPointer(), bytes);
+		m_Offset += bytes;
+	}
+
 
 protected:
 	u64 m_Limit;

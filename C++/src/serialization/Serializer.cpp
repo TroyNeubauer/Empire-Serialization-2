@@ -51,13 +51,11 @@ void Serializer::InitSerializers() {
 	AddSerializer(EMPIRE_UINT_16_TYPE, &Serialize_U16 EMPIRE_IF_ERROR_CODES(error));
 	AddSerializer(EMPIRE_UINT_32_TYPE, &Serialize_U32 EMPIRE_IF_ERROR_CODES(error));
 	AddSerializer(EMPIRE_UINT_64_TYPE, &Serialize_U64 EMPIRE_IF_ERROR_CODES(error));
-	AddSerializer(EMPIRE_UINT_128_TYPE, &Serialize_U128 EMPIRE_IF_ERROR_CODES(error));
 
 	AddSerializer(EMPIRE_SINT_8_TYPE, &Serialize_S8 EMPIRE_IF_ERROR_CODES(error));
 	AddSerializer(EMPIRE_SINT_16_TYPE, &Serialize_S16 EMPIRE_IF_ERROR_CODES(error));
 	AddSerializer(EMPIRE_SINT_32_TYPE, &Serialize_S32 EMPIRE_IF_ERROR_CODES(error));
 	AddSerializer(EMPIRE_SINT_64_TYPE, &Serialize_S64 EMPIRE_IF_ERROR_CODES(error));
-	AddSerializer(EMPIRE_SINT_128_TYPE, &Serialize_S128 EMPIRE_IF_ERROR_CODES(error));
 }
 
 }//namespace

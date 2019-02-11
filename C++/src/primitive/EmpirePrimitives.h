@@ -3,15 +3,6 @@
 #include <stdint.h>
 #include "EmpirePrimitivesConfig.h"
 
-
-#if EMPIRE_SOFTWARE_UINT_128
-	union uint128_t;
-	union int128_t;
-#else
-	typedef unsigned __int128 uint128_t;
-	typedef signed __int128 int128_t;
-#endif
-
 #if EMPIRE_SOFTWARE_FLOAT_16
 	struct float16;
 #else
@@ -30,9 +21,6 @@ typedef uint32_t u32;
 
 typedef int64_t s64;
 typedef uint64_t u64;
-
-typedef uint128_t u128;
-typedef int128_t s128;
 
 
 

@@ -32,8 +32,6 @@
     <ClInclude Include="src\primitive\EmpirePrimitivesConfig.h" />
     <ClInclude Include="src\primitive\FloatUtil.h" />
     <ClInclude Include="src\primitive\float16.h" />
-    <ClInclude Include="src\primitive\int128_t.h" />
-    <ClInclude Include="src\primitive\uint128_t.h" />
     <ClInclude Include="src\serialization\Field.h" />
     <ClInclude Include="src\serialization\PrimitiveSerializers.h" />
     <ClInclude Include="src\serialization\Serializer.h" />
@@ -48,7 +46,6 @@
     <ClCompile Include="src\main\Main.cpp" />
     <ClCompile Include="src\primitive\FloatUtil.cpp" />
     <ClCompile Include="src\primitive\float16.cpp" />
-    <ClCompile Include="src\primitive\uint128_t.cpp" />
     <ClCompile Include="src\serialization\PrimitiveSerializers.cpp" />
     <ClCompile Include="src\serialization\Serializer.cpp" />
     <ClCompile Include="src\type\TypeManager.cpp" />

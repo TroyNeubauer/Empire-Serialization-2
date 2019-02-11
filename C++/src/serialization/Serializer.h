@@ -4,8 +4,6 @@
 #include "../buffer/Output.h"
 #include "../type/EmpireTypes.h"
 #include "../primitive/EmpirePrimitives.h"
-#include "../primitive/int128_t.h"
-#include "../primitive/uint128_t.h"
 
 #define DEFAULT_SERIALIZE_TABLE_SIZE 256
 
@@ -70,20 +68,5 @@ template<>
 __forceinline void Serializer::Write<u64>(u64 value, Output& buf EMPIRE_ERROR_PARAMETER) {
 	SerializeNamed(EMPIRE_UINT_64_TYPE, &value, buf EMPIRE_ERROR_VAR);
 }
-template<>
-__forceinline void Serializer::Write<u128>(u128 value, Output& buf EMPIRE_ERROR_PARAMETER) {
-	SerializeNamed(EMPIRE_UINT_128_TYPE, &value, buf EMPIRE_ERROR_VAR);
-}
-template<>
-__forceinline void Serializer::Write<s128>(s128 value, Output& buf EMPIRE_ERROR_PARAMETER) {
-	SerializeNamed(EMPIRE_SINT_128_TYPE, &value, buf EMPIRE_ERROR_VAR);
-}
 
-
-
-
-
-
-
-
-}
+}//namespace

@@ -4,43 +4,22 @@
 
 #include "../Empire.h"
 
+using namespace Empire;
 
 int main() {
-	try {
-		Serializer s;
-		EmpireError error;
-		Output write(30);
-		std::string line;
-		std::cin >> line;
-		u128 a(line, error);
-		write.WriteVLE(a);
+	Serializer s;
+	EmpireError error;
+	Output out;
+	std::cout  << std::hex << reinterpret_cast<u64>(out.GetPointer()) << std::endl;
 
-		Input read(write);
-		u128 result = read.ReadVLE<u128>(error);
-		std::cout << result.ToString();
-		std::cout << " - " << ErrorToString(error) << std::endl;
-
-
-
-		/*
-		int x = 0;
-		while(x != -1) {
-			std::cin >> x;
-			EmpireError error;
-			s.Write(x, buf, error);
-			if (error) {
-				throw ErrorToException(error);
-			}
-		}*/
-		FILE* file = fopen("out.dat", "wb");
-		if (file) {
-			fwrite(write.GetStart(), 1, write.Offset(), file);
-		}
-		fclose(file);
+	s.Write(6, out, error);
 	
-	} catch (const std::exception & ex) {
-		std::cerr << "ERROR: " << ex.what() << std::endl;
+	FILE* file = fopen("out.dat", "wb");
+	if (file) {
+		fwrite(out.GetStart(), 1, out.Offset(), file);
 	}
+	fclose(file);
+
 
 	system("PAUSE");
 }

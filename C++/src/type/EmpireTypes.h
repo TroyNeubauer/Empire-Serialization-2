@@ -13,32 +13,24 @@
 #define EMPIRE_UINT_64_TYPE		 6
 #define EMPIRE_SINT_64_TYPE		 7
 
-#define EMPIRE_UINT_128_TYPE	 8
-#define EMPIRE_SINT_128_TYPE	 9
-
-#define EMPIRE_UINT_256_TYPE	10
-#define EMPIRE_SINT_256_TYPE	11
-
-#define EMPIRE_BIG_INT_TYPE		12
+#define EMPIRE_BIG_INT_TYPE		 8
 
 
 //#################### FLOATS ####################
-#define EMPIRE_FLOAT_16_TYPE	13	
-#define EMPIRE_FLOAT_32_TYPE	14
+#define EMPIRE_FLOAT_16_TYPE	 9	
 
-#define EMPIRE_FLOAT_64_TYPE	15
-#define EMPIRE_FLOAT_128_TYPE	16
+#define EMPIRE_FLOAT_32_TYPE	10
+#define EMPIRE_FLOAT_64_TYPE	11
 
-#define EMPIRE_FLOAT_256_TYPE	17
-#define EMPIRE_BIG_FLOAT_TYPE	18
+#define EMPIRE_BIG_FLOAT_TYPE	12
 
 
 //#################### CHARS ####################
-#define EMPIRE_CHAR_4_TYPE		19
-#define EMPIRE_CHAR_6_TYPE		20
-#define EMPIRE_CHAR_8_TYPE		21
-#define EMPIRE_CHAR_16_TYPE		22
-#define EMPIRE_CHAR_32_TYPE		23
+#define EMPIRE_CHAR_4_TYPE		13
+#define EMPIRE_CHAR_6_TYPE		14
+#define EMPIRE_CHAR_8_TYPE		15
+#define EMPIRE_CHAR_16_TYPE		16
+#define EMPIRE_CHAR_32_TYPE		17
 
 
 //#################### STRINGS ####################

@@ -7,31 +7,12 @@
 	#error Cannot compile without intrinsics! intrinsics needed for addition and subtraction
 #endif
 
-#if defined(__SIZEOF_INT128__) && (__SIZEOF_INT128__ == 16)
-	#define EMPIRE_SOFTWARE_UINT_128 0
-	#define EMPIRE_SOFTWARE_INT_128 0
-#else
-	#define EMPIRE_SOFTWARE_UINT_128 1
-	#define EMPIRE_SOFTWARE_INT_128 1
-#endif
-
 #if defined(__SIZEOF_FLOAT16__) && (__SIZEOF_FLOAT16__ == 2)
 	#define EMPIRE_SOFTWARE_FLOAT_16 0
 #else
 	#define EMPIRE_SOFTWARE_FLOAT_16 1
 #endif
 
-#if defined(__SIZEOF_FLOAT128__) && (__SIZEOF_FLOAT128__ == 16)
-	#define EMPIRE_SOFTWARE_FLOAT_128 0
-#else
-	#define EMPIRE_SOFTWARE_FLOAT_128 1
-#endif
-
-#if defined(__SIZEOF_FLOAT256__) && (__SIZEOF_FLOAT256__ == 32)
-	#define EMPIRE_SOFTWARE_FLOAT_256 0
-#else
-	#define EMPIRE_SOFTWARE_FLOAT_256 1
-#endif
 
 
 #define DISABLE_SIMD 0

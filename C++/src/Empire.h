@@ -6,8 +6,6 @@ namespace Empire {}
 #include "EmpireException.h"
 
 #include "primitive/EmpirePrimitives.h"
-#include "primitive/int128_t.h"
-#include "primitive/uint128_t.h"
 #include "primitive/float16.h"
 
 #include "buffer/TempBuffer.h"
