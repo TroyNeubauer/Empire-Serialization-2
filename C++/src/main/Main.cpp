@@ -16,20 +16,18 @@ struct Test {
 };
 
 int main() {
-	TypeData c = TypeData(sizeof(int), offsetof(Test, x), "x");
-	std::cout << c.ToString() << std::endl;
 
 	TypeData x = CreateField(int, Test, x);
 	std::cout << x.ToString() << std::endl;
 
-	/*TypeData y = CreateField(double, Test, y);
+	TypeData y = CreateField(double, Test, y);
 	std::cout << y.ToString() << std::endl;
 
 	TypeData z = CreateField(char, Test, z);
 	std::cout << z.ToString() << std::endl;
 
 	TypeData test = CreateClass(Test, x, y, z);
-	std::cout << test.ToString() << std::endl;*/
+	std::cout << test.ToString() << std::endl;
 
 
 	system("PAUSE");
