@@ -15,15 +15,31 @@ struct Test {
 	char z;
 };
 
+template<typename T>
+TypeData GetTypeData() {
+	return 0;
+}
+
+template<typename T>
+void SerializeAny(void* value, Output& buf EMPIRE_ERROR_PARAMETER) {
+	TypeData data = GetTypeData<T>();
+	// Write type definition
+	for (TypeData& field : fields) {
+		
+	}
+
+}
+
+
 int main() {
 
-	TypeData x = CreateField(int, Test, x);
+	TypeData x = CreatePODField(int, Test, x);
 	std::cout << x.ToString() << std::endl;
 
-	TypeData y = CreateField(double, Test, y);
+	TypeData y = CreatePODField(double, Test, y);
 	std::cout << y.ToString() << std::endl;
 
-	TypeData z = CreateField(char, Test, z);
+	TypeData z = CreatePODField(char, Test, z);
 	std::cout << z.ToString() << std::endl;
 
 	TypeData test = CreateClass(Test, x, y, z);
