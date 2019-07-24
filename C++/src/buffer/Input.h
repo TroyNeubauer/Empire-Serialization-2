@@ -21,7 +21,7 @@ public:
 	*/
 	inline bool EnsureCapacity(u64 bytes EMPIRE_ERROR_PARAMETER) {
 		if (bytes + m_Offset > m_Limit) {
-			EMPIRE_ERROR(EMPIRE_BUFFER_OVERFLOW, new BufferOverflowErrorData(bytes, m_Offset, m_Limit), false);
+			EMPIRE_ERROR(BUFFER_OVERFLOW, new BufferOverflowErrorData(bytes, m_Offset, m_Limit), false);
 		}
 		return true;
 	}

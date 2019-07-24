@@ -26,12 +26,14 @@
     <ClInclude Include="src\Empire.h" />
     <ClInclude Include="src\EmpireErrorCodes.h" />
     <ClInclude Include="src\EmpireException.h" />
+    <ClInclude Include="src\Encoding.h" />
     <ClInclude Include="src\little-big-int.hpp" />
     <ClInclude Include="src\main\Test.h" />
+    <ClInclude Include="src\primitive\double_integer.hpp" />
     <ClInclude Include="src\primitive\EmpirePrimitives.h" />
     <ClInclude Include="src\primitive\EmpirePrimitivesConfig.h" />
-    <ClInclude Include="src\primitive\FloatUtil.h" />
-    <ClInclude Include="src\primitive\float16.h" />
+    <ClInclude Include="src\primitive\IEEE754.hpp" />
+    <ClInclude Include="src\primitive\Integers.h" />
     <ClInclude Include="src\serialization\Deserializer.h" />
     <ClInclude Include="src\serialization\PrimitiveDeserializers.h" />
     <ClInclude Include="src\serialization\PrimitiveSerializers.h" />
@@ -50,42 +52,43 @@
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</PreprocessToFile>
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</PreprocessToFile>
     </ClCompile>
-    <ClCompile Include="src\primitive\FloatUtil.cpp" />
-    <ClCompile Include="src\primitive\float16.cpp" />
     <ClCompile Include="src\serialization\Deserializer.cpp" />
     <ClCompile Include="src\serialization\Serializer.cpp" />
     <ClCompile Include="src\type\TypeManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\primitive\double_integer.tcc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{D7073881-08D4-4CAF-93EE-01643BF912BD}</ProjectGuid>
     <RootNamespace>C</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>

@@ -1,14 +1,21 @@
 #pragma once
 
 #include <stdint.h>
+
+#include "IEEE754.hpp"
+#include "double_integer.hpp"
+
 #include "EmpirePrimitivesConfig.h"
 
-#if EMPIRE_SOFTWARE_FLOAT_16
-	struct float16;
-#else
+#ifdef EMPIRE_HAVE_COMPILER_F16
 	typedef __fp16 float16;
+#else
+	typedef IEEE754<10, 5> float16;
 #endif
 
+
+
+typedef IEEE754<112, 15> float128;
 
 typedef int8_t s8;
 typedef uint8_t u8;
@@ -21,7 +28,6 @@ typedef uint32_t u32;
 
 typedef int64_t s64;
 typedef uint64_t u64;
-
 
 
 

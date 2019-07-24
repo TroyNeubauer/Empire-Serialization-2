@@ -43,56 +43,64 @@ std::string ParseOverFlowData::ToString() {
 	return std::string("ParseOver Flow, Parse Input: ") + parseInput + " - " + info;
 };
 
-std::string AlreadyKnownTypeData::ToString() {
-	return  std::string("Already Known Type, ID: ")  + std::to_string(name);
-};
-
-
 
 EmpireError::EmpireError() {
-	this->code = EMPIRE_NO_ERROR;
+	this->code = NO_ERROR;
 	this->errorInfo = nullptr;
 }
 
 void clearError(EmpireError& error) {
-	error.code = EMPIRE_NO_ERROR;
+	error.code = NO_ERROR;
 	if (error.errorInfo != nullptr) {
 		delete error.errorInfo;
 		error.errorInfo = nullptr;
 	}
 }
 
+#define NO_ERROR_TEXT "No Error"
+#define INVALID_ARGUMENT_TEXT "Invalid Argument"
+#define MISMATCHED_TYPE_TEXT "Mismatched Type"
+#define UNKNOWN_TYPE_TEXT "Unknown Type"
+#define INVALID_TYPE_DEF_TEXT "Invalid Type"
+#define INVALID_FLAGS_TEXT "Invalid Flags"
+#define ALREADY_KNOWN_TYPE_TEXT "Cannot override pre-existing type"
+
+#define BUFFER_OVERFLOW_TEXT "Buffer Overflow"
+
+#define INVALID_CHARACTER_TEXT "Invalid Character"
+#define PARSE_ERROR_OVERFLOW_TEXT "Overflow while parsing. Too many digets!"
+
 std::string ErrorCodeToString(ErrorCode code) {
 	switch (code) {
-	case EMPIRE_NO_ERROR:
-		return EMPIRE_NO_ERROR_TEXT;
+	case NO_ERROR:
+		return NO_ERROR_TEXT;
 
-	case EMPIRE_INVALID_ARGUMENT:
-		return EMPIRE_INVALID_ARGUMENT_TEXT;
+	case INVALID_ARGUMENT:
+		return INVALID_ARGUMENT_TEXT;
 
-	case EMPIRE_MISMATCHED_TYPE:
-		return EMPIRE_MISMATCHED_TYPE_TEXT;
+	case MISMATCHED_TYPE:
+		return MISMATCHED_TYPE_TEXT;
 
-	case EMPIRE_UNKNOWN_TYPE:
-		return EMPIRE_UNKNOWN_TYPE_TEXT;
+	case UNKNOWN_TYPE:
+		return UNKNOWN_TYPE_TEXT;
 
-	case EMPIRE_INVALID_TYPE_DEF:
-		return EMPIRE_INVALID_TYPE_DEF_TEXT;
+	case INVALID_TYPE_DEF:
+		return INVALID_TYPE_DEF_TEXT;
 
-	case EMPIRE_INVALID_FLAGS:
-		return EMPIRE_INVALID_FLAGS_TEXT;
+	case INVALID_FLAGS:
+		return INVALID_FLAGS_TEXT;
 
-	case EMPIRE_INVALID_CHARACTER:
-		return EMPIRE_INVALID_CHARACTER_TEXT;
+	case INVALID_CHARACTER:
+		return INVALID_CHARACTER_TEXT;
 
-	case EMPIRE_PARSE_ERROR_OVERFLOW:
-		return EMPIRE_PARSE_ERROR_OVERFLOW_TEXT;
+	case PARSE_ERROR_OVERFLOW:
+		return PARSE_ERROR_OVERFLOW_TEXT;
 
-	case EMPIRE_ALREADY_KNOWN_TYPE:
-		return EMPIRE_ALREADY_KNOWN_TYPE_TEXT;
+	case ALREADY_KNOWN_TYPE:
+		return ALREADY_KNOWN_TYPE_TEXT;
 
-	case EMPIRE_BUFFER_OVERFLOW:
-		return EMPIRE_BUFFER_OVERFLOW_TEXT;
+	case BUFFER_OVERFLOW:
+		return BUFFER_OVERFLOW_TEXT;
 	default:
 		return "Unknown Error";
 	}

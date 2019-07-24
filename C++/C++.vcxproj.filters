@@ -54,9 +54,6 @@
     <ClInclude Include="src\serialization\Serializer.h">
       <Filter>serialization</Filter>
     </ClInclude>
-    <ClInclude Include="src\primitive\FloatUtil.h">
-      <Filter>primitive</Filter>
-    </ClInclude>
     <ClInclude Include="src\type\EmpireTypes.h">
       <Filter>type</Filter>
     </ClInclude>
@@ -65,9 +62,6 @@
     </ClInclude>
     <ClInclude Include="src\util\ToStringUtil.h">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="src\primitive\float16.h">
-      <Filter>primitive</Filter>
     </ClInclude>
     <ClInclude Include="src\serialization\PrimitiveSerializers.h">
       <Filter>serialization</Filter>
@@ -84,6 +78,10 @@
     <ClInclude Include="src\serialization\PrimitiveDeserializers.h">
       <Filter>serialization</Filter>
     </ClInclude>
+    <ClInclude Include="src\Encoding.h" />
+    <ClInclude Include="src\primitive\IEEE754.hpp" />
+    <ClInclude Include="src\primitive\double_integer.hpp" />
+    <ClInclude Include="src\primitive\Integers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main\Main.cpp">
@@ -98,14 +96,8 @@
     <ClCompile Include="src\type\TypeManager.cpp">
       <Filter>type</Filter>
     </ClCompile>
-    <ClCompile Include="src\primitive\FloatUtil.cpp">
-      <Filter>primitive</Filter>
-    </ClCompile>
     <ClCompile Include="src\serialization\Serializer.cpp">
       <Filter>serialization</Filter>
-    </ClCompile>
-    <ClCompile Include="src\primitive\float16.cpp">
-      <Filter>primitive</Filter>
     </ClCompile>
     <ClCompile Include="src\buffer\Output.cpp">
       <Filter>buffer</Filter>
@@ -113,5 +105,8 @@
     <ClCompile Include="src\serialization\Deserializer.cpp">
       <Filter>serialization</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\primitive\double_integer.tcc" />
   </ItemGroup>
 </Project>
