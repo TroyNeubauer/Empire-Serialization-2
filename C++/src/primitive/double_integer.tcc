@@ -38,6 +38,8 @@
 #include <cstring>
 #include <cctype>
 #include <cmath>
+#include <iostream>
+#include <sstream>
 
 #include <limits>
 #include <stdexcept>
@@ -666,7 +668,6 @@ bool operator >= (const double_integer <LO, HI> & a,
 //  - and some type_traits overrides
 
 namespace std {
-    template <>
     template <typename LO, typename HI>
     struct numeric_limits <double_integer <LO, HI> > {
         static const bool is_specialized = true;
@@ -723,16 +724,35 @@ namespace std {
         static const float_round_style round_style = round_indeterminate;
     };
     
-    template <>
     template <typename LO, typename HI>
     struct make_unsigned <double_integer <LO, HI> > {
         typedef double_integer <LO, LO> type;
     };
 
-    template <>
+	template <typename LO, typename HI>
+	struct make_signed <double_integer <LO, HI> > {
+		typedef double_integer <LO, std::make_signed<LO>> type;
+	};
+
     template <typename LO, typename HI>
     struct is_integral <double_integer <LO, HI> >
         : std::integral_constant <bool, true> {};
 };
+
+template <typename LO, typename HI>
+std::ostream& operator<<(std::ostream& os, const double_integer <LO, HI>& value) {
+	constexpr size_t capacity = std::numeric_limits<double_integer<LO, HI>>::digits10 + 5;//Extra room for the negitive sign and any rounding issues
+	char buf[capacity];
+	int base;
+	if (os.flags() & std::ios_base::hex)
+		base = 16;
+	else if (os.flags() & std::ios_base::dec)
+		base = 10;
+	else
+		base = 8;
+	os << value.print(buf, capacity, base);
+	return os;
+}
+
 
 #endif

@@ -28,7 +28,8 @@ public:
 
 	inline u8* GetPointer() const { return m_Buffer + m_Offset; }
 
-	inline u8* GetStart() const { return m_Buffer; }
+	inline u8* Begin() const { return m_Buffer; }
+	inline u8* GetStart() const { return Begin(); }
 
 	inline u64 Offset() const { return m_Offset; }
 

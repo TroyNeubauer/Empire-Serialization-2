@@ -10,4 +10,8 @@
 	
 	typedef double_integer<uint64_t, uint64_t> u128;
 	typedef double_integer<uint64_t, int64_t> s128;
+
 #endif
+
+typedef double_integer<u128, u128> u256;
+//typedef double_integer<u128, s128> s256;

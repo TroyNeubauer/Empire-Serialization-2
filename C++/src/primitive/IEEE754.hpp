@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #ifndef __IEEE754_H__
 #define __IEEE754_H__
 
@@ -7,6 +7,7 @@
 #include <limits>
 #include <algorithm>
 #include <type_traits>
+#include <iostream>
 #include <stdint.h>
 
 #include "Integers.h"
@@ -15,15 +16,12 @@ template<unsigned M, unsigned E, int B >
 class IEEE754;
 
 namespace std {
-	/**
-	 * The IEEE754 class with any template parameter is a floating point type.
-	 */
+	//The IEEE754 class with any template parameter is a floating point type.
+	 
 	template<unsigned M, unsigned E, int B >
 	struct is_floating_point<IEEE754<M, E, B > > : public std::true_type { };
 
-	/**
-	 * Specialization of std::numeric_limits for any bit format provided.
-	 */
+	//Specialization of std::numeric_limits for any bit format provided.
 	template <unsigned M, unsigned E, int B >
 	struct numeric_limits<IEEE754<M, E, B > > {
 	public:
@@ -80,9 +78,9 @@ namespace std {
 
 	// --------------------------- Classification --------------------------- //
 
-	/*
-	 * Categorizes the given floating point value
-	 */
+
+	//Categorizes the given floating point value
+	
 	template <unsigned M, unsigned E, int B >
 	int fpclassify(const IEEE754<M, E, B >& arg) {
 		// Zero exponent can be either zero or a subnormal (denormal)
@@ -105,44 +103,34 @@ namespace std {
 		return FP_NORMAL;
 	}
 
-	/*
-	 * Checks if the given number has finite value
-	 */
+	
+	//Checks if the given number has finite value
+	
 	template <unsigned M, unsigned E, int B >
 	bool isfinite(const IEEE754<M, E, B >& arg) {
 		return (arg.exponent != IEEE754<M, E, B >::EXPONENT_MASK);
 	}
 
-	/*
-	 * Checks if the given number is infinite
-	 */
+	//Checks if the given number is infinite
 	template <unsigned M, unsigned E, int B >
 	bool isinf(const IEEE754<M, E, B >& arg) {
 		return (arg.exponent == IEEE754<M, E, B >::EXPONENT_MASK)
 			&& arg.mantissa == 0;
 	}
 
-	/**
-	 * Checks if the given number is NaN
-	 */
 	template <unsigned M, unsigned E, int B >
 	bool isnan(const IEEE754<M, E, B >& arg) {
 		return (arg.exponent == IEEE754<M, E, B >::EXPONENT_MASK)
 			&& arg.mantissa != 0;
 	}
 
-	/*
-	 * Checks if the given number is normal
-	 */
 	template <unsigned M, unsigned E, int B >
 	bool isnormal(const IEEE754<M, E, B >& arg) {
 		return (arg.exponent != 0)
 			&& (arg.exponent != IEEE754<M, E, B >::EXPONENT_MASK);
 	}
 
-	/**
-	 * Checks if two floating-point values are unordered
-	 */
+	//Checks if two floating-point values are unordered
 	template <unsigned M, unsigned E, int B >
 	bool isunordered(const IEEE754<M, E, B >& arg1, const IEEE754<M, E, B >& arg2) {
 		return isnan(arg1)
@@ -151,17 +139,13 @@ namespace std {
 
 	// ------------------------- Sign manipulation -------------------------- //
 
-	/*
-	 * Checks if the given number is negative
-	 */
+	//Checks if the given number is negative
 	template <unsigned M, unsigned E, int B >
 	bool signbit(const IEEE754<M, E, B >& arg) {
 		return arg.sign != 0;
 	}
 
-	/**
-	 * Computes the absolute value of a floating point value
-	 */
+	//Computes the absolute value of a floating point value
 	template <unsigned M, unsigned E, int B >
 	IEEE754<M, E, B > abs(const IEEE754<M, E, B >& arg) {
 		IEEE754<M, E, B > result = arg;
@@ -169,9 +153,7 @@ namespace std {
 		return result;
 	}
 
-	/**
-	 * Composes a floating point value with the magnitude of x and the sign of y
-	 */
+	//Composes a floating point value with the magnitude of x and the sign of y
 	template <unsigned M, unsigned E, int B >
 	IEEE754<M, E, B > copysign(const IEEE754<M, E, B >& x, const IEEE754<M, E, B >& y) {
 		IEEE754<M, E, B > result = x;
@@ -181,20 +163,16 @@ namespace std {
 
 	// ----------------------------- Components ----------------------------- //
 
-	/**
-	 *  Returns the resulting floating point value from multiplying
-	 *  the significand by 2 raised to the power of the exponent.
-	 */
+	//Returns the resulting floating point value from multiplying
+	//the significand by 2 raised to the power of the exponent.
 	template <unsigned M, unsigned E, int B >
 	IEEE754<M, E, B > ldexp(const IEEE754<M, E, B >& x, int exp) {
 		// XXX: Conversion of double to IEEE754 instance
 		return x * std::pow(2.0, exp);
 	}
 
-	/**
-	 * Breaks the floating point number x into its binary significand
-	 * and an integral exponent for 2
-	 */
+	//Breaks the floating point number x into its binary significand
+	//and an integral exponent for 2
 	template <unsigned M, unsigned E, int B >
 	IEEE754<M, E, B > frexp(const IEEE754<M, E, B >& x, int* exp) {
 		IEEE754<M, E, B > result = x;
@@ -252,6 +230,11 @@ struct smallest_unsigned<128> {
 	typedef u128 type;
 };
 
+template<>
+struct smallest_unsigned<256> {
+	typedef u256 type;
+};
+
 template<unsigned M, unsigned E, int B = (1 << (E - 1)) - 1 >
 class IEEE754 {
 	// XXX: This actually needs to be private, however I do not know how to make
@@ -276,9 +259,7 @@ public:
 	primitive sign : 1;
 
 private:
-	/**
-	 * Build a float from components
-	 */
+	//Build a float from components
 	inline static IEEE754 from_components(primitive sign, primitive exponent, primitive mantissa) {
 		IEEE754 result;
 		result.sign = sign;
@@ -287,9 +268,7 @@ private:
 		return result;
 	}
 
-	/**
-	 * Renormalizes a signed fixed point into a float
-	 */
+	//Renormalizes a signed fixed point into a float
 	template<typename T >
 	inline static IEEE754 renormalize(T unnormalized, int radix_point) {
 		IEEE754 result;
@@ -297,9 +276,7 @@ private:
 		return result;
 	}
 
-	/**
-	 * Renormalizes an unsigned fixed point into a float
-	 */
+	//Renormalizes an unsigned fixed point into a float
 	template<typename T >
 	inline static IEEE754 renormalize(T unnormalized, int radix_point, int sign) {
 		IEEE754 result;
@@ -308,23 +285,17 @@ private:
 		return result;
 	}
 
-	/**
-	 * Returns nan with optional sign and mantissa
-	 */
+	//Returns nan with optional sign and mantissa
 	inline static IEEE754 nan(primitive sign = 0, primitive mantissa = 1) {
 		return from_components(sign, EXPONENT_MASK, mantissa);
 	}
 
-	/**
-	 * Returns Infinity
-	 */
+	//Returns Infinity
 	inline static IEEE754 inf(primitive sign = 0) {
 		return from_components(sign, EXPONENT_MASK, 0);
 	}
 
-	/**
-	 * Shift that allows negative values
-	 */
+	//Shift that allows negative values
 	template <
 		typename T,
 		typename RT = typename std::conditional<(sizeof(T) > sizeof(primitive)), T, primitive >::type
@@ -338,18 +309,14 @@ private:
 		return value;
 	}
 
-	/**
-	 * Computes the real value of the mantissa.
-	 * This adds the implicit 1.xxxx to the mantissa when needed
-	 */
+	//Computes the real value of the mantissa.
+	//This adds the implicit 1.xxxx to the mantissa when needed
 	primitive real_mantissa() const {
 		return exponent ? mantissa | (1 << M) : (mantissa << 1);
 	}
 
-	/**
-	 * Fills up exponent and mantissa from an unsigned value.
-	 * Sign is left unchanged.
-	 */
+	//Fills up exponent and mantissa from an unsigned value.
+	//Sign is left unchanged.
 	template <typename T >
 	void from_unsigned(T unsigned_value, int radix_point = 0) {
 		if (unsigned_value > shift<T >((1 << (M + 1)) - 1, E - radix_point)) {
@@ -370,9 +337,7 @@ private:
 		}
 	}
 
-	/**
-	 * Fills up sign, exponent and mantissa from an unsigned value.
-	 */
+	//Fills up sign, exponent and mantissa from an unsigned value.
 	template <typename T >
 	void from_signed(T signed_value, int radix_point = 0) {
 		typedef typename std::make_signed<T >::type signed_T;
@@ -384,17 +349,13 @@ private:
 		from_unsigned<unsigned_T >(std::abs(forced_signed), radix_point);
 	}
 
-	/**
-	 * Retrieve the value of this float as an unsigned value
-	 */
+	//Retrieve the value of this float as an unsigned value
 	template <typename T >
 	T to_unsigned(int radix_point = 0) const {
 		return shift<T >(real_mantissa(), exponent - radix_point - B - M);
 	}
 
-	/**
-	 * Retrieve the value of this float as a signed value
-	 */
+	//Retrieve the value of this float as a signed value
 	template <typename T >
 	T to_signed(int radix_point = 0) const {
 		return (to_unsigned<T >(radix_point) ^ -sign) + sign;
@@ -403,19 +364,13 @@ private:
 public:
 	// -------------------------- Constructors -------------------------- //
 
-	/**
-	 * Default constructor, undefined value.
-	 */
+	//Default constructor, undefined value.
 	IEEE754() = default;
 
-	/**
-	 * Default copy constructor
-	 */
+	//Default copy constructor
 	IEEE754(const IEEE754&) = default;
 
-	/**
-	 * Conversion from another IEEE floating point object
-	 */
+	//Conversion from another IEEE floating point object
 	template <unsigned OM, unsigned OE, int OB >
 	IEEE754(const IEEE754<OM, OE, OB >& other_ieee754) {
 		sign = other_ieee754.sign;
@@ -423,9 +378,7 @@ public:
 		mantissa = shift(other_ieee754.mantissa, M - OM);
 	}
 
-	/**
-	 * Conversion from a floating point value
-	 */
+	//Conversion from a floating point value
 	template <
 		typename T,
 		typename = typename std::enable_if<std::is_floating_point<T >::value, T >::type
@@ -456,9 +409,7 @@ public:
 		}
 	}
 
-	/**
-	 * Conversion from a signed integral type
-	 */
+	//Conversion from a signed integral type
 	template <
 		typename T,
 		typename = typename std::enable_if<!std::is_floating_point<T >::value, T >::type,
@@ -468,9 +419,7 @@ public:
 		from_signed(signed_integral);
 	}
 
-	/**
-	 * Conversion from an unsigned integral type
-	 */
+	//Conversion from an unsigned integral type
 	template <
 		typename T,
 		typename = typename std::enable_if<!std::is_floating_point<T >::value, T >::type,
@@ -484,9 +433,7 @@ public:
 
 	// ------------------------- Cast operators ------------------------- //
 
-	/**
-	 * Convert to another floating point value
-	 */
+	//Convert to another floating point value
 	template <
 		typename T,
 		typename = typename std::enable_if<std::is_floating_point<T >::value, T >::type
@@ -506,9 +453,7 @@ public:
 		return std::copysign(result, -sign);
 	}
 
-	/**
-	 * Convert to a signed integer
-	 */
+	//Convert to a signed integer
 	template <
 		typename T,
 		typename = typename std::enable_if<!std::is_floating_point<T >::value, T >::type,
@@ -518,9 +463,7 @@ public:
 		return to_signed<T >();
 	}
 
-	/**
-	 * Convert to an unsigned integer
-	 */
+	//Convert to an unsigned integer
 	template <
 		typename T,
 		typename = typename std::enable_if<!std::is_floating_point<T >::value, T >::type,
@@ -692,4 +635,13 @@ public:
 	}
 };
 
+template<unsigned M, unsigned E, int B>
+std::ostream& operator<<(std::ostream& os, const IEEE754<M, E, B>& value)
+{
+	os << "Not implemented" << std::endl;
+
+	return os;
+}
+
 #endif
+*/

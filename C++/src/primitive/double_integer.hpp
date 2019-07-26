@@ -1,6 +1,8 @@
 #ifndef DOUBLE_INTEGER_HPP
 #define DOUBLE_INTEGER_HPP
 
+//Taken from: https://github.com/tringi/doubleinteger
+
 /* Double Integer template
 // double_integer.hpp
 //
@@ -42,6 +44,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <limits>
+#include <iostream>
 
 // double_integer <LO, HI>
 //  - unlike the intrinsic types, this one is always zero initialized
@@ -54,7 +57,7 @@ template <typename LO, typename HI = LO>
 class double_integer {
     
     // check assumptions
-    static_assert (sizeof (LO) == sizeof (HI), "both types must have the same size");
+    //static_assert (sizeof (LO) == sizeof (HI), "both types must have the same size");
     static_assert (!std::numeric_limits <LO> ::is_signed, "type of lower half must be unsigned");
     
     public:
@@ -147,25 +150,26 @@ class double_integer {
     
 };
 
-template <typename LO, typename HI> bool operator < (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> bool operator > (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> bool operator <= (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> bool operator <= (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> bool operator == (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> bool operator != (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> bool operator || (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> bool operator && (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
+template <typename LO, typename HI> bool operator < (const double_integer<LO, HI> &, const double_integer<LO, HI> &);
+template <typename LO, typename HI> bool operator > (const double_integer<LO, HI> &, const double_integer<LO, HI> &);
+template <typename LO, typename HI> bool operator <= (const double_integer<LO, HI> &, const double_integer<LO, HI> &);
+template <typename LO, typename HI> bool operator <= (const double_integer<LO, HI> &, const double_integer<LO, HI> &);
+template <typename LO, typename HI> bool operator == (const double_integer<LO, HI> &, const double_integer<LO, HI> &);
+template <typename LO, typename HI> bool operator != (const double_integer<LO, HI> &, const double_integer<LO, HI> &);
+template <typename LO, typename HI> bool operator || (const double_integer<LO, HI> &, const double_integer<LO, HI> &);
+template <typename LO, typename HI> bool operator && (const double_integer<LO, HI> &, const double_integer<LO, HI> &);
 
-template <typename LO, typename HI> double_integer <LO, HI> operator + (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> double_integer <LO, HI> operator - (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> double_integer <LO, HI> operator * (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> double_integer <LO, HI> operator / (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> double_integer <LO, HI> operator % (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> double_integer <LO, HI> operator & (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> double_integer <LO, HI> operator | (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> double_integer <LO, HI> operator ^ (const double_integer <LO, HI> &, const double_integer <LO, HI> &);
-template <typename LO, typename HI> double_integer <LO, HI> operator << (const double_integer <LO, HI> &, unsigned int);
-template <typename LO, typename HI> double_integer <LO, HI> operator >> (const double_integer <LO, HI> &, unsigned int);
+template <typename LO, typename HI> double_integer<LO, HI> operator + (const double_integer<LO, HI> &, const double_integer <LO, HI> &);
+template <typename LO, typename HI> double_integer<LO, HI> operator - (const double_integer<LO, HI> &, const double_integer <LO, HI> &);
+template <typename LO, typename HI> double_integer<LO, HI> operator * (const double_integer<LO, HI> &, const double_integer <LO, HI> &);
+template <typename LO, typename HI> double_integer<LO, HI> operator / (const double_integer<LO, HI> &, const double_integer <LO, HI> &);
+template <typename LO, typename HI> double_integer<LO, HI> operator % (const double_integer<LO, HI> &, const double_integer <LO, HI> &);
+template <typename LO, typename HI> double_integer<LO, HI> operator & (const double_integer<LO, HI> &, const double_integer <LO, HI> &);
+template <typename LO, typename HI> double_integer<LO, HI> operator | (const double_integer<LO, HI> &, const double_integer <LO, HI> &);
+template <typename LO, typename HI> double_integer<LO, HI> operator ^ (const double_integer<LO, HI> &, const double_integer <LO, HI> &);
+template <typename LO, typename HI> double_integer<LO, HI> operator << (const double_integer<LO, HI> &, unsigned int);
+template <typename LO, typename HI> double_integer<LO, HI> operator >> (const double_integer<LO, HI> &, unsigned int);
+template <typename LO, typename HI> std::ostream& operator<<(std::ostream& os, const double_integer <LO, HI>&);
 
 #include "double_integer.tcc"
 #endif

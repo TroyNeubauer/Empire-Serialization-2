@@ -66,9 +66,8 @@ void clearError(EmpireError& error) {
 #define ALREADY_KNOWN_TYPE_TEXT "Cannot override pre-existing type"
 
 #define BUFFER_OVERFLOW_TEXT "Buffer Overflow"
-
-#define INVALID_CHARACTER_TEXT "Invalid Character"
-#define PARSE_ERROR_OVERFLOW_TEXT "Overflow while parsing. Too many digets!"
+#define ILLEGAL_OPCODE_TEXT "Illegal Opcode"
+#define ILLEGAL_REFERENCE_TEXT "Illegal Reference"
 
 std::string ErrorCodeToString(ErrorCode code) {
 	switch (code) {
@@ -90,17 +89,18 @@ std::string ErrorCodeToString(ErrorCode code) {
 	case INVALID_FLAGS:
 		return INVALID_FLAGS_TEXT;
 
-	case INVALID_CHARACTER:
-		return INVALID_CHARACTER_TEXT;
-
-	case PARSE_ERROR_OVERFLOW:
-		return PARSE_ERROR_OVERFLOW_TEXT;
-
 	case ALREADY_KNOWN_TYPE:
 		return ALREADY_KNOWN_TYPE_TEXT;
 
 	case BUFFER_OVERFLOW:
 		return BUFFER_OVERFLOW_TEXT;
+
+	case ILLEGAL_OPCODE:
+		return ILLEGAL_OPCODE_TEXT;
+
+	case ILLEGAL_REFERENCE:
+		return ILLEGAL_REFERENCE_TEXT;
+
 	default:
 		return "Unknown Error";
 	}

@@ -10,6 +10,10 @@
 	#define EMPIRE_HAVE_COMPILER_F16
 #endif
 
+#ifdef __SIZEOF_FLOAT128__
+	#define EMPIRE_HAVE_COMPILER_F128
+#endif
+
 
 #if defined(DISABLE_SMID)
 	#define EMPIRE_NO_FP_EXTENSIONS
