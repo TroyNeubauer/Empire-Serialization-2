@@ -70,13 +70,14 @@
     <ClInclude Include="src\primitive\IEEE754.hpp" />
     <ClInclude Include="src\primitive\double_integer.hpp" />
     <ClInclude Include="src\primitive\Integers.h" />
+    <ClInclude Include="src\type\Type.h" />
+    <ClInclude Include="src\util\BitUtils.h" />
+    <ClInclude Include="src\system\FileSystem.h" />
+    <ClInclude Include="src\util\StringUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main\Main.cpp">
       <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EmpireErrorCodes.cpp">
-      <Filter>empire</Filter>
     </ClCompile>
     <ClCompile Include="src\little-big-int.cpp">
       <Filter>empire</Filter>
@@ -87,6 +88,7 @@
     <ClCompile Include="src\buffer\Output.cpp">
       <Filter>buffer</Filter>
     </ClCompile>
+    <ClCompile Include="src\type\Type.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\primitive\double_integer.tcc" />

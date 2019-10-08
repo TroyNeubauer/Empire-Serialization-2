@@ -34,7 +34,7 @@ namespace Empire {
 	};
 
 	class BuiltinTypes {
-		static const u64
+		static inline const u64
 			INVALID_ID = 0,
 			BIT_FIELD_ID = 0,
 			S8_ID = 1,
@@ -65,7 +65,7 @@ namespace Empire {
 			ESC6_STRING_ID = 28,
 			ESC8_PLUS_STRING_ID = 29;
 
-		inline static const Type 
+		inline static const Type
 			INVALID = { "Invalid", INVALID_ID },
 			S8 = {"S8", S8_ID},
 			U8 = { "U8", U8_ID },

@@ -7,89 +7,46 @@
 
 namespace Empire {
 	enum ErrorCodes {
-			NO_ERROR			= 0,
+			NO_ERROR = 0,
 			INVALID_ARGUMENT, MISMATCHED_TYPE, UNKNOWN_TYPE, INVALID_TYPE_DEF, INVALID_FLAGS, ALREADY_KNOWN_TYPE, BUFFER_OVERFLOW, ILLEGAL_OPCODE, ILLEGAL_REFERENCE
-	};
-
-
-	struct EmpireErrorInfo {
-		virtual std::string ToString() = 0;
 	};
 
 	struct EmpireError {
 		//Initalizes an error object to hold no error
-		EmpireError();
-		EmpireError(ErrorCode code, EmpireErrorInfo* errorInfo) : code(code), errorInfo(errorInfo) {}
-		inline operator bool() { return code; }
+		EmpireError() : Code(NO_ERROR) { ErrorInfo[0] = 0x00; }
 
-		ErrorCode code;
-		EmpireErrorInfo* errorInfo;
+		template<typename... Args>
+		EmpireError(ErrorCode code, const char* format, Args... args) : Code(code) {
+			snprintf(ErrorInfo, sizeof(ErrorInfo), format, args...);
+		}
+
+		inline operator bool() { return Code; }
+
+		ErrorCode Code;
+		char ErrorInfo[512];
 
 	};
 
-	void clearError(EmpireError& error);
+	inline std::exception ErrorToException(EmpireError& error) {
+		return std::exception(error.ErrorInfo);
+	}
 
-	std::exception ErrorCodeToException(ErrorCode code);
-	std::exception ErrorToException(EmpireError& code);
+	inline const char* ErrorCodeToString(ErrorCode code) {
+		switch (code) {
+			default:					return "Unknown Error Code";
+			case NO_ERROR:				return "No Error";
+			case INVALID_ARGUMENT:		return "Invalid Argument";
+			case MISMATCHED_TYPE:		return "Mismatched Type";
+			case UNKNOWN_TYPE:			return "Unknown Type";
+			case INVALID_TYPE_DEF:		return "Invalid Type";
+			case INVALID_FLAGS:			return "Invalid Flags";
+			case ALREADY_KNOWN_TYPE:	return "Cannot override pre-existing type";
+			case BUFFER_OVERFLOW:		return "Buffer Overflow";
+			case ILLEGAL_OPCODE:		return "Illegal Opcode";
+			case ILLEGAL_REFERENCE:		return "Illegal Reference";
+		}
+	}
 
-	std::string ErrorCodeToString(ErrorCode code);
-	std::string ErrorToString(EmpireError& error);
-
-	struct InvalidArgumentErrorData : EmpireErrorInfo {
-		std::string argumentName;
-
-		virtual std::string ToString() override;
-	};
-
-	struct MismatchedTypeErrorData : EmpireErrorInfo {
-		EmpireType expected, encoded;
-		u64 offset;
-
-		MismatchedTypeErrorData(EmpireType expected, EmpireType encoded, u64 offset) :
-			expected(expected), encoded(encoded), offset(offset) {}
-
-		virtual std::string ToString() override;
-	};
-
-	struct UnknownTypeErrorData : EmpireErrorInfo {
-		EmpireType type;
-
-		UnknownTypeErrorData(EmpireType type) : type(type) {}
-
-		virtual std::string ToString() override;
-	};
-
-	struct InvalidTypeDefErrorData : EmpireErrorInfo {
-		//TODO
-
-		virtual std::string ToString() override;
-	};
-
-	struct BufferOverflowErrorData : EmpireErrorInfo {
-		BufferOverflowErrorData(u64 bytesRequested, u64 lastIndex, u64 capacity) :
-			bytesRequested(bytesRequested), lastIndex(lastIndex), capacity(capacity) {}
-
-		u64 bytesRequested;
-		u64 lastIndex, capacity;
-
-		virtual std::string ToString() override;
-	};
-
-	struct InvalidCharacterErrorData : EmpireErrorInfo {
-		InvalidCharacterErrorData(char character, u64 index, std::string extra) : character(character), index(index), extra(extra) {}
-		char character;
-		u64 index;
-		std::string extra;
-
-		virtual std::string ToString() override;
-	};
-
-	struct ParseOverFlowData : EmpireErrorInfo {
-		ParseOverFlowData(std::string parseInput, std::string info) : parseInput(parseInput), info(info) {}
-		std::string parseInput, info;
-
-		virtual std::string ToString() override;
-	};
 
 
 }//namespace

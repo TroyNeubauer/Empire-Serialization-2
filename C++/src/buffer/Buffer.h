@@ -13,23 +13,34 @@
 namespace Empire {
 
 class Buffer {
-
-protected:
-	u8* m_Buffer;
-	u64 m_Offset, m_Capacity;
-	bool m_Free;
-
 public:
-	Buffer(u64 capacity = 1024) :
+
+	Buffer() : m_Buffer(nullptr), m_Offset(0), m_Capacity(0), m_Free(false) {}
+
+	Buffer(u64 capacity) :
 		m_Buffer(new u8[capacity]), m_Offset(0), m_Capacity(capacity), m_Free(true) {}
 
 	Buffer(u8* buffer, u64 capacity) :
 		m_Buffer(buffer), m_Offset(0), m_Capacity(capacity), m_Free(false) {}
 
-	inline u8* GetPointer() const { return m_Buffer + m_Offset; }
+	void Init(u64 capacity = 1024) {
+		this->m_Buffer = new u8[capacity];
+		this->m_Offset = 0;
+		this->m_Capacity = capacity;
+		this->m_Free = true;
+	}
+
+	void Init(u8* buffer, u64 capacity) {
+		this->m_Buffer = buffer;
+		this->m_Offset = 0;
+		this->m_Capacity = capacity;
+		this->m_Free = false;
+	}
+
+	inline u8* Pointer() const { return m_Buffer + m_Offset; }
 
 	inline u8* Begin() const { return m_Buffer; }
-	inline u8* GetStart() const { return Begin(); }
+	inline u8* Start() const { return Begin(); }
 
 	inline u64 Offset() const { return m_Offset; }
 
@@ -40,6 +51,11 @@ public:
 			delete[] m_Buffer;
 		}
 	}
+
+protected:
+	u8* m_Buffer;
+	u64 m_Offset, m_Capacity;
+	bool m_Free;
 };
 
 }//namespace

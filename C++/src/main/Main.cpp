@@ -4,22 +4,29 @@
 #include <vector>
 #include <typeinfo>
 
+#include <stdio.h>
+
 #include "../Empire.h"
 #include "../type/TypeManager.h"
+
 
 using namespace Empire;
 
 int main() {
 
-	using s = std::make_signed<u128>::type;
-	s a = 10;
+	BufferedOutput out;
 
-	/*f128 f;
-	double d = 0.12378;
-	f = d;
-	float128 b = 23784234.23478234;
-	f += b;
-	//std::cout << "lf " << b << std::endl;*/
-	system("PAUSE");
+	using Type = int;
+	Type value = 0;
+	while (value != -1) {
+		std::cin >> value;
+		out.WriteVLE(value);
+	}
+
+	FILE* f = fopen("./test.dat", "wb");
+	fwrite(out.Begin(), 1, out.Offset(), f);
+	fclose(f);
+	
+
 }
 

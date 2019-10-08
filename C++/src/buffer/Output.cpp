@@ -2,7 +2,7 @@
 
 namespace Empire {
 
-void Output::Resize(u64 newCapacity) {
+void BufferedOutput::Resize(u64 newCapacity) {
 	u8* newBuffer = new u8[newCapacity];
 	memcpy(newBuffer, m_Buffer, m_Offset);
 	m_Capacity = newCapacity;
@@ -10,7 +10,7 @@ void Output::Resize(u64 newCapacity) {
 	m_Buffer = newBuffer;
 }
 
-void Output::EnsureCapacity(u64 bytes) {
+void BufferedOutput::EnsureCapacity(u64 bytes) {
 	u64 newCapacity = m_Capacity;
 	u64 required = bytes + m_Offset;
 	if (required > m_Capacity) {

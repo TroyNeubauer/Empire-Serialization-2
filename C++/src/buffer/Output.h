@@ -4,14 +4,21 @@
 
 namespace Empire {
 
-class Output : public Buffer {
+class BufferedOutput : public Buffer {
 public:
-	Output(u64 capacity = 1024) : Buffer(capacity) {}
-	
-	Output(u64 capacity, u8* buffer) : Buffer(buffer, capacity) {}
-	
-	void Resize(u64 newCapacity);
+	BufferedOutput() {}
 
+	BufferedOutput(u64 capacity) : Buffer(capacity) {}
+	BufferedOutput(u64 capacity, u8* buffer) : Buffer(buffer, capacity) {}
+
+	void Init(u64 capacity) {
+		Buffer::Init(capacity);
+	}
+	void Init(u64 capacity, u8* buffer) {
+		Buffer::Init(buffer, capacity);
+	}
+
+	void Resize(u64 newCapacity);
 	void EnsureCapacity(u64 bytes);
 
 	template<typename T>
@@ -58,7 +65,7 @@ private:
 		std::memcpy(GetPointer(), value, bytes);
 		m_Offset += bytes;
 	}
-	friend class Input;
+	friend class BufferedInput;
 };
 
 
