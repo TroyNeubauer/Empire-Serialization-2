@@ -10,11 +10,12 @@
 
 #include <stdio.h>
 
-namespace Hazel {
+namespace Empire {
 	class System {
 	public:
 
 		static u64 PageSize();
+		static u64 PerformanceCounterResulution();
 
 		static void GetLastErrorMessage(char* buf, unsigned int capacity);
 

@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-namespace Hazel {
+namespace Empire {
 
 	const uint32_t MAX_SLASHES = 128;
 

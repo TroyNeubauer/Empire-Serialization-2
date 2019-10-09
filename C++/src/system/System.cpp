@@ -1,16 +1,31 @@
 #include "System.h"
 
 
-namespace Hazel {
+namespace Empire {
 
 #ifdef EMPIRE_PLATFORM_WINDOWS
 
 	static SYSTEM_INFO info = {};
+	static u64 timerResulution = 0;
 
 	u64 System::PageSize() {
 		if(info.dwPageSize == 0)
 			GetSystemInfo(&info);
 		return info.dwPageSize;
+	}
+
+	u64 System::PerformanceCounterResulution()
+	{
+		if (timerResulution == 0) {
+			LARGE_INTEGER result;
+			if (QueryPerformanceFrequency(&result) == 0) {
+				char buf[1024];
+				GetLastErrorMessage(buf, sizeof(buf));
+				printf("QueryPerformanceFrequency Returned 0! Error: %s\n", buf);
+			}
+			timerResulution = result.QuadPart;
+		}
+		return timerResulution;
 	}
 
 	void System::GetLastErrorMessage(char* buf, unsigned int capacity) {

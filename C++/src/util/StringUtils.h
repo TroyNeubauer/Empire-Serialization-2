@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-namespace Hazel {
+namespace Empire {
 
 	//A nicer looking api for C-strings
 	class StringUtils

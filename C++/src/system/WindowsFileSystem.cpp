@@ -8,7 +8,7 @@
 #undef CreateDirectory
 #undef DeleteFile
 
-namespace Hazel {
+namespace Empire {
 
 	bool FileSystem::Exists(const char* path)
 	{
@@ -21,6 +21,29 @@ namespace Hazel {
 		DWORD atts = GetFileAttributesA(path);
 		return atts & FILE_ATTRIBUTE_DIRECTORY;
 	}
+
+	uint64_t FileSystem::FileSize(const char *path EMPIRE_ERROR_PARAMETER)
+	{
+		HANDLE handle = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, NULL);
+
+		if (handle == INVALID_HANDLE_VALUE)
+		{
+			char errorMessage[1024];
+			System::GetLastErrorMessage(errorMessage, sizeof(errorMessage));
+			EMPIRE_ERROR(Empire::ErrorCodes::IO_ERROR, nullptr, "Error opening file. Error from CreateFileA is: %s", errorMessage);
+		}
+
+		LARGE_INTEGER size;
+
+		if (!GetFileSizeEx(handle, &size)) {
+			char errorMessage[1024];
+			System::GetLastErrorMessage(errorMessage, sizeof(errorMessage));
+			EMPIRE_ERROR(Empire::ErrorCodes::IO_ERROR, 0, "Failed to get file length. Error from GetFileSizeEx is: %s", errorMessage);
+		}
+		CloseHandle(handle);
+		return size.QuadPart;
+	}
+
 
 	bool FileSystem::CreateFile(const char* path)
 	{

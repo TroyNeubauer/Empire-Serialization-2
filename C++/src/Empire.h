@@ -12,4 +12,11 @@ namespace Empire {}
 #include "buffer/Output.h"
 #include "buffer/Input.h"
 
+#include "util/BitUtils.h"
+#include "util/StringUtils.h"
+
+#include "system/FileSystem.h"
+#include "system/System.h"
+#include "system/Timer.h"
+
 

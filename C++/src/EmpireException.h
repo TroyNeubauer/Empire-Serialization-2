@@ -18,19 +18,15 @@
 
 #define CONCAT(a, b) a ## b
 
-#define CREATE_EMPIRE_ERROR(code, format, ...) Empire::EmpireError(code, CONCAT("Empire Error: %u (%s): ", format), code, Empire::ErrorCodeToString(code), __VA_ARGS__)
+#define BUILD_EMPIRE_ERROR(code, format, ...) empireError.Code = code;\
+	snprintf(empireError.ErrorInfo, sizeof(empireError.ErrorInfo), CONCAT("Empire Error: %u (%s): ", format), code, Empire::ErrorCodeToString(code), __VA_ARGS__)
 
 #if EMPIRE_ENABLE_EXCEPTIONS
 	#include <exception>
 
 
 	#if EMPIRE_DISABLE_ERROR_CODES
-		#define EMPIRE_IF_ERROR_CODES(code)
-		#define EMPIRE_ERROR_PARAMETER1
-		#define EMPIRE_ERROR_PARAMETER
-		#define EMPIRE_ERROR_VAR1
-		#define EMPIRE_ERROR_VAR
-		#define EMPIRE_ERROR(code, returnValue, format, ...) throw( ErrorToException(CREATE_EMPIRE_ERROR(code, format, __VA_ARGS__) )
+		#error Cannot enable exceptions when error codes are disabled!
 	#else
 		#define EMPIRE_IF_ERROR_CODES(code) , code
 		#define EMPIRE_ERROR_PARAMETER1 Empire::EmpireError& empireError
@@ -38,7 +34,7 @@
 		#define EMPIRE_ERROR_VAR1 empireError
 		#define EMPIRE_ERROR_VAR , EMPIRE_ERROR_VAR1
 		#define EMPIRE_ERROR(code, returnValue, format, ...)	\
-			empireError = CREATE_EMPIRE_ERROR(code, format, __VA_ARGS__);\
+			BUILD_EMPIRE_ERROR(code, format, __VA_ARGS__);\
 			throw( ErrorToException(empireError) )
 	#endif
 #else
@@ -56,7 +52,7 @@
 		#define EMPIRE_ERROR_VAR1 empireError
 		#define EMPIRE_ERROR_VAR , EMPIRE_ERROR_VAR1
 		#define EMPIRE_ERROR(code, returnValue, format, ...)		\
-			empireError = CREATE_EMPIRE_ERROR(code, format, __VA_ARGS__);	\
+			BUILD_EMPIRE_ERROR(code, format, __VA_ARGS__);	\
 			return returnValue// No ; here on purpose to force the caller to include one
 	#endif
 

@@ -7,7 +7,7 @@
 #include <utility>
 
 
-namespace Hazel {
+namespace Empire {
 
 	enum FileOpenOptions
 	{
@@ -30,6 +30,8 @@ namespace Hazel {
 		//The following functions return true if their operation succeeded and false otherwise.
 		static bool Exists(const char* path);
 		static bool IsDirectory(const char* path);
+
+		static uint64_t FileSize(const char* path EMPIRE_ERROR_PARAMETER);
 
 		//Creates a new file with the name and location specified by path
 		//The return value indicates weather or not a new file was created. 

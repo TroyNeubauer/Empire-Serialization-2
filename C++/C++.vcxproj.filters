@@ -57,9 +57,6 @@
     <ClInclude Include="src\primitive\EmpirePrimitivesConfig.h">
       <Filter>primitive</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\ToStringUtil.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="src\buffer\Input.h">
       <Filter>buffer</Filter>
     </ClInclude>
@@ -75,6 +72,7 @@
     <ClInclude Include="src\system\FileSystem.h" />
     <ClInclude Include="src\util\StringUtils.h" />
     <ClInclude Include="src\system\System.h" />
+    <ClInclude Include="src\system\Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main\Main.cpp">
@@ -92,6 +90,8 @@
     <ClCompile Include="src\type\Type.cpp" />
     <ClCompile Include="src\system\WindowsFileSystem.cpp" />
     <ClCompile Include="src\system\FileSystem.cpp" />
+    <ClCompile Include="src\system\System.cpp" />
+    <ClCompile Include="src\system\WindowsTimer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\primitive\double_integer.tcc" />

@@ -36,12 +36,12 @@
     <ClInclude Include="src\primitive\Integers.h" />
     <ClInclude Include="src\system\FileSystem.h" />
     <ClInclude Include="src\system\System.h" />
+    <ClInclude Include="src\system\Timer.h" />
     <ClInclude Include="src\type\EmpireTypes.h" />
     <ClInclude Include="src\type\Type.h" />
     <ClInclude Include="src\type\TypeManager.h" />
     <ClInclude Include="src\util\BitUtils.h" />
     <ClInclude Include="src\util\StringUtils.h" />
-    <ClInclude Include="src\util\ToStringUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\buffer\Output.cpp" />
@@ -53,7 +53,9 @@
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</PreprocessToFile>
     </ClCompile>
     <ClCompile Include="src\system\FileSystem.cpp" />
+    <ClCompile Include="src\system\System.cpp" />
     <ClCompile Include="src\system\WindowsFileSystem.cpp" />
+    <ClCompile Include="src\system\WindowsTimer.cpp" />
     <ClCompile Include="src\type\Type.cpp" />
     <ClCompile Include="src\type\TypeManager.cpp" />
   </ItemGroup>

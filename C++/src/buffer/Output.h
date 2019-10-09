@@ -5,8 +5,10 @@
 namespace Empire {
 
 class BufferedOutput : public Buffer {
-public:
+protected:
 	BufferedOutput() {}
+
+public:
 
 	BufferedOutput(u64 capacity) : Buffer(capacity) {}
 	BufferedOutput(u64 capacity, u8* buffer) : Buffer(buffer, capacity) {}

@@ -7,17 +7,13 @@
 
 namespace Empire {
 
-	class Type;
-
-	struct TypeMember {
-		const std::string Name;
-		const Type& Type;
-	};
+	struct TypeMember;
 
 	class Type {
 	public:
-		Type(std::string name, std::initializer_list<TypeMember> members) : m_Primitive(false), m_Name(name), m_Members(members) {}
-		Type(std::string name, u64 id) : m_Primitive(true), m_Name(name), m_ID(id), m_Members(0) {}
+		Type() : m_Name("Invalid"), m_Members(0), m_Primitive(false), m_ID(-1) {}
+		Type(std::string name, std::initializer_list<TypeMember> members) : m_Name(name), m_Members(members), m_Primitive(false), m_ID(-1) {}
+		Type(std::string name, u64 id) : m_Name(name), m_ID(id), m_Primitive(true), m_Members(0) {}
 
 		inline bool IsPrimitive() const { return m_Primitive; }
 		inline u64 GetPrimitiveID() const { return m_ID; }
@@ -34,6 +30,7 @@ namespace Empire {
 	};
 
 	class BuiltinTypes {
+	public:
 		static inline const u64
 			INVALID_ID = 0,
 			BIT_FIELD_ID = 0,
@@ -98,6 +95,11 @@ namespace Empire {
 		//Returns a reference to the primitive type with the desired ID. If id doesnt represent a primitive type this function returns BuiltinTypes::INVALID
 		static const Type& Get(u64 id);
 
+	};
+
+	struct TypeMember {
+		const std::string Name = "Invalid";
+		const Type& Type = BuiltinTypes::INVALID;
 	};
 
 
