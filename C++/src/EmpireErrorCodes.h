@@ -8,7 +8,8 @@
 namespace Empire {
 	enum ErrorCodes {
 			NO_ERROR = 0,
-			INVALID_ARGUMENT, MISMATCHED_TYPE, UNKNOWN_TYPE, INVALID_TYPE_DEF, INVALID_FLAGS, ALREADY_KNOWN_TYPE, BUFFER_OVERFLOW, ILLEGAL_OPCODE, ILLEGAL_REFERENCE
+			INVALID_ARGUMENT, MISMATCHED_TYPE, UNKNOWN_TYPE, INVALID_TYPE_DEF, INVALID_FLAGS, ALREADY_KNOWN_TYPE, BUFFER_OVERFLOW, 
+			ILLEGAL_OPCODE, ILLEGAL_REFERENCE, IO_ERROR
 	};
 
 	struct EmpireError {
@@ -44,6 +45,7 @@ namespace Empire {
 			case BUFFER_OVERFLOW:		return "Buffer Overflow";
 			case ILLEGAL_OPCODE:		return "Illegal Opcode";
 			case ILLEGAL_REFERENCE:		return "Illegal Reference";
+			case IO_ERROR:				return "I/O Error";
 		}
 	}
 

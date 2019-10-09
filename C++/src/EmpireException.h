@@ -18,7 +18,7 @@
 
 #define CONCAT(a, b) a ## b
 
-#define CREATE_EMPIRE_ERROR(code, format, ...) EmpireError(code, CONCAT("Empire Error: %u (%s): ", format), code, ErrorCodeToString(code), __VA_ARGS__)
+#define CREATE_EMPIRE_ERROR(code, format, ...) Empire::EmpireError(code, CONCAT("Empire Error: %u (%s): ", format), code, Empire::ErrorCodeToString(code), __VA_ARGS__)
 
 #if EMPIRE_ENABLE_EXCEPTIONS
 	#include <exception>
@@ -33,7 +33,7 @@
 		#define EMPIRE_ERROR(code, returnValue, format, ...) throw( ErrorToException(CREATE_EMPIRE_ERROR(code, format, __VA_ARGS__) )
 	#else
 		#define EMPIRE_IF_ERROR_CODES(code) , code
-		#define EMPIRE_ERROR_PARAMETER1 EmpireError& empireError
+		#define EMPIRE_ERROR_PARAMETER1 Empire::EmpireError& empireError
 		#define EMPIRE_ERROR_PARAMETER , EMPIRE_ERROR_PARAMETER1
 		#define EMPIRE_ERROR_VAR1 empireError
 		#define EMPIRE_ERROR_VAR , EMPIRE_ERROR_VAR1
@@ -51,7 +51,7 @@
 		#define EMPIRE_ERROR(code, returnValue, format, ...) return returnValue
 	#else
 		#define EMPIRE_IF_ERROR_CODES(code) , code
-		#define EMPIRE_ERROR_PARAMETER1 EmpireError& empireError
+		#define EMPIRE_ERROR_PARAMETER1 Empire::EmpireError& empireError
 		#define EMPIRE_ERROR_PARAMETER , EMPIRE_ERROR_PARAMETER1
 		#define EMPIRE_ERROR_VAR1 empireError
 		#define EMPIRE_ERROR_VAR , EMPIRE_ERROR_VAR1

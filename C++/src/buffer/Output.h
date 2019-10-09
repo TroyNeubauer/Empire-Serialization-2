@@ -62,7 +62,7 @@ public:
 private:
 	template<typename T>
 	inline void WriteImpl(T* value, size_t bytes) {
-		std::memcpy(GetPointer(), value, bytes);
+		memcpy(Pointer(), value, bytes);
 		m_Offset += bytes;
 	}
 	friend class BufferedInput;

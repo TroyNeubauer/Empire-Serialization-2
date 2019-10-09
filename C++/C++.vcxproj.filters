@@ -74,6 +74,7 @@
     <ClInclude Include="src\util\BitUtils.h" />
     <ClInclude Include="src\system\FileSystem.h" />
     <ClInclude Include="src\util\StringUtils.h" />
+    <ClInclude Include="src\system\System.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main\Main.cpp">
@@ -89,6 +90,8 @@
       <Filter>buffer</Filter>
     </ClCompile>
     <ClCompile Include="src\type\Type.cpp" />
+    <ClCompile Include="src\system\WindowsFileSystem.cpp" />
+    <ClCompile Include="src\system\FileSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\primitive\double_integer.tcc" />

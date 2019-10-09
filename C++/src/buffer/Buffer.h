@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstring>
+#include <string.h>
 
 #include "../primitive/EmpirePrimitives.h"
 #include "../EmpireException.h"
@@ -46,7 +46,7 @@ public:
 
 	inline void Offset(u64 newOffset) { this->m_Offset = newOffset; }
 
-	inline Buffer() {
+	inline ~Buffer() {
 		if (m_Free) {
 			delete[] m_Buffer;
 		}

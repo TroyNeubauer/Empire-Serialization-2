@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../util/StringUtils.h"
+#include "../EmpireException.h"
 
 #include <functional>
 #include <utility>
@@ -8,12 +9,12 @@
 
 namespace Hazel {
 
-	enum class FileError;
 	enum FileOpenOptions
 	{
 		READ =			0b0001,
 		WRITE =			0b0010,
 		APPEND =		0b0100,
+		RANDOM_ACCESS =	0b1000,
 		READ_WRITE = READ | WRITE,
 	};
 
@@ -23,7 +24,7 @@ namespace Hazel {
 		static const uint64_t ENTIRE_FILE = (uint64_t)-1;
 		//Maps a section of a file into virtual memory
 		//This function returns the pointer to the memory and the length of the file
-		static void* MapFile(const char* file, FileOpenOptions options, uint64_t& fileLength, FileError* error, uint64_t offset = 0, uint64_t bytes = ENTIRE_FILE);
+		static void* MapFile(const char* file, FileOpenOptions options, uint64_t& fileLength EMPIRE_ERROR_PARAMETER, uint64_t offset = 0, uint64_t bytes = ENTIRE_FILE);
 		static void UnmapFile(void* file);
 
 		//The following functions return true if their operation succeeded and false otherwise.
@@ -69,8 +70,6 @@ namespace Hazel {
 		template<typename F>
 		inline static void PathNameIterator(char* path, F onPath);
 
-		static bool PathsEqual(const char* a, const char* b);
-
 		//Tests if the extension of fileName equals extension. For example IsExtension("test.png", "png"); would return true
 		static bool IsExtension(const char* fileName, const char* extension);
 
@@ -80,7 +79,7 @@ namespace Hazel {
 
 		static inline char GetSlashCharacter()
 		{
-#ifdef HZ_PLATFORM_WINDOWS
+#ifdef EMPIRE_PLATFORM_WINDOWS
 			return '\\';
 #else
 			return '/';
@@ -90,7 +89,46 @@ namespace Hazel {
 		static inline bool HasArchiveExtension(const char* fileName) { return StringUtils::ContainsAny(fileName, ".zip", ".pax", ".cpio", ".tar", "mtree", "ar"); }
 	};
 
+	template<typename F>
+	void FileSystem::PathNameIterator(const char* path, F onPath)
+	{
+		size_t bytes = StringUtils::Capacity(path);
+		char* mutablePath = _malloca(bytes);
+		memcpy(mutablePath, path, bytes);
+
+		PathNameIterator<F>(mutablePath, onPath);
+		_freea(mutablePath);
+	}
+
+	template<typename F>
+	void FileSystem::PathNameIterator(char* path, F onPath)
+	{
+		if (*path == 0x00)
+			return;//Return for empty strings
+		if (IsSlash(*path))
+			path++;
+		char* start = path;//Skip the first slash and have start point to the first char of this file/dir name
+		char* end = path;//Begin searching for the end starting at the first character of this file/dir name
+		while (*end)
+		{
+			StringUtils::Until(end, IsSlash);
+			if (*end == 0x00) break;
+			if (start != end)//We found somthing
+			{
+				char origional = *end;//Put in a temporary null byte so they we dont have to copy it
+				*end = 0x00;
+				if (onPath(start, origional ? (end + 1) : end)) {
+					*end = origional;
+					return;
+				}
+				*end = origional;
+			}
+			start = ++end;//Have the next start be the char after this trailing slash
+		}
+		if (start != end)
+			onPath(start, end);
+	}
+
+
 }
 
-
-#include "FileSystem.inl"
