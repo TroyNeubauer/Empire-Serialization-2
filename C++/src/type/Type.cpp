@@ -1,7 +1,176 @@
 #include "Type.h"
+#include "../util/StringUtils.h"
+
+#include <limits>
+
 
 namespace Empire {
 
+	//const Type& BuiltinTypes::FLOAT = BuiltinTypes::F32;
+	//const Type& BuiltinTypes::DOUBLE = BuiltinTypes::F64;
+	const Type& BuiltinTypes::BYTE = BuiltinTypes::S8;
+	const Type& BuiltinTypes::SHORT = BuiltinTypes::S16;
+	const Type& BuiltinTypes::INT = BuiltinTypes::S32;
+	const Type& BuiltinTypes::LONG_LONG = BuiltinTypes::S64;
+
+	const Type& BuiltinTypes::UBYTE = BuiltinTypes::U8;
+	const Type& BuiltinTypes::USHORT = BuiltinTypes::U16;
+	const Type& BuiltinTypes::UINT = BuiltinTypes::U32;
+	const Type& BuiltinTypes::ULONG_LONG = BuiltinTypes::U64;
+
+	const Type BuiltinTypes::VIRTUAL = { "Virtual", std::numeric_limits<u64>::max() },//-1 to differentiate itself in the code. Never written to the stream
+		BuiltinTypes::INVALID = { "Invalid", INVALID_ID },
+		BuiltinTypes::S8 = { "S8", S8_ID },
+		BuiltinTypes::U8 = { "U8", U8_ID },
+		BuiltinTypes::S16 = { "S16", S16_ID },
+		BuiltinTypes::U16 = { "U16", U16_ID },
+		BuiltinTypes::S32 = { "S32", S32_ID },
+		BuiltinTypes::U32 = { "U32", U32_ID },
+		BuiltinTypes::S64 = { "S64", S64_ID },
+		BuiltinTypes::U64 = { "U64", U64_ID },
+		BuiltinTypes::S128 = { "S128", S128_ID },
+		BuiltinTypes::U128 = { "U128", U128_ID },
+		BuiltinTypes::S256 = { "S256", S256_ID },
+		BuiltinTypes::U256 = { "U256", U256_ID },
+		BuiltinTypes::BIG_INTEGER = { "BigInteger", BIG_INTEGER_ID },
+
+		/*BuiltinTypes::F8 = { "F8", F8_ID },
+		BuiltinTypes::F16 = { "F16", F16_ID },
+		BuiltinTypes::F32 = { "F32", F32_ID },
+		BuiltinTypes::F32 = { "F32", F32_ID },
+		BuiltinTypes::F64 = { "F64", F64_ID },
+		BuiltinTypes::F128 = { "F128", F128_ID },
+		BuiltinTypes::BIG_FLOAT = { "BigFloat", BIG_FLOAT_ID },*/
+
+		BuiltinTypes::UTF8_STRING = { "UTF8-String", UTF8_STRING_ID },
+		BuiltinTypes::UTF16_STRING = { "UTF16-String", UTF16_STRING_ID },
+		BuiltinTypes::UTF32_STRING = { "UTF32-String", UTF32_STRING_ID },
+		BuiltinTypes::ESC4_STRING = { "ESC4-String", ESC4_STRING_ID },
+		BuiltinTypes::ESC6_STRING = { "ESC6-String", ESC6_STRING_ID },
+		BuiltinTypes::ESC8_PLUS_STRING = { "ESC8+-String", ESC8_PLUS_STRING_ID };
+
+	SequenceData::SequenceData(const Type& listType) : First(&listType), Size(1) {}
+	SequenceData::SequenceData(const Type& key, const Type& value) : First(&key), Second(&value), Size(2) {}
+
+	bool SequenceData::operator==(const SequenceData& other) const
+	{
+		return this == &other || 
+			this->First->operator==(*other.First) && this->Second->operator==(*other.Second) && this->Size == other.Size;
+	}
+
+	Type::Type(const char* name, u64 id) : m_Name() {
+		StringUtils::Copy(name, m_Name, sizeof(m_Name));
+	}
+
+	Type::Type(const char* name, std::initializer_list<TypeMember> members) : m_Data(members), m_Name() {
+		StringUtils::Copy(name, m_Name, sizeof(m_Name));
+	}
+
+	Type::Type(const Type& listType, bool unused) : m_Data(listType), m_Name() {
+		m_Name[0] = '[';
+		StringUtils::Copy(GetSequence().First->GetName(), m_Name + 1, sizeof(m_Name) - 1);
+	}
+
+	Type::Type(const Type& key, const Type& value) : m_Data(SequenceData(key, value)), m_Name() {
+		s64 length = sizeof(m_Name);
+		const char* keyName = key.GetName();
+		const char* valueName = value.GetName();
+		char* name = m_Name;
+		*name++ = '<'; length--;
+
+		size_t bytes = StringUtils::Copy(keyName, name, length);
+		length -= bytes; name += bytes;
+		if (length <= 2) { *name++ = 0x00; return; }
+
+		*name++ = ','; length--;
+		*name++ = ' '; length--;
+
+		bytes = StringUtils::Copy(valueName, name, length);
+		length -= bytes; name += bytes;
+		if (length <= 1) { *name++ = 0x00; return; }
+
+		*name++ = '>'; length--;
+		*name = 0x00; length--;
+	}
+
+	bool Type::operator==(const Type& other) const {
+		if (this->m_Data.index != other.m_Data.index)// They must be the same kind of Type in order to be the same
+			return false;
+		if (IsPrimitive()) {
+			return this->GetPrimitiveID() == other.GetPrimitiveID();
+		} else if (IsNormalObject()) {
+			return StringUtils::Equal(this->m_Name, other.m_Name) && this->GetMembers() == other.GetMembers();
+		} else if (IsSequence()) {
+			return this->GetSequence() == other.GetSequence();
+		}
+	}
+
+	Type Type::Create(const char* name, u64 id) {
+		return Type(name, id);
+	}
+
+	Type Type::Create(const char* name, std::initializer_list<TypeMember> members) {
+		return Type(name, members);
+	}
+
+	Type Type::Create(const Type& listType) {
+		return Type(listType, false);
+	}
+
+	Type Type::Create(const Type& key, const Type& value) {
+		return Type(key, value);
+	}
+
+	thread_local int indentation = -1;
+
+	void Indent(std::ostream& out) {
+		for (int i = 0; i < indentation; i++) out << "  ";
+	}
+
+	std::ostream& operator<<(std::ostream& out, const Type& type) {
+		indentation++;
+		Indent(out);
+		out << "Type (";
+		if (type.IsPrimitive()) {
+			out << "Primitive) " << type.GetName() << " ID: " << type.GetPrimitiveID() << std::endl;
+		} else if (type.IsNormalObject()) {
+			out << "Object) " << type.GetName() << std::endl;
+			indentation++;
+			for (auto& member : type.GetMembers()) {
+				if (member.Type->IsPrimitive() || type == *member.Type) {
+					Indent(out);
+					out << member.Type->GetName() << ": " << member.Name << std::endl;
+				} else {
+					out << *member.Type;
+					
+				}
+			}
+			indentation--;
+			out << std::endl;
+		} else if (type.IsSequence()) {
+			out << "Sequence)" << std::endl;
+			out << type.GetSequence() << std::endl;
+		}
+		indentation--;
+		return out;
+	}
+
+	std::ostream& operator<<(std::ostream& out, const SequenceData& type) {
+		indentation++;
+		Indent(out);
+		if (type.Size == 1) {
+			out << "List of:" << std::endl;
+			out << *type.First;
+		} else {
+			out << "Map. Key: " << std::endl;
+			out << *type.First;
+			Indent(out);
+			out << "Value: " << std::endl;
+			out << *type.Second;
+		}
+		indentation--;
+		return out;
+	}
 
 
 	const Type& BuiltinTypes::Get(u64 id)
@@ -23,12 +192,12 @@ namespace Empire {
 			case U256_ID: return U256;
 			case BIG_INTEGER_ID: return BIG_INTEGER;
 			
-			case F8_ID: return F8;
+			/*case F8_ID: return F8;
 			case F16_ID: return F16;
 			case F32_ID: return F32;
 			case F64_ID: return F64;
 			case F128_ID: return F128;
-			case BIG_FLOAT_ID: return BIG_FLOAT;
+			case BIG_FLOAT_ID: return BIG_FLOAT;*/
 
 			case UTF8_STRING_ID: return UTF8_STRING;
 			case UTF16_STRING_ID: return UTF16_STRING;

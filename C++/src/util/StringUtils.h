@@ -8,6 +8,20 @@ namespace Empire {
 	class StringUtils
 	{
 	public:
+		inline constexpr static size_t Copy(const char* src, char* dest, size_t destSize) {
+			size_t charsWritten = 0;
+			for (size_t i = 0; i < destSize - 1; i++) {
+				if (*src == 0x00)
+					break;
+				*dest = *src;
+				dest++;
+				src++;
+				charsWritten++;
+			}
+			*dest = 0x00;
+			return charsWritten;
+		}
+
 		inline static bool Equal(const char* a, const char* b) { return strcmp(a, b) == 0; }
 		inline static bool Contains(const char* string, const char* part) { return strstr(string, part) != NULL; }
 
@@ -28,9 +42,9 @@ namespace Empire {
 		}
 
 		inline static size_t Length(const char* string) { return strlen(string); }
+
 		inline static size_t Capacity(const char* string) { return Length(string) + 1; }
 
-		inline static void Copy(char* dest, const char* source) { strcpy(dest, source); }
 
 		template<class none = void>
 		constexpr static bool ContainsAny(const char* string, const char* first)

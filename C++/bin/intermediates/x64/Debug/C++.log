@@ -1,5 +1,5 @@
 ﻿  Main.cpp
-  WindowsTimer.cpp
+  Type.cpp
   Generating Code...
 c:\c++\empire serialization 2\c++\src\buffer\input.h(194): warning C4715: 'Empire::FileInput::CanRead': not all control paths return a value
   C++.vcxproj -> C:\C++\Empire Serialization 2\C++\bin\x64\Debug\C++.exe

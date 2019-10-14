@@ -1,33 +1,18 @@
 #pragma once
 
+#include <variant>
+#include <array>
+#include <iostream>
 #include <vector>
-#include <string>
 
 #include "../primitive/EmpirePrimitives.h"
 
 namespace Empire {
 
 	struct TypeMember;
+	struct SequenceData;
 
-	class Type {
-	public:
-		Type() : m_Name("Invalid"), m_Members(0), m_Primitive(false), m_ID(-1) {}
-		Type(std::string name, std::initializer_list<TypeMember> members) : m_Name(name), m_Members(members), m_Primitive(false), m_ID(-1) {}
-		Type(std::string name, u64 id) : m_Name(name), m_ID(id), m_Primitive(true), m_Members(0) {}
-
-		inline bool IsPrimitive() const { return m_Primitive; }
-		inline u64 GetPrimitiveID() const { return m_ID; }
-		inline const std::vector<TypeMember>& GetMembers() const { return m_Members; }
-		inline const std::string& GetName() const { return m_Name; }
-
-	private:
-		const bool m_Primitive;
-		const u64 m_ID;//The id of the type. Only known if m_Primitive is true
-
-		const std::string m_Name;
-		const std::vector<TypeMember> m_Members;
-
-	};
+	class Type;
 
 	class BuiltinTypes {
 	public:
@@ -62,47 +47,95 @@ namespace Empire {
 			ESC6_STRING_ID = 28,
 			ESC8_PLUS_STRING_ID = 29;
 
-		inline static const Type
-			INVALID = { "Invalid", INVALID_ID },
-			S8 = {"S8", S8_ID},
-			U8 = { "U8", U8_ID },
-			S16 = { "S16", S16_ID },
-			U16 = { "U16", U16_ID },
-			S32 = { "S32", S32_ID },
-			U32 = { "U32", U32_ID },
-			S64 = { "S64", S64_ID },
-			U64 = { "U64", U64_ID },
-			S128 = { "S128", S128_ID },
-			U128 = { "U128", U128_ID },
-			S256 = { "S256", S256_ID },
-			U256 = { "U256", U256_ID },
-			BIG_INTEGER = { "BigInteger", BIG_INTEGER_ID },
+		static const Type
+			VIRTUAL, INVALID,
+			S8, U8, S16, U16, S32, U32, S64, U64, S128, U128, S256, U256, BIG_INTEGER,
 
-			F8 = { "F8", F8_ID },
-			F16 = { "F16", F16_ID },
-			F32 = { "F32", F32_ID },
-			F64 = { "F64", F64_ID },
-			F128 = { "F128", F128_ID },
-			BIG_FLOAT = { "BigFloat", BIG_FLOAT_ID },
+	//F8, F16, F32, F32, F64, F128, BIG_FLOAT,
 
-			UTF8_STRING = { "UTF8-String", UTF8_STRING_ID},
-			UTF16_STRING = { "UTF16-String", UTF16_STRING_ID},
-			UTF32_STRING = { "UTF32-String", UTF32_STRING_ID},
-			ESC4_STRING = { "ESC4-String", ESC4_STRING_ID },
-			ESC6_STRING = { "ESC6-String", ESC6_STRING_ID},
-			ESC8_PLUS_STRING = { "ESC8+-String", ESC8_PLUS_STRING_ID };
+			UTF8_STRING, UTF16_STRING, UTF32_STRING, ESC4_STRING, ESC6_STRING, ESC8_PLUS_STRING;
+
+		static const Type& FLOAT;
+		static const Type& DOUBLE;
+		static const Type& BYTE;
+		static const Type& SHORT;
+		static const Type& INT;
+		static const Type& LONG_LONG;
+
+		static const Type& UBYTE;
+		static const Type& USHORT;
+		static const Type& UINT;
+		static const Type& ULONG_LONG;
 
 		//Returns a reference to the primitive type with the desired ID. If id doesnt represent a primitive type this function returns BuiltinTypes::INVALID
 		static const Type& Get(u64 id);
 
 	};
 
-	struct TypeMember {
-		const std::string Name = "Invalid";
-		const Type& Type = BuiltinTypes::INVALID;
+	struct SequenceData {
+		const Type* First;
+		const Type* Second;
+		u32 Size;
+
+		SequenceData() = default;
+		SequenceData(SequenceData& other) = default;
+		SequenceData(SequenceData&& other) = default;
+
+		SequenceData(const Type& listType);
+		SequenceData(const Type& key, const Type& value);
+
+		bool operator==(const SequenceData& other) const;
 	};
 
+	std::ostream& operator<<(std::ostream& out, const SequenceData& type);
 
+	struct TypeMember {
+		TypeMember() : TypeMember(BuiltinTypes::INVALID) {}
+		TypeMember(const Type& type, std::string name = "INVALID") : Type(&type), Name(name) {}
+
+		const Type* Type;
+		const std::string Name;
+	};
+
+	class Type {
+	private:
+		Type() : m_Name("Invalid") {}
+		Type(const char* name, u64 id);
+		Type(const char* name, std::initializer_list<TypeMember> members);
+		Type(const Type& listType, bool unused);
+		Type(const Type& key, const Type& value);
+	public:
+
+		Type& operator=(const Type& other) = delete;
+		Type& operator=(Type&& other) = default;
+
+		bool operator==(const Type& other) const;
+
+		static Type Create(const char* name, u64 id);
+		static Type Create(const char* name, std::initializer_list<TypeMember> members);
+		static Type Create(const Type& listType);
+		static Type Create(const Type& key, const Type& value);
+
+		inline bool IsPrimitive()		const { return m_Data.index() == 0; }
+		inline bool IsNormalObject()	const { return m_Data.index() == 1; }
+		inline bool IsSequence()		const { return m_Data.index() == 2; }
+
+		inline const char* GetName() const { return m_Name; }
+
+		inline u64 GetPrimitiveID() const { return std::get<u64>(m_Data); }
+		const inline std::vector<TypeMember>& GetMembers() const { return std::get<std::vector<TypeMember>>(m_Data); }
+		const inline SequenceData& GetSequence() const { return std::get<SequenceData>(m_Data); }
+		
+
+	private:
+		char m_Name[256];
+		//Can either be primitive (and have an id), be a normal object (and have members), or be a sequence (and have 1 or more component types)
+		std::variant<u64, std::vector<TypeMember>, SequenceData> m_Data;
+
+		friend class BuiltinTypes;
+	};
+
+	std::ostream& operator<<(std::ostream& out, const Type& type);
 
 }
 

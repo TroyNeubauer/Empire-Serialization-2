@@ -51,9 +51,6 @@
     <ClInclude Include="src\primitive\EmpirePrimitives.h">
       <Filter>primitive</Filter>
     </ClInclude>
-    <ClInclude Include="src\type\EmpireTypes.h">
-      <Filter>type</Filter>
-    </ClInclude>
     <ClInclude Include="src\primitive\EmpirePrimitivesConfig.h">
       <Filter>primitive</Filter>
     </ClInclude>

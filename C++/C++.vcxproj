@@ -37,7 +37,6 @@
     <ClInclude Include="src\system\FileSystem.h" />
     <ClInclude Include="src\system\System.h" />
     <ClInclude Include="src\system\Timer.h" />
-    <ClInclude Include="src\type\EmpireTypes.h" />
     <ClInclude Include="src\type\Type.h" />
     <ClInclude Include="src\type\TypeManager.h" />
     <ClInclude Include="src\util\BitUtils.h" />
