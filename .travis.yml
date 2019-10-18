@@ -2,13 +2,12 @@ language: cpp
 compiler: gcc
 
 before_install:
-  - sudo add-apt-repository ppa:pasgui/ppa
-  - sudo apt-get update
+  - wget https://github.com/premake/premake-core/releases/download/v5.0.0-alpha12/premake-5.0.0-alpha12-linux.tar.gz -O premake.tar.gz
+  - tar -xf premake.tar.gz
 
 install: 
-  - sudo apt-get install premake5
+  - premake5 gmake2
 
 script:
-  - premake5 gmake2
   - make
 
