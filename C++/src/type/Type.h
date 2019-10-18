@@ -4,8 +4,11 @@
 #include <array>
 #include <iostream>
 #include <vector>
+#include <limits>
 
 #include "../primitive/EmpirePrimitives.h"
+#undef max
+#undef min
 
 namespace Empire {
 
@@ -90,18 +93,24 @@ namespace Empire {
 	std::ostream& operator<<(std::ostream& out, const SequenceData& type);
 
 	struct TypeMember {
-		TypeMember() : TypeMember(BuiltinTypes::INVALID) {}
-		TypeMember(const Type& type, std::string name = "INVALID") : Type(&type), Name(name) {}
+		TypeMember() : TypeMember(BuiltinTypes::INVALID, "INVALID", UNKNOWN_OFFSET) {}
+		TypeMember(const Type& type, std::string name, u32 offset) : Type(&type), Name(name), Offset(offset) {}
 
+		inline static constexpr u32 UNKNOWN_OFFSET = std::numeric_limits<u32>::max();
+
+		bool operator==(const TypeMember& other);
+		
 		const Type* Type;
 		const std::string Name;
+		const u32 Offset;
+
 	};
 
 	class Type {
 	private:
-		Type() : m_Name("Invalid") {}
-		Type(const char* name, u64 id);
-		Type(const char* name, std::initializer_list<TypeMember> members);
+		Type() : m_Name("Invalid"), m_Size(UNKNOWN_SIZE) {}
+		Type(const char* name, u32 size, u64 id);
+		Type(const char* name, u32 size, std::initializer_list<TypeMember> members);
 		Type(const Type& listType, bool unused);
 		Type(const Type& key, const Type& value);
 	public:
@@ -111,10 +120,11 @@ namespace Empire {
 
 		bool operator==(const Type& other) const;
 
-		static Type Create(const char* name, u64 id);
-		static Type Create(const char* name, std::initializer_list<TypeMember> members);
-		static Type Create(const Type& listType);
-		static Type Create(const Type& key, const Type& value);
+		static Type CreatePrimitive(const char* name, u32 size, u64 id);
+
+		static Type CreateClass(const char* name, std::initializer_list<TypeMember> members);
+		static Type CreateList(const Type& listType);
+		static Type CreateMap(const Type& key, const Type& value);
 
 		inline bool IsPrimitive()		const { return m_Data.index() == 0; }
 		inline bool IsNormalObject()	const { return m_Data.index() == 1; }
@@ -123,14 +133,21 @@ namespace Empire {
 		inline const char* GetName() const { return m_Name; }
 
 		inline u64 GetPrimitiveID() const { return std::get<u64>(m_Data); }
-		const inline std::vector<TypeMember>& GetMembers() const { return std::get<std::vector<TypeMember>>(m_Data); }
+		inline const std::vector<TypeMember>& GetMembers() const { return std::get<std::vector<TypeMember>>(m_Data); }
 		const inline SequenceData& GetSequence() const { return std::get<SequenceData>(m_Data); }
+
+		inline static constexpr u32 UNKNOWN_SIZE = std::numeric_limits<u32>::max();
+
+		inline bool IsConstantSize() const { return m_Size != UNKNOWN_SIZE; }
+		inline u32 GetSize() const { return m_Size; }
+
 		
 
 	private:
 		char m_Name[256];
 		//Can either be primitive (and have an id), be a normal object (and have members), or be a sequence (and have 1 or more component types)
 		std::variant<u64, std::vector<TypeMember>, SequenceData> m_Data;
+		u32 m_Size;
 
 		friend class BuiltinTypes;
 	};

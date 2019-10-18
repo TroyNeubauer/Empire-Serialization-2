@@ -190,7 +190,7 @@ public:
 
 	inline bool CanRead() {
 		if (m_Mode == InputMode::MAPPED) return m_Input.CanRead();
-		else m_Input.CanRead() || (m_TotalRead < m_FileSize);
+		else return m_Input.CanRead() || (m_TotalRead < m_FileSize);
 	}
 
 

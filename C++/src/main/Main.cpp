@@ -4,6 +4,7 @@
 #include <vector>
 #include <typeinfo>
 #include <random>
+#include <map>
 
 #include <stdio.h>
 
@@ -15,21 +16,27 @@ struct Point {
 	int x, y;
 };
 
+struct BigClass {
+	std::unordered_map<int, std::vector<Point>> m_BigMap;
+	int m_RandInt;
+	Point m_DefaultPoint;
+};
+
 int main() {
-	Type point = Type::Create("Point", { 
-		{ BuiltinTypes::INT, "x" }, 
-		{ BuiltinTypes::INT, "y" }
+	Type point = Type::CreateClass("Point", { 
+		{ BuiltinTypes::INT, "x", offsetof(Point, x) }, 
+		{ BuiltinTypes::INT, "y", offsetof(Point, y) },
 	});
 
-	Type pointVector = Type::Create(point);
-	Type myMap = Type::Create(BuiltinTypes::INT, pointVector);
+	Type pointVector = Type::CreateList(point);
+	Type myMap = Type::CreateMap(BuiltinTypes::INT, pointVector);
 	
-	Type bigClass = Type::Create("BigClass", { {myMap, "m_BigMap"} , {BuiltinTypes::INT, "rand int"} , {point, "default point"} });
+	Type bigClass = Type::CreateClass("BigClass", { 
+		{ myMap, "m_BigMap", offsetof(BigClass, m_BigMap) } , 
+		{ point, "m_DefaultPoint", offsetof(BigClass, m_DefaultPoint) },
+		{ BuiltinTypes::INT, "m_RandInt", offsetof(BigClass, m_RandInt) },
+	});
 	
-	std::cout << point << std::endl;
-	std::cout << pointVector << std::endl;
-	std::cout << myMap << std::endl;
-	std::cout << bigClass << std::endl;
 	system("PAUSE");
 }
 
