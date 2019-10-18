@@ -1,0 +1,14 @@
+language: cpp
+compiler: gcc
+
+before_install:
+  - sudo add-apt-repository ppa:pasgui/ppa
+  - sudo apt-get update
+
+install: 
+  - sudo apt-get install premake5
+
+script:
+  - premake5 gmake2
+  - make
+
