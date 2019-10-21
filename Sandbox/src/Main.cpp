@@ -37,7 +37,7 @@ int main() {
 		{ BuiltinTypes::INT, "m_RandInt", offsetof(BigClass, m_RandInt) },
 	});
 	std::cout << bigClass;
-	system("PAUSE");
+	std::cin.get();
 }
 
 

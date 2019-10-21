@@ -1,4 +1,4 @@
-#ifdef EMPIRE_PLATFORM_WINDOWS
+
 #include "FileSystem.h"
 
 #include <stdint.h>
@@ -76,4 +76,3 @@ namespace Empire {
 	}
 
 }
-#endif

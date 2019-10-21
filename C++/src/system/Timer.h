@@ -8,11 +8,9 @@
 #if defined(EMPIRE_PLATFORM_WINDOWS)
 	#include <Windows.h>
 	typedef LARGE_INTEGER TimeType;
-#elif defined(EMPIRE_PLATFORM_UNIX)
+#else
 	#include <time.h>
 	typedef timespec TimeType;
-#else
-	#error
 #endif
 
 namespace Empire {

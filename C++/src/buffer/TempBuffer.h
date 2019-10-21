@@ -5,7 +5,7 @@
 #include <malloc.h>
 #ifdef EMPIRE_PLATFORM_WINDOWS
 	#include <Windows.h>
-#else
+#elif defined(EMPIRE_COMPILER_GCC)
 	#include <alloca.h>
 #endif
 
@@ -14,7 +14,7 @@ namespace Empire {
 
     namespace TempBuffer {
 
-#ifdef EMPIRE_PLATFORM_WINDOWS
+#if defined(EMPIRE_COMPILER_MSVC)
         template<typename T>
         __forceinline T* Alloc(u64 elements) {
             return _malloca(sizeof(T) * elements);
@@ -23,20 +23,24 @@ namespace Empire {
 
         template<typename T>
         __forceinline void Free(T* ptr) {
-            
-
+			_freea(ptr);
         }
-#else
+        
+#elif defined(EMPIRE_COMPILER_GCC)
         //Returns the address of the "top of the stack". This intuitively is at a lower address than GetBottomOfStack
-        void* GetTopOfStack() {
+        inline void* GetTopOfStack() {
             void* result;
-            asm("mov result, %rsp");
+            asm("mov %0, rsp;"
+				:"=r"(result)
+			);
             return result;
         }
         
-        void* GetBottomOfStack() {
+        inline void* GetBottomOfStack() {
             void* result;
-            asm("mov result, %rbp");
+            asm("mov %0, rbp;"
+				:"=r"(result)
+			);
             return result;
         }
         
@@ -52,6 +56,7 @@ namespace Empire {
                 return static_cast<T*>(alloca(bytes));
 
         }
+        
 
         template<typename T>
         __attribute__((always_inline)) void Free(T* ptr) {

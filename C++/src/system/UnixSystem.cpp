@@ -1,8 +1,11 @@
 
-#ifdef EMPIRE_PLATFORM_UNIX
+//#ifdef EMPIRE_PLATFORM_UNIX
 
-#include "Timer.h"
+#include "FileSystem.h"
 #include "System.h"
+#include "Timer.h"
+
+#include "../util/StringUtils.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -14,26 +17,23 @@
 #include <errno.h>
 
 namespace Empire {
-	Timer::Timer()
-	{
-		Start();
-	}
 
 	Timer& Timer::Start()
 	{
-		QueryPerformanceCounter(&start);
+		clock_gettime(CLOCK_REALTIME, &start);
 		return *this;
 	}
 
 	Timer& Timer::Stop()
 	{
-		QueryPerformanceCounter(&end);
+		clock_gettime(CLOCK_REALTIME, &end);
 		return *this;
 	}
 
-	u64 Timer::Nanos()
+	uint64_t Timer::Nanos()
 	{
-		return (end.QuadPart - start.QuadPart) * 1000000000ULL / System::PerformanceCounterResulution();
+		uint64_t seconds = end.tv_sec - start.tv_sec;
+		return 1000000000ULL * seconds + end.tv_nsec - start.tv_nsec;
 	}
 	
 	
@@ -50,7 +50,62 @@ namespace Empire {
 		char* error = strerror(errno);
 		StringUtils::Copy(error, buf, capacity);
 	}
+	
+	
+	
+	bool FileSystem::Exists(const char* path)
+	{
+		return false;
+	}
+
+	bool FileSystem::IsDirectory(const char* path)
+	{
+		return false;
+	}
+
+	uint64_t FileSystem::FileSize(const char *path EMPIRE_ERROR_PARAMETER) {
+		return 0;
+	}
+
+
+	bool FileSystem::CreateFile(const char* path) {
+		return false;
+	}
+
+	bool FileSystem::CreateFileWithParents(const char* path) {
+		return false;
+	}
+
+	bool FileSystem::CreateDirectory(const char* path) {
+		return false;
+	}
+
+	bool FileSystem::CreateDirectories(const char* path) {
+		return false;
+	}
+
+	bool FileSystem::TruncateFile(const char* path) {
+		return false;
+	}
+
+	void FileSystem::AbsloutePath(const char* file, char* buf, size_t bufLength) {
+		
+	}
+
+	bool FileSystem::Delete(const char* path) {
+		return false;
+	}
+
+
+	//Use of p_ to denote parameters from local vars in this long function
+	void* FileSystem::MapFile(const char* p_File, FileOpenOptions p_Options, uint64_t& p_FileLength EMPIRE_ERROR_PARAMETER, uint64_t p_Offset, uint64_t p_Bytes) {
+		return nullptr;
+	}
+
+	void FileSystem::UnmapFile(void* file) {
+		
+	}
 
 }
 
-#endif
+//#endif

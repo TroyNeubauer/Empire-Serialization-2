@@ -54,12 +54,12 @@ project "C++"
 			"EMPIRE_COMPILER_MSVC"
 		}
 		
-	filter "toolset:gcc"
+	filter { "action:gmake*", "toolset:gcc" }
 		defines
 		{
 			"EMPIRE_COMPILER_GCC"
 		}
-		buildoptions { "-fPIC" }
+		buildoptions { "-fPIC", "-masm=intel" }
 
 	filter "system:windows"
 		defines
@@ -138,16 +138,14 @@ project "Sandbox"
 			"EMPIRE_COMPILER_MSVC"
 		}
 		
-	filter "toolset:gcc"
+	filter { "action:gmake*", "toolset:gcc" }
 		defines
 		{
 			"EMPIRE_COMPILER_GCC"
 		}
-		buildoptions { "-fPIC" }
+		buildoptions { "-fPIC", "-masm=intel" }
 	
 	filter "system:windows"
-
-
 		defines
 		{
 			"EMPIRE_PLATFORM_WINDOWS"
@@ -155,8 +153,6 @@ project "Sandbox"
 
 
 	filter "system:linux"
-	
-
 		defines
 		{
 			"EMPIRE_PLATFORM_UNIX"
