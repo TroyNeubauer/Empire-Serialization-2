@@ -11,5 +11,9 @@
 #make
 **/.project
 **/.workspace
+**/Makefile
 
 
+
+**/*.kdev4
+**/premake*

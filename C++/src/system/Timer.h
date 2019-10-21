@@ -5,7 +5,7 @@
 
 #include "../primitive/EmpirePrimitives.h"
 
-#ifdef EMPIRE_PLATFORM_WINDOWS
+#if defined(EMPIRE_PLATFORM_WINDOWS)
 	#include <Windows.h>
 	typedef LARGE_INTEGER TimeType;
 #elif defined(EMPIRE_PLATFORM_UNIX)
@@ -20,7 +20,7 @@ namespace Empire {
 	class Timer {
 	public:
 		//Constructing a timer starts it
-		Timer();
+		inline Timer() { Start(); }
 
 		Timer& Start();
 		Timer& Stop();
@@ -44,7 +44,7 @@ namespace Empire {
 		static inline void FormatNanos(char* buf, u64 bufSize, const char* message, u64 nanos)
 		{
 			if (nanos < 1000)
-				snprintf(buf, bufSize, "%s %llu nanoseconds", message, nanos);
+				snprintf(buf, bufSize, "%s %lu nanoseconds", message, nanos);
 			else if (nanos < (1000ULL * 1000ULL))
 				snprintf(buf, bufSize, "%s %.2f microseconds", message, (double)nanos / 1000.0);
 			else if (nanos < (1000ULL * 1000ULL * 1000ULL))

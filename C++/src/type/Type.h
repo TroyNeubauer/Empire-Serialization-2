@@ -83,6 +83,9 @@ namespace Empire {
 		SequenceData() = default;
 		SequenceData(SequenceData& other) = default;
 		SequenceData(SequenceData&& other) = default;
+		
+		SequenceData& operator=(const SequenceData& other) = default;
+		SequenceData& operator=(SequenceData&& other) = default;
 
 		SequenceData(const Type& listType);
 		SequenceData(const Type& key, const Type& value);
@@ -93,14 +96,14 @@ namespace Empire {
 	std::ostream& operator<<(std::ostream& out, const SequenceData& type);
 
 	struct TypeMember {
-		TypeMember() : TypeMember(BuiltinTypes::INVALID, "INVALID", UNKNOWN_OFFSET) {}
-		TypeMember(const Type& type, std::string name, u32 offset) : Type(&type), Name(name), Offset(offset) {}
+		TypeMember();
+		TypeMember(const Type& type, std::string name, u32 offset);
 
 		inline static constexpr u32 UNKNOWN_OFFSET = std::numeric_limits<u32>::max();
 
 		bool operator==(const TypeMember& other);
 		
-		const Type* Type;
+		const Type* MemberType;
 		const std::string Name;
 		const u32 Offset;
 
@@ -116,7 +119,7 @@ namespace Empire {
 	public:
 
 		Type& operator=(const Type& other) = delete;
-		Type& operator=(Type&& other) = default;
+		//Type& operator=(const Type&& other);
 
 		bool operator==(const Type& other) const;
 

@@ -67,7 +67,7 @@ void VLETest() {
 
 	EmpireError empireError;
 	FileInput in("test.dat" EMPIRE_ERROR_VAR, FileOptions::MAPPED);
-	if (empireError) DebugBreak();
+	//if (empireError) DebugBreak();
 
 	while (in.CanRead()) {
 		int value = in.ReadVLE<int>(empireError);

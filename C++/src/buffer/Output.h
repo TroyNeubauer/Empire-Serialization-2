@@ -26,7 +26,7 @@ public:
 	template<typename T>
 	void WriteVLE(T valueIn) {
 		EnsureCapacity(sizeof(T) * 8 / 7 + 1);
-		typedef std::make_unsigned<T>::type E;
+		typedef typename std::make_unsigned<T>::type E;
 		E value = static_cast<E>(valueIn);
 		do {
 			u8 byte = static_cast<u8>(value & VLE_DATA_MASK);// Bottom 7 bits

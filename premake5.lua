@@ -35,7 +35,7 @@ project "C++"
 
 	includedirs
 	{
-		"%{prj.name}/src",
+		"%{prj.name}/src/",
 	}
 
 	links 
@@ -47,21 +47,32 @@ project "C++"
 	{
 
 	}
-
-	filter "system:windows"
-
-
+	
+	filter "action:vs*"
 		defines
 		{
-			"EMPIRE_PLATFORM_WINDOWS"
+			"EMPIRE_COMPILER_MSVC"
+		}
+		
+	filter "toolset:gcc"
+		defines
+		{
+			"EMPIRE_COMPILER_GCC"
+		}
+		buildoptions { "-fPIC" }
+
+	filter "system:windows"
+		defines
+		{
+			"EMPIRE_PLATFORM_WINDOWS",
+			
 		}
 
 
 	filter "system:linux"
-	
 		libdirs
 		{
-			"EMPIRE_PLATFORM_LINUX"
+			"EMPIRE_PLATFORM_UNIX"
 		}
 	
 
@@ -71,10 +82,10 @@ project "C++"
 		}
 
 	filter "system:macosx"
-
 		defines
 		{
-			"EMPIRE_PLATFORM_OSX"
+			"EMPIRE_PLATFORM_OSX",
+			"EMPIRE_PLATFORM_UNIX"
 		}
 
 	filter "configurations:Debug"
@@ -108,7 +119,8 @@ project "Sandbox"
 
 	includedirs
 	{
-		"C++/src",
+		"./C++/src/",
+		"%{prj.name}/src/",
 	}
 
 	links 
@@ -120,7 +132,20 @@ project "Sandbox"
 	{
 	}
 
-		filter "system:windows"
+	filter "action:vs*"
+		defines
+		{
+			"EMPIRE_COMPILER_MSVC"
+		}
+		
+	filter "toolset:gcc"
+		defines
+		{
+			"EMPIRE_COMPILER_GCC"
+		}
+		buildoptions { "-fPIC" }
+	
+	filter "system:windows"
 
 
 		defines
@@ -131,22 +156,18 @@ project "Sandbox"
 
 	filter "system:linux"
 	
-		libdirs
-		{
-			"EMPIRE_PLATFORM_LINUX"
-		}
-	
 
 		defines
 		{
-
+			"EMPIRE_PLATFORM_UNIX"
 		}
 
 	filter "system:macosx"
 
 		defines
 		{
-			"EMPIRE_PLATFORM_OSX"
+			"EMPIRE_PLATFORM_OSX",
+			"EMPIRE_PLATFORM_UNIX"
 		}
 
 

@@ -51,27 +51,31 @@ namespace Empire {
 
 	SequenceData::SequenceData(const Type& listType) : First(&listType), Size(1) {}
 	SequenceData::SequenceData(const Type& key, const Type& value) : First(&key), Second(&value), Size(2) {}
+	
+	
+	TypeMember::TypeMember() : TypeMember(BuiltinTypes::INVALID, "INVALID", UNKNOWN_OFFSET) {}
+	TypeMember::TypeMember(const class Type& type, std::string name, u32 offset) : MemberType(&type), Name(name), Offset(offset) {}
 
 	bool SequenceData::operator==(const SequenceData& other) const
 	{
 		return this == &other || 
-			this->First->operator==(*other.First) && this->Second->operator==(*other.Second) && this->Size == other.Size;
+			(this->First->operator==(*other.First) && this->Second->operator==(*other.Second) && this->Size == other.Size);
 	}
 
 	Type::Type(const char* name, u32 size, u64 id) : m_Name(), m_Size(size) {
 		StringUtils::Copy(name, m_Name, sizeof(m_Name));
 	}
 
-	Type::Type(const char* name, u32 size, std::initializer_list<TypeMember> members) : m_Data(members), m_Name(), m_Size(size) {
+	Type::Type(const char* name, u32 size, std::initializer_list<TypeMember> members) : m_Name(), m_Data(members), m_Size(size) {
 		StringUtils::Copy(name, m_Name, sizeof(m_Name));
 	}
 
-	Type::Type(const Type& listType, bool unused) : m_Data(listType), m_Name(), m_Size(Type::UNKNOWN_SIZE) {
+	Type::Type(const Type& listType, bool unused) : m_Name(), m_Data(listType), m_Size(Type::UNKNOWN_SIZE) {
 		m_Name[0] = '[';
 		StringUtils::Copy(GetSequence().First->GetName(), m_Name + 1, sizeof(m_Name) - 1);
 	}
 
-	Type::Type(const Type& key, const Type& value) : m_Data(SequenceData(key, value)), m_Name(), m_Size(key.GetSize() + value.GetSize()) {
+	Type::Type(const Type& key, const Type& value) : m_Name(), m_Data(SequenceData(key, value)), m_Size(key.GetSize() + value.GetSize()) {
 		s64 length = sizeof(m_Name);
 		const char* keyName = key.GetName();
 		const char* valueName = value.GetName();
@@ -102,8 +106,15 @@ namespace Empire {
 			return StringUtils::Equal(this->m_Name, other.m_Name) /*&& this->GetMembers() == other.GetMembers()*/;
 		} else if (IsSequence()) {
 			return this->GetSequence() == other.GetSequence();
+		} else {
+			return false;
 		}
 	}
+	
+	/*Type& Type::operator=(const Type&& other) {
+		this->m_Data = other.m_Data;
+		return *this;
+	}*/
 
 	Type Type::CreatePrimitive(const char* name, u32 size, u64 id) {
 		return Type(name, size, id);
@@ -112,8 +123,8 @@ namespace Empire {
 	u32 GetSizeOfMembers(std::initializer_list<TypeMember> members) {
 		u32 size = 0;
 		for (const auto& member : members) {
-			if (member.Type->IsConstantSize())
-				size += member.Type->GetSize();
+			if (member.MemberType->IsConstantSize())
+				size += member.MemberType->GetSize();
 			else
 				return Type::UNKNOWN_SIZE;
 		}
@@ -148,11 +159,11 @@ namespace Empire {
 			out << "Object) " << type.GetName() << std::endl;
 			indentation++;
 			for (auto& member : type.GetMembers()) {
-				if (member.Type->IsPrimitive() || type == *member.Type) {
+				if (member.MemberType->IsPrimitive() || type == *member.MemberType) {
 					Indent(out);
-					out << member.Type->GetName() << ": " << member.Name << std::endl;
+					out << member.MemberType->GetName() << ": " << member.Name << std::endl;
 				} else {
-					out << *member.Type;
+					out << *member.MemberType;
 					
 				}
 			}
@@ -220,7 +231,7 @@ namespace Empire {
 	}
 
 	bool TypeMember::operator==(const TypeMember & other) {
-		return Type->operator==(*other.Type) && (Name == other.Name) && (Offset == other.Offset);
+		return MemberType->operator==(*other.MemberType) && (Name == other.Name) && (Offset == other.Offset);
 	}
 
 }

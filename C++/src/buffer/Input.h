@@ -6,6 +6,8 @@
 #include "../system/System.h"
 #include "../system/FileSystem.h"
 
+#include <algorithm>
+
 namespace Empire {
 
 class BufferedInput : public Buffer {
@@ -33,12 +35,7 @@ public:
 	/*
 	* Returns true if there is enough space in the buffer to read x bytes, false if a buffer overflow will occur by reading x bytes
 	*/
-	inline bool EnsureCapacity(u64 bytes EMPIRE_ERROR_PARAMETER) {
-		if (bytes + m_Offset > m_Limit) {
-			EMPIRE_ERROR(BUFFER_OVERFLOW, false, "Limit: %llu, Size Needed: %llu, Chunk Size: %llu", m_Limit, bytes + m_Offset, bytes);
-		}
-		return true;
-	}
+	bool EnsureCapacity(u64 bytes EMPIRE_ERROR_PARAMETER);
 
 	inline bool CanRead() {
 		return m_Offset < m_Limit;
@@ -128,7 +125,7 @@ private:
 		m_FileSize = FileSystem::FileSize(path EMPIRE_ERROR_VAR);
 		m_FP = fopen(path, "rb");
 		if (m_FP == nullptr)
-			EMPIRE_ERROR(IO_ERROR, , "File not found");
+			EMPIRE_ERROR0(IO_ERROR, , "File not found");
 		m_Mode = InputMode::NORMAL;
 	}
 
@@ -173,12 +170,12 @@ public:
 	void Read(T* dest, u64 bytes EMPIRE_ERROR_PARAMETER) {
 		u64 bytesRead = 0;
 		if (m_Input.CanRead()) {
-			bytesRead = min(bytes, m_Input.BytesAvilable());
+			bytesRead = std::min(bytes, m_Input.BytesAvilable());
 			m_Input.Read(dest, bytesRead EMPIRE_ERROR_VAR);
 			bytes -= bytesRead;
 			m_TotalRead += bytesRead;
 		} else if (m_Mode == InputMode::MAPPED) {//If we cant read in mapped mode then we have run out of data
-			EMPIRE_ERROR(BUFFER_UNDERFLOW, , "No more data left to read. Consumed %llu bytes", m_TotalRead);
+			EMPIRE_ERROR(BUFFER_UNDERFLOW, , "No more data left to read. Consumed %lu bytes", m_TotalRead);
 		}
 		if (bytes && m_Mode == InputMode::NORMAL) {// Get new bytes from the file.
 			u64 newBytes = fread(m_Input.Start(), 1, m_Input.m_Capacity, m_FP);

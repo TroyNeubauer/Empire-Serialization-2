@@ -2,12 +2,6 @@
 
 #include "../primitive/EmpirePrimitives.h"
 
-#ifdef EMPIRE_PLATFORM_WINDOWS
-	#include <Windows.h>
-#else
-#error Not supported!
-#endif
-
 #include <stdio.h>
 
 namespace Empire {
@@ -17,7 +11,7 @@ namespace Empire {
 		static u64 PageSize();
 		static u64 PerformanceCounterResulution();
 
-		static void GetLastErrorMessage(char* buf, unsigned int capacity);
+		static void GetLastErrorMessage(char* buf, u32 capacity);
 
 
 	};

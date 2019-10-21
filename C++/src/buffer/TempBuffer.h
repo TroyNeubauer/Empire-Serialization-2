@@ -2,21 +2,67 @@
 
 #include "../primitive/EmpirePrimitives.h"
 
+#include <malloc.h>
 #ifdef EMPIRE_PLATFORM_WINDOWS
 	#include <Windows.h>
-	#include <malloc.h>
 #else
-	#error Not Implemented!
+	#include <alloca.h>
 #endif
 
 
 namespace Empire {
 
+    namespace TempBuffer {
 
-__forceinline void* AllocateTempBuffer(u64 bytes) {
-	return _malloca(bytes);
+#ifdef EMPIRE_PLATFORM_WINDOWS
+        template<typename T>
+        __forceinline T* Alloc(u64 elements) {
+            return _malloca(sizeof(T) * elements);
 
-}
+        }
+
+        template<typename T>
+        __forceinline void Free(T* ptr) {
+            
+
+        }
+#else
+        //Returns the address of the "top of the stack". This intuitively is at a lower address than GetBottomOfStack
+        void* GetTopOfStack() {
+            void* result;
+            asm("mov result, %rsp");
+            return result;
+        }
+        
+        void* GetBottomOfStack() {
+            void* result;
+            asm("mov result, %rbp");
+            return result;
+        }
+        
+
+        const u64 MAX_STACK_ALLOC_SIZE = 8192;
+        
+        template<typename T>
+        __attribute__((always_inline)) T* Alloc(u64 elements) {
+            u64 bytes = sizeof(T) * elements;
+            if (bytes > MAX_STACK_ALLOC_SIZE)
+				return malloc(bytes);
+            else
+                return static_cast<T*>(alloca(bytes));
+
+        }
+
+        template<typename T>
+        __attribute__((always_inline)) void Free(T* ptr) {
+            void* cmp = ptr;
+            if (cmp <= GetTopOfStack() || cmp >= GetBottomOfStack())
+                free(ptr);
+
+        }
+#endif
+        
+    }
 
 }//namespace
 

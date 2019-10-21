@@ -2,6 +2,7 @@
 
 #include "../util/StringUtils.h"
 #include "../EmpireException.h"
+#include "../buffer/TempBuffer.h"
 
 #include <functional>
 #include <utility>
@@ -95,11 +96,11 @@ namespace Empire {
 	void FileSystem::PathNameIterator(const char* path, F onPath)
 	{
 		size_t bytes = StringUtils::Capacity(path);
-		char* mutablePath = _malloca(bytes);
+		char* mutablePath = TempBuffer::Alloc<char>(bytes);
 		memcpy(mutablePath, path, bytes);
 
 		PathNameIterator<F>(mutablePath, onPath);
-		_freea(mutablePath);
+		TempBuffer::Free(mutablePath);
 	}
 
 	template<typename F>
