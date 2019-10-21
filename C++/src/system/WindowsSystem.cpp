@@ -8,9 +8,6 @@
 #include "../util/StringUtils.h"
 
 #include <Windows.h>
-#undef CreateFile
-#undef CreateDirectory
-#undef DeleteFile
 
 namespace Empire {
 

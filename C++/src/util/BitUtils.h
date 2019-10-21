@@ -35,7 +35,7 @@ namespace Empire {
 
 		//template<>
 		static u32 HighestBitPosition(u32 value) {
-			u32 result;
+			unsigned long result;
 #ifdef EMPIRE_COMPILER_MSVC
 			_BitScanReverse(&result, value);
 #elif defined(EMPIRE_COMPILER_GCC)

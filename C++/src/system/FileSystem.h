@@ -7,6 +7,13 @@
 #include <functional>
 #include <utility>
 
+#ifdef EMPIRE_PLATFORM_WINDOWS
+	#undef CreateFile
+	#undef CreateDirectory
+	#undef DeleteFile
+	#undef min
+	#undef max
+#endif
 
 namespace Empire {
 

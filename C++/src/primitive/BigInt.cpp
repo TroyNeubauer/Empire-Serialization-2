@@ -22,7 +22,7 @@
 * SOFTWARE.
 ******************************************************************************/
 
-#include "little-big-int.hpp"
+#include "BigInt.hpp"
 
 #include <algorithm>
 #include <bitset>

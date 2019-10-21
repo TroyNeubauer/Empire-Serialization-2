@@ -1,5 +1,5 @@
 
-//#ifdef EMPIRE_PLATFORM_UNIX
+#ifdef EMPIRE_PLATFORM_UNIX
 
 #include "FileSystem.h"
 #include "System.h"
@@ -108,4 +108,4 @@ namespace Empire {
 
 }
 
-//#endif
+#endif
