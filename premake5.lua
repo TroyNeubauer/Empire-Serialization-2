@@ -1,3 +1,8 @@
+newoption {
+	trigger     = "coverage",
+	description = "Compile with --coverage"
+}
+
 workspace "Empire Serialization 2"
 	architecture "x64"
 	startproject "Sandbox"
@@ -12,10 +17,6 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 
-newoption {
-	trigger     = "coverage",
-	description = "Compile with --coverage"
-}
 
 
 project "C++"
@@ -34,6 +35,7 @@ project "C++"
 
 	configuration "coverage"
 		buildoptions { "--coverage" }
+		print "Code coverage is enabled"
 
 	files
 	{
