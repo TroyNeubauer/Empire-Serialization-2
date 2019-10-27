@@ -12,6 +12,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 
+newoption {
+	trigger     = "coverage",
+	description = "Compile with --coverage"
+}
+
 
 project "C++"
 	location "C++"
@@ -26,6 +31,9 @@ project "C++"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	configuration "coverage"
+		buildoptions { "--coverage" }
 
 	files
 	{
@@ -111,6 +119,9 @@ project "Sandbox"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+	configuration "coverage"
+		buildoptions { "--coverage" }
+
 	files
 	{
 		"%{prj.name}/src/**.h",
@@ -177,8 +188,6 @@ project "Sandbox"
 		optimize "speed"
 		inlining "auto"
 		floatingpoint "Fast"
-
-
 
 
 project "Test"

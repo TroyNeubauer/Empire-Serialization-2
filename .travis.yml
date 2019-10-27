@@ -13,6 +13,7 @@ before_install:
   - wget https://github.com/premake/premake-core/releases/download/v5.0.0-alpha14/premake-5.0.0-alpha14-linux.tar.gz -O premake.tar.gz
   - tar -xf premake.tar.gz
   - chmod +x premake5
+  - pip install --user pyyaml cpp-coveralls
 install: 
 
 script:
@@ -24,6 +25,9 @@ script:
   - export CXX=/usr/bin/g++-7
 # Check versions of gcc, g++ and cmake
   - gcc -v && g++ -v --version
-  - ./premake5 gmake2
+  - ./premake5 gmake2 --coverage
   - make
+  - ./test
+after_success:
+  - coveralls
 
