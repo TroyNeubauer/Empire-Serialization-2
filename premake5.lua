@@ -35,7 +35,6 @@ project "C++"
 
 	configuration "coverage"
 		buildoptions { "--coverage" }
-		print "Code coverage is enabled"
 
 	files
 	{
@@ -69,26 +68,20 @@ project "C++"
 		{
 			"EMPIRE_COMPILER_GCC"
 		}
+		print "Using GCC"
 		buildoptions { "-fPIC", "-masm=intel" }
 
 	filter "system:windows"
 		defines
 		{
 			"EMPIRE_PLATFORM_WINDOWS",
-			
 		}
 
 
 	filter "system:linux"
-		libdirs
-		{
-			"EMPIRE_PLATFORM_UNIX"
-		}
-	
-
 		defines
 		{
-
+			"EMPIRE_PLATFORM_UNIX"
 		}
 
 	filter "system:macosx"
@@ -122,7 +115,7 @@ project "Sandbox"
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	configuration "coverage"
-		buildoptions { "--coverage" }
+		links { "gcov" }
 
 	files
 	{
@@ -203,6 +196,10 @@ project "Test"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+	configuration "coverage"
+		links { "gcov" }
+		print "Code coverage is enabled for Test"
+	
 	files
 	{
 		"%{prj.name}/src/**.h",
@@ -236,7 +233,7 @@ project "Test"
 		{
 			"EMPIRE_COMPILER_GCC"
 		}
-		buildoptions { "-fPIC", "-masm=intel" }
+		buildoptions { "-fPIC" }
 	
 	filter "system:windows"
 		defines

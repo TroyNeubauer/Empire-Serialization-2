@@ -63,7 +63,7 @@ namespace Empire {
 		return false;
 	}
 
-	uint64_t FileSystem::FileSize(const char *path EMPIRE_ERROR_PARAMETER) {
+	uint64_t FileSystem::FileSize(const char *path) {
 		return 0;
 	}
 
