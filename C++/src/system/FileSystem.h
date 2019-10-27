@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <utility>
+#include <limits>
 
 #ifdef EMPIRE_PLATFORM_WINDOWS
 	#undef CreateFile
@@ -29,7 +30,11 @@ namespace Empire {
 	class FileSystem
 	{
 	public:
-		static const uint64_t ENTIRE_FILE = (uint64_t)-1;
+		//For MapFile
+		static const uint64_t ENTIRE_FILE = std::numeric_limits<uint64_t>::max();
+
+		//For FileSize
+		static const uint64_t INVALID_FILE = std::numeric_limits<uint64_t>::max();
 		//Maps a section of a file into virtual memory
 		//This function returns the pointer to the memory and the length of the file
 		static void* MapFile(const char* file, FileOpenOptions options, uint64_t& fileLength EMPIRE_ERROR_PARAMETER, uint64_t offset = 0, uint64_t bytes = ENTIRE_FILE);
@@ -39,7 +44,8 @@ namespace Empire {
 		static bool Exists(const char* path);
 		static bool IsDirectory(const char* path);
 
-		static uint64_t FileSize(const char* path EMPIRE_ERROR_PARAMETER);
+		//Queries the length of a file. If the file doesnt exist or is a directory INVALID_FILE if returned
+		static uint64_t FileSize(const char* path);
 
 		//Creates a new file with the name and location specified by path
 		//The return value indicates weather or not a new file was created. 
@@ -75,6 +81,9 @@ namespace Empire {
 		//The boolean return value in the lambda is used to determine weather to continue or not. True means break and iterate no more, false means continue
 		//This is marked always inline because onPath will almost always be a lambda, therefore inlining this function will usually
 		//lead the compiler to inline the lambda too
+		//onPath is a function with the given decleration: bool func(char* pathName, char* total, char* rest)
+		//PathName is the name of the file or directory that is being processed. total is a string that starts at path and contains all subdirectories/files up to pathName.
+		//rest is the opposite, it contains the remaining path directly after pathName.
 		template<typename F>
 		inline static void PathNameIterator(const char* path, F onPath);
 		template<typename F>
@@ -115,8 +124,11 @@ namespace Empire {
 	{
 		if (*path == 0x00)
 			return;//Return for empty strings
+		if (path[0] == '.' && IsSlash(path[1]))
+			path += 2;
 		if (IsSlash(*path))
 			path++;
+		char* origionalStart = path;
 		char* start = path;//Skip the first slash and have start point to the first char of this file/dir name
 		char* end = path;//Begin searching for the end starting at the first character of this file/dir name
 		while (*end)
@@ -127,7 +139,7 @@ namespace Empire {
 			{
 				char origional = *end;//Put in a temporary null byte so they we dont have to copy it
 				*end = 0x00;
-				if (onPath(start, origional ? (end + 1) : end)) {
+				if (onPath(static_cast<const char*>(start), static_cast<const char*>(origionalStart), static_cast<const char*>(origional ? (end + 1) : end))) {
 					*end = origional;
 					return;
 				}
@@ -136,7 +148,7 @@ namespace Empire {
 			start = ++end;//Have the next start be the char after this trailing slash
 		}
 		if (start != end)
-			onPath(start, end);
+			onPath(start, origionalStart, end);
 	}
 
 

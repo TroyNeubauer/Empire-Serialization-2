@@ -17,8 +17,7 @@ namespace Empire {
 #if defined(EMPIRE_COMPILER_MSVC)
         template<typename T>
         __forceinline T* Alloc(u64 elements) {
-            return _malloca(sizeof(T) * elements);
-
+            return reinterpret_cast<T*>(_malloca(sizeof(T) * elements));
         }
 
         template<typename T>

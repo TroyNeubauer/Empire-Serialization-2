@@ -17,3 +17,5 @@
 
 **/*.kdev4
 **/premake*
+
+Test/test/

@@ -8,6 +8,7 @@
 #include "../util/StringUtils.h"
 
 #include <Windows.h>
+#include <Shlobj.h>
 
 namespace Empire {
 
@@ -76,24 +77,16 @@ namespace Empire {
 		return atts & FILE_ATTRIBUTE_DIRECTORY;
 	}
 
-	uint64_t FileSystem::FileSize(const char *path EMPIRE_ERROR_PARAMETER)
+	uint64_t FileSystem::FileSize(const char *path)
 	{
 		HANDLE handle = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, NULL);
 
-		if (handle == INVALID_HANDLE_VALUE)
-		{
-			char errorMessage[1024];
-			System::GetLastErrorMessage(errorMessage, sizeof(errorMessage));
-			EMPIRE_ERROR(Empire::ErrorCodes::IO_ERROR, nullptr, "Error opening file. Error from CreateFileA is: %s", errorMessage);
-		}
+		if (handle == INVALID_HANDLE_VALUE) return INVALID_FILE;
 
 		LARGE_INTEGER size;
-
-		if (!GetFileSizeEx(handle, &size)) {
-			char errorMessage[1024];
-			System::GetLastErrorMessage(errorMessage, sizeof(errorMessage));
-			EMPIRE_ERROR(Empire::ErrorCodes::IO_ERROR, 0, "Failed to get file length. Error from GetFileSizeEx is: %s", errorMessage);
-		}
+		if (!GetFileSizeEx(handle, &size))
+			return INVALID_FILE;
+		
 		CloseHandle(handle);
 		return size.QuadPart;
 	}
@@ -123,24 +116,20 @@ namespace Empire {
 
 	bool FileSystem::CreateDirectory(const char* path)
 	{
-		HANDLE handle = CreateFileA(path, GENERIC_READ, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
-		if (handle == INVALID_HANDLE_VALUE)
-		{
-			return false;
-		}
-		CloseHandle(handle);//A bit wasteful. Looking into assigning the handle to a path might be more efficent since Paths are usually opened anyway
-		return true;
+		return CreateDirectoryA(path, nullptr) || FileSystem::Exists(path);
 	}
 
 	bool FileSystem::CreateDirectories(const char* path)
 	{
-		HANDLE handle = CreateFileA(path, GENERIC_READ, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
-		if (handle == INVALID_HANDLE_VALUE)
-		{
+		bool success = true;
+		FileSystem::PathNameIterator(path, [&success](const char* dirName, const char* total, const char* rest) -> bool {
+			if (!FileSystem::CreateDirectory(dirName)) {
+				success = false;
+				return true;
+			}			
 			return false;
-		}
-		CloseHandle(handle);//A bit wasteful. Looking into assigning the handle to a path might be more efficent since Paths are usually opened anyway
-		return true;
+		});
+		return success;
 	}
 
 	bool FileSystem::TruncateFile(const char* path)
@@ -164,7 +153,14 @@ namespace Empire {
 
 	bool FileSystem::Delete(const char* path)
 	{
-		return false;
+		DWORD atts = GetFileAttributesA(path);
+		if (atts & FILE_ATTRIBUTE_DIRECTORY) {
+
+			//HANDLE h = FindFirstFileA()
+		} else {
+			return DeleteFileA(path);
+
+		}
 	}
 
 

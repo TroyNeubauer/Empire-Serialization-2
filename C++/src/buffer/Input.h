@@ -122,9 +122,9 @@ private:
 	}
 
 	void OpenFileNormally(const char* path, u64 offset, u64 length EMPIRE_ERROR_PARAMETER) {
-		m_FileSize = FileSystem::FileSize(path EMPIRE_ERROR_VAR);
+		m_FileSize = FileSystem::FileSize(path);
 		m_FP = fopen(path, "rb");
-		if (m_FP == nullptr)
+		if (m_FP == nullptr || m_FileSize == FileSystem::INVALID_FILE)
 			EMPIRE_ERROR0(IO_ERROR, , "File not found");
 		m_Mode = InputMode::NORMAL;
 	}
