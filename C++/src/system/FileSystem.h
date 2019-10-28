@@ -139,7 +139,8 @@ namespace Empire {
 			{
 				char origional = *end;//Put in a temporary null byte so they we dont have to copy it
 				*end = 0x00;
-				if (onPath(static_cast<const char*>(start), static_cast<const char*>(origionalStart), static_cast<const char*>(origional ? (end + 1) : end))) {
+				if (onPath(static_cast<const char*>(start), static_cast<const char*>(origionalStart), static_cast<const char*>(origional ? (end + 1) : end)))
+				{
 					*end = origional;
 					return;
 				}

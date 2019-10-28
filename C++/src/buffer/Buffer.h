@@ -23,14 +23,16 @@ public:
 	Buffer(u8* buffer, u64 capacity) :
 		m_Buffer(buffer), m_Offset(0), m_Capacity(capacity), m_Free(false) {}
 
-	void Init(u64 capacity = 1024) {
+	void Init(u64 capacity = 1024)
+	{
 		this->m_Buffer = new u8[capacity];
 		this->m_Offset = 0;
 		this->m_Capacity = capacity;
 		this->m_Free = true;
 	}
 
-	void Init(u8* buffer, u64 capacity) {
+	void Init(u8* buffer, u64 capacity)
+	{
 		this->m_Buffer = buffer;
 		this->m_Offset = 0;
 		this->m_Capacity = capacity;
@@ -46,8 +48,10 @@ public:
 
 	inline void Offset(u64 newOffset) { this->m_Offset = newOffset; }
 
-	inline ~Buffer() {
-		if (m_Free) {
+	inline ~Buffer()
+	{
+		if (m_Free)
+		{
 			delete[] m_Buffer;
 		}
 	}

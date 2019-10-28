@@ -27,7 +27,8 @@ script:
   - gcc -v && g++ -v --version
   - ./premake5 gmake2 --coverage
   - make
-  - ./test
+  - ls
+  - ./bin/test
 after_success:
   - coveralls
 

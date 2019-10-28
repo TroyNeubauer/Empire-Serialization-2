@@ -62,11 +62,13 @@ namespace Empire {
 			(this->First->operator==(*other.First) && this->Second->operator==(*other.Second) && this->Size == other.Size);
 	}
 
-	Type::Type(const char* name, u32 size, u64 id) : m_Name(), m_Size(size) {
+	Type::Type(const char* name, u32 size, u64 id) : m_Name(), m_Size(size)
+	{
 		StringUtils::Copy(name, m_Name, sizeof(m_Name));
 	}
 
-	Type::Type(const char* name, u32 size, std::initializer_list<TypeMember> members) : m_Name(), m_Data(members), m_Size(size) {
+	Type::Type(const char* name, u32 size, std::initializer_list<TypeMember> members) : m_Name(), m_Data(members), m_Size(size)
+	{
 		StringUtils::Copy(name, m_Name, sizeof(m_Name));
 	}
 
@@ -75,7 +77,8 @@ namespace Empire {
 		StringUtils::Copy(GetSequence().First->GetName(), m_Name + 1, sizeof(m_Name) - 1);
 	}
 
-	Type::Type(const Type& key, const Type& value) : m_Name(), m_Data(SequenceData(key, value)), m_Size(key.GetSize() + value.GetSize()) {
+	Type::Type(const Type& key, const Type& value) : m_Name(), m_Data(SequenceData(key, value)), m_Size(key.GetSize() + value.GetSize())
+	{
 		s64 length = sizeof(m_Name);
 		const char* keyName = key.GetName();
 		const char* valueName = value.GetName();
@@ -97,18 +100,19 @@ namespace Empire {
 		*name = 0x00; length--;
 	}
 
-	bool Type::operator==(const Type& other) const {
+	bool Type::operator==(const Type& other) const
+	{
 		if (this->m_Data.index() != other.m_Data.index())// They must be the same kind of Type in order to be the same
 			return false;
-		if (IsPrimitive()) {
+		if (IsPrimitive())
 			return this->GetPrimitiveID() == other.GetPrimitiveID();
-		} else if (IsNormalObject()) {
+		else if (IsNormalObject())
 			return StringUtils::Equal(this->m_Name, other.m_Name) /*&& this->GetMembers() == other.GetMembers()*/;
-		} else if (IsSequence()) {
+		else if (IsSequence())
 			return this->GetSequence() == other.GetSequence();
-		} else {
+		else
 			return false;
-		}
+		
 	}
 	
 	/*Type& Type::operator=(const Type&& other) {
@@ -116,11 +120,13 @@ namespace Empire {
 		return *this;
 	}*/
 
-	Type Type::CreatePrimitive(const char* name, u32 size, u64 id) {
+	Type Type::CreatePrimitive(const char* name, u32 size, u64 id)
+	{
 		return Type(name, size, id);
 	}
 
-	u32 GetSizeOfMembers(std::initializer_list<TypeMember> members) {
+	u32 GetSizeOfMembers(std::initializer_list<TypeMember> members)
+	{
 		u32 size = 0;
 		for (const auto& member : members) {
 			if (member.MemberType->IsConstantSize())
@@ -131,45 +137,58 @@ namespace Empire {
 		return size;
 	}
 
-	Type Type::CreateClass(const char* name, std::initializer_list<TypeMember> members) {
+	Type Type::CreateClass(const char* name, std::initializer_list<TypeMember> members)
+	{
 		return Type(name, GetSizeOfMembers(members), members);
 	}
 
-	Type Type::CreateList(const Type& listType) {
+	Type Type::CreateList(const Type& listType)
+	{
 		return Type(listType, false);
 	}
 
-	Type Type::CreateMap(const Type& key, const Type& value) {
+	Type Type::CreateMap(const Type& key, const Type& value)
+	{
 		return Type(key, value);
 	}
 
 	thread_local int indentation = -1;
 
-	void Indent(std::ostream& out) {
+	void Indent(std::ostream& out)
+	{
 		for (int i = 0; i < indentation; i++) out << "  ";
 	}
 
-	std::ostream& operator<<(std::ostream& out, const Type& type) {
+	std::ostream& operator<<(std::ostream& out, const Type& type)
+	{
 		indentation++;
 		Indent(out);
 		out << "Type (";
-		if (type.IsPrimitive()) {
+		if (type.IsPrimitive())
+		{
 			out << "Primitive) " << type.GetName() << " ID: " << type.GetPrimitiveID() << std::endl;
-		} else if (type.IsNormalObject()) {
+		}
+		else if (type.IsNormalObject())
+		{
 			out << "Object) " << type.GetName() << std::endl;
 			indentation++;
-			for (auto& member : type.GetMembers()) {
-				if (member.MemberType->IsPrimitive() || type == *member.MemberType) {
+			for (auto& member : type.GetMembers())
+			{
+				if (member.MemberType->IsPrimitive() || type == *member.MemberType)
+				{
 					Indent(out);
 					out << member.MemberType->GetName() << ": " << member.Name << std::endl;
-				} else {
-					out << *member.MemberType;
-					
+				}
+				else
+				{
+					out << *member.MemberType;	
 				}
 			}
 			indentation--;
 			out << std::endl;
-		} else if (type.IsSequence()) {
+		}
+		else if (type.IsSequence())
+		{
 			out << "Sequence)" << std::endl;
 			out << type.GetSequence() << std::endl;
 		}
@@ -177,13 +196,17 @@ namespace Empire {
 		return out;
 	}
 
-	std::ostream& operator<<(std::ostream& out, const SequenceData& type) {
+	std::ostream& operator<<(std::ostream& out, const SequenceData& type)
+	{
 		indentation++;
 		Indent(out);
-		if (type.Size == 1) {
+		if (type.Size == 1)
+		{
 			out << "List of:" << std::endl;
 			out << *type.First;
-		} else {
+		}
+		else
+		{
 			out << "Map. Key: " << std::endl;
 			out << *type.First;
 			Indent(out);
@@ -197,7 +220,8 @@ namespace Empire {
 
 	const Type& BuiltinTypes::Get(u64 id)
 	{
-		switch (id) {
+		switch (id)
+		{
 			default:
 			case INVALID_ID: return INVALID;
 			case S8_ID: return S8;
@@ -230,7 +254,8 @@ namespace Empire {
 		}
 	}
 
-	bool TypeMember::operator==(const TypeMember & other) {
+	bool TypeMember::operator==(const TypeMember & other)
+	{
 		return MemberType->operator==(*other.MemberType) && (Name == other.Name) && (Offset == other.Offset);
 	}
 

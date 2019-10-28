@@ -15,7 +15,8 @@
 
 namespace Empire {
 
-	class Timer {
+	class Timer
+	{
 	public:
 		//Constructing a timer starts it
 		inline Timer() { Start(); }

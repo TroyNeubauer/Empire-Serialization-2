@@ -5,7 +5,8 @@
 #include <stdio.h>
 
 namespace Empire {
-	class System {
+	class System
+	{
 	public:
 
 		static u64 PageSize();

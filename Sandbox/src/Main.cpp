@@ -16,14 +16,17 @@ struct Point {
 	int x, y;
 };
 
-struct BigClass {
+struct BigClass
+{
 	std::unordered_map<int, std::vector<Point>> m_BigMap;
 	int m_RandInt;
 	Point m_DefaultPoint;
 };
 
-int main() {
-	Type point = Type::CreateClass("Point", { 
+int main()
+{
+	Type point = Type::CreateClass("Point",
+	{ 
 		{ BuiltinTypes::INT, "x", offsetof(Point, x) }, 
 		{ BuiltinTypes::INT, "y", offsetof(Point, y) },
 	});

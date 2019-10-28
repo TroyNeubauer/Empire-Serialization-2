@@ -38,15 +38,18 @@ namespace Empire {
 	
 	
 	
-	u64 System::PageSize() {
+	u64 System::PageSize()
+	{
 		return getpagesize();
 	}
 
-	u64 System::PerformanceCounterResulution() {
+	u64 System::PerformanceCounterResulution()
+	{
 		return CLOCKS_PER_SEC;
 	}
 
-	void System::GetLastErrorMessage(char* buf, u32 capacity) {
+	void System::GetLastErrorMessage(char* buf, u32 capacity)
+	{
 		char* error = strerror(errno);
 		StringUtils::Copy(error, buf, capacity);
 	}
@@ -63,46 +66,56 @@ namespace Empire {
 		return false;
 	}
 
-	uint64_t FileSystem::FileSize(const char *path) {
+	uint64_t FileSystem::FileSize(const char *path)
+	{
 		return 0;
 	}
 
 
-	bool FileSystem::CreateFile(const char* path) {
+	bool FileSystem::CreateFile(const char* path)
+	{
 		return false;
 	}
 
-	bool FileSystem::CreateFileWithParents(const char* path) {
+	bool FileSystem::CreateFileWithParents(const char* path)
+	{
 		return false;
 	}
 
-	bool FileSystem::CreateDirectory(const char* path) {
+	bool FileSystem::CreateDirectory(const char* path)
+	{
 		return false;
 	}
 
-	bool FileSystem::CreateDirectories(const char* path) {
+	bool FileSystem::CreateDirectories(const char* path)
+	{
 		return false;
 	}
 
-	bool FileSystem::TruncateFile(const char* path) {
+	bool FileSystem::TruncateFile(const char* path)
+	{
 		return false;
 	}
 
-	void FileSystem::AbsloutePath(const char* file, char* buf, size_t bufLength) {
+	void FileSystem::AbsloutePath(const char* file, char* buf, size_t bufLength)
+	{
 		
 	}
 
-	bool FileSystem::Delete(const char* path) {
+	bool FileSystem::Delete(const char* path)
+	{
 		return false;
 	}
 
 
 	//Use of p_ to denote parameters from local vars in this long function
-	void* FileSystem::MapFile(const char* p_File, FileOpenOptions p_Options, uint64_t& p_FileLength EMPIRE_ERROR_PARAMETER, uint64_t p_Offset, uint64_t p_Bytes) {
+	void* FileSystem::MapFile(const char* p_File, FileOpenOptions p_Options, uint64_t& p_FileLength EMPIRE_ERROR_PARAMETER, uint64_t p_Offset, uint64_t p_Bytes)
+	{
 		return nullptr;
 	}
 
-	void FileSystem::UnmapFile(void* file) {
+	void FileSystem::UnmapFile(void* file)
+	{
 		
 	}
 

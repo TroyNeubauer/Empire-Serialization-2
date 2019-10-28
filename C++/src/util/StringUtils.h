@@ -8,9 +8,11 @@ namespace Empire {
 	class StringUtils
 	{
 	public:
-		inline constexpr static size_t Copy(const char* src, char* dest, size_t destSize) {
+		inline constexpr static size_t Copy(const char* src, char* dest, size_t destSize)
+		{
 			size_t charsWritten = 0;
-			for (size_t i = 0; i < destSize - 1; i++) {
+			for (size_t i = 0; i < destSize - 1; i++)
+			{
 				if (*src == 0x00)
 					break;
 				*dest = *src;

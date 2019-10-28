@@ -13,12 +13,14 @@ namespace Empire {
 			ILLEGAL_OPCODE, ILLEGAL_REFERENCE, IO_ERROR
 	};
 
-	struct EmpireError {
+	struct EmpireError
+	{
 		//Initalizes an error object to hold no error
 		EmpireError() : Code(NO_ERROR) { ErrorInfo[0] = 0x00; }
 
 		template<typename... Args>
-		EmpireError(ErrorCode code, const char* format, Args... args) : Code(code) {
+		EmpireError(ErrorCode code, const char* format, Args... args) : Code(code)
+		{
 			snprintf(ErrorInfo, sizeof(ErrorInfo), format, args...);
 		}
 
@@ -29,12 +31,15 @@ namespace Empire {
 
 	};
 
-	inline std::exception ErrorToException(EmpireError& error) {
+	inline std::exception ErrorToException(EmpireError& error)
+	{
 		return std::runtime_error(std::string(error.ErrorInfo));
 	}
 
-	inline const char* ErrorCodeToString(ErrorCode code) {
-		switch (code) {
+	inline const char* ErrorCodeToString(ErrorCode code)
+	{
+		switch (code)
+		{
 			default:					return "Unknown Error Code";
 			case NO_ERROR:				return "No Error";
 			case INVALID_ARGUMENT:		return "Invalid Argument";

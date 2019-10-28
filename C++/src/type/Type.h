@@ -17,7 +17,8 @@ namespace Empire {
 
 	class Type;
 
-	class BuiltinTypes {
+	class BuiltinTypes
+	{
 	public:
 		static inline const u64
 			INVALID_ID = 0,
@@ -75,7 +76,8 @@ namespace Empire {
 
 	};
 
-	struct SequenceData {
+	struct SequenceData
+	{
 		const Type* First;
 		const Type* Second;
 		u32 Size;
@@ -95,7 +97,8 @@ namespace Empire {
 
 	std::ostream& operator<<(std::ostream& out, const SequenceData& type);
 
-	struct TypeMember {
+	struct TypeMember
+	{
 		TypeMember();
 		TypeMember(const Type& type, std::string name, u32 offset);
 
@@ -109,7 +112,8 @@ namespace Empire {
 
 	};
 
-	class Type {
+	class Type
+	{
 	private:
 		Type() : m_Name("Invalid"), m_Size(UNKNOWN_SIZE) {}
 		Type(const char* name, u32 size, u64 id);

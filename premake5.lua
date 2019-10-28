@@ -1,6 +1,6 @@
 newoption {
 	trigger     = "coverage",
-	description = "Compile with --coverage"
+	description = "Compile with code coverage enabled"
 }
 
 workspace "Empire Serialization 2"

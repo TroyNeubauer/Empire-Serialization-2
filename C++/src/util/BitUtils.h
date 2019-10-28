@@ -14,11 +14,15 @@
 
 namespace Empire {
 
-	namespace BitUtils {
+	namespace BitUtils
+	{
+	
 		template <typename T>
-		static T NextPowerOfTwo(T value) {
+		static T NextPowerOfTwo(T value)
+		{
 			value--;
-			for (int i = 1; i < CHAR_BIT * sizeof(T); i *= 2) {//Bleed all the 1 bits togther
+			for (int i = 1; i < CHAR_BIT * sizeof(T); i *= 2)//Bleed all the 1 bits togther
+			{
 				value |= value >> i;
 			}
 			value++;//Increment to cause all to carry
@@ -27,14 +31,16 @@ namespace Empire {
 
 		//Standard implementation
 		template<typename T>
-		static u32 HighestBitPosition(T value) {
+		static u32 HighestBitPosition(T value)
+		{
 			u32 result = 0;
 			while (value >>= 1) result++;
 			return result;
 		}
 
 		//template<>
-		static u32 HighestBitPosition(u32 value) {
+		static u32 HighestBitPosition(u32 value)
+		{
 			unsigned long result;
 #ifdef EMPIRE_COMPILER_MSVC
 			_BitScanReverse(&result, value);
@@ -45,7 +51,8 @@ namespace Empire {
 		}
 
 		//template<>
-		static u32 HighestBitPosition(u64 value) {
+		static u32 HighestBitPosition(u64 value)
+		{
 			unsigned long result;
 #ifdef EMPIRE_COMPILER_MSVC
 			_BitScanReverse64(&result, value);
@@ -57,7 +64,8 @@ namespace Empire {
 	};
 
 	template <typename T>
-	static T SwapEndianness(T value) {
+	static T SwapEndianness(T value)
+	{
 		T result;
 		u8* dest = reinterpret_cast<u8*>(&result);
 		u8* start = reinterpret_cast<u8*>(&value);

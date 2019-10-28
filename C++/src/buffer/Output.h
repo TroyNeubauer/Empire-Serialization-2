@@ -13,10 +13,12 @@ public:
 	BufferedOutput(u64 capacity) : Buffer(capacity) {}
 	BufferedOutput(u64 capacity, u8* buffer) : Buffer(buffer, capacity) {}
 
-	void Init(u64 capacity) {
+	void Init(u64 capacity)
+	{
 		Buffer::Init(capacity);
 	}
-	void Init(u64 capacity, u8* buffer) {
+	void Init(u64 capacity, u8* buffer)
+	{
 		Buffer::Init(buffer, capacity);
 	}
 
@@ -24,7 +26,8 @@ public:
 	void EnsureCapacity(u64 bytes);
 
 	template<typename T>
-	void WriteVLE(T valueIn) {
+	void WriteVLE(T valueIn)
+	{
 		EnsureCapacity(sizeof(T) * 8 / 7 + 1);
 		typedef typename std::make_unsigned<T>::type E;
 		E value = static_cast<E>(valueIn);
@@ -36,34 +39,40 @@ public:
 
 			m_Buffer[m_Offset++] = byte;
 			value >>= 7;// Get next 7 bits
-		} while (value);
+		}
+		while (value);
 	}
 
 	template<typename T>
-	inline void Write(T* value, size_t bytes) {
+	inline void Write(T* value, size_t bytes)
+	{
 		EnsureCapacity(bytes);
 		WriteImpl(value, bytes);
 	}
 
 	template<typename T>
-	inline void WriteRaw(T* value, size_t bytes) {
+	inline void WriteRaw(T* value, size_t bytes)
+	{
 		WriteImpl(value, bytes);
 	}
 
 	template<typename T>
-	inline void Write(T value) {
+	inline void Write(T value)
+	{
 		EnsureCapacity(sizeof(T));
 		WriteImpl(&value, sizeof(T));
 	}
 
 	template<typename T>
-	inline void WriteRaw(T value) {
+	inline void WriteRaw(T value)
+	{
 		WriteImpl(&value, sizeof(T));
 	}
 
 private:
 	template<typename T>
-	inline void WriteImpl(T* value, size_t bytes) {
+	inline void WriteImpl(T* value, size_t bytes)
+	{
 		memcpy(Pointer(), value, bytes);
 		m_Offset += bytes;
 	}
