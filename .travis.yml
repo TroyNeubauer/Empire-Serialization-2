@@ -26,9 +26,8 @@ script:
 # Check versions of gcc, g++ and cmake
   - gcc -v && g++ -v --version
   - ./premake5 gmake2 --coverage
-  - make
-  - ls
-  - ./bin/test
+  - make make config=release
+  - ./bin/Release-linux-x86_64/Test/Test
 after_success:
   - coveralls
 

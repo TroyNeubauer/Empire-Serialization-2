@@ -20,5 +20,4 @@ namespace Empire {}
 #include "system/Timer.h"
 
 #include "type/Type.h"
-#include "type/TypeManager.h"
 
