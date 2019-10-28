@@ -8,5 +8,6 @@ Empire Serialization is an extremely fast and efficient serialization framework.
 * Python
 * JavaScript/Node
 * Go
+
 Empire Serialization is also very robust and will allow for changes in classes members from one serialized form to another. 
 Empire Serialization is an evolving standard which can be located [here]( https://docs.google.com/document/d/1hk4uM8_i8ZAb3smQFcM6dKP8REH3ivORBcV8yDvftxo/edit?usp=sharing)
