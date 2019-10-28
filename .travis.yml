@@ -27,7 +27,7 @@ script:
   - gcc -v && g++ -v --version
   - ./premake5 gmake2 --coverage
   - make config=debug
-  - ./bin/Release-linux-x86_64/Test/Test
+  - ./bin/Debug-linux-x86_64/Test/Test
 after_success:
   - coveralls
 
