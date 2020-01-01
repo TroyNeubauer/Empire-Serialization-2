@@ -37,14 +37,21 @@ namespace ES {
 
 	//typedef uint128_t f128;
 
-	typedef uint8_t utf8;
+	typedef char utf8;
 	typedef uint16_t utf16;
 	typedef uint32_t utf32;
 
-	typedef uint8_t esc4;
-	typedef uint8_t esc6;
-	typedef uint8_t esc8;
+	struct esc4 {
+		uint8_t Value;
+	};
 
+	struct esc6 {
+		uint8_t Value;
+	};
+
+	struct esc8 {
+		uint8_t Value;
+	};
 
 	const int ES_ASSERT_LEVEL_NONE = 0;
 
@@ -55,6 +62,7 @@ namespace ES {
 		#define ES_ASSERT_LEVEL ES_ASSERT_LEVEL_MAX
 	#endif
 
+	//Not enum class to allow for if (ErrorCode) without the compiler complaining
 	enum ErrorCode
 	{
 		NONE = 0, INVALID_CHARACTER, NOT_IMPLEMENTED, BUFFER_OVERFLOW
@@ -75,7 +83,7 @@ namespace ES {
 			{
 				uint32_t Char;
 				Charset CharacterSet;
-				es_length Offset;
+				es_length Offset;//The index of the bad character
 			} InvalidCharacter;
 			
 			struct

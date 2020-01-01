@@ -93,6 +93,17 @@
 #endif
 
 
+//Inline
+#if defined(ES_COMPILER_GCC) || defined(ES_COMPILER_CLANG)
+	#define ES_ALWAYS_INLINE /*__attribule(inline)*/ inline
+#elif defined(ES_COMPILER_MSVC)
+	#define ES_ALWAYS_INLINE inline
+#else
+	#error No ES_ALWAYS_INLINE
+#endif
+
+
+
 #if defined(ES_PLATFORM_WINDOWS) || defined(ES_PLATFORM_UNIX)
 	#include <cstdlib>
 	#define ES_ABORT(message) { ::ES::DefaultFormatter formatter; formatter << "[Empire Serialization] Aborting: " << message << ". At file " << __FILE__ << " line " << __LINE__; ::ES::Internal::Log(formatter); abort(); }
@@ -125,15 +136,27 @@ namespace ES {
 		//Call FreeMemory when finished.
 		//This function will always return a valid pointer. If no memory can be allocated
 		template<typename T>
-		inline T* AllocMemory(size_t length)
+		ES_ALWAYS_INLINE T* AllocMemory(std::size_t length)
 		{
-
+			return static_cast<T*>(malloc(length));
 		}
 
-		inline void FreeMemory(void* mem)
+		ES_ALWAYS_INLINE void FreeMemory(void* mem)
 		{
-
+			free(mem);
 		}
+
+		template<typename T>
+		struct TempBuffer
+		{
+			ES_ALWAYS_INLINE TempBuffer(std::size_t length) : Ptr(AllocMemory<T>(length)) {}
+			ES_ALWAYS_INLINE ~TempBuffer() { FreeMemory(Ptr); }
+
+			inline T& operator-> () { return Ptr; }
+			inline T* Get() { return Ptr; }
+
+			T* Ptr;
+		};
 
 		void SetAllocErrorHandler(AllocErrorHandler handler);
 		void InvokeAllocErrorHandler();
@@ -150,7 +173,11 @@ namespace ES {
 
 #endif
 			}
+		}
 
+		namespace Math {
+			template<typename T>
+			T DivideCeli(T value, T divide) { return (value + divide - 1) / divide; }
 		}
 	}
 }

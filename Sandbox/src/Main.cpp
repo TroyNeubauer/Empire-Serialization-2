@@ -1,5 +1,5 @@
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include <exception>
 #include <vector>
 #include <typeinfo>
@@ -9,6 +9,8 @@
 #include <cstdio>
 
 #include <EmpireSerialization2.h>
+#include <EmpireSerialization/Conversions.h>
+#include <Internal.h>
 
 struct Point {
 	int x, y;
@@ -23,6 +25,15 @@ struct BigClass
 
 int main()
 {
+	char in[] = "test!";
+	ES::esc4 dest[100];
+	ES::Conversions::StringCodingData data;
+	ES::Conversions::Convert<ES::utf8, ES::esc4>(in, sizeof(in), dest, sizeof(dest), data);
+	for (int i = 0; i < data.Bytes; i++)
+	{
+		printf("%d (%c)\n", dest[i], dest[i]);
+	}
+
 	/*Type point = Type::CreateClass("Point",
 	{ 
 		{ BuiltinTypes::INT, "x", offsetof(Point, x) }, 

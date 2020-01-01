@@ -62,6 +62,11 @@ project "C++"
 		"%{prj.name}/include/",
 		"%{prj.name}/include/EmpireSerialization/",
 	}
+
+	sysincludedirs
+	{
+		"C++/src/",--To allow for accessing internals in test cases
+	}
 	
 	configuration "coverage"
 		buildoptions { "--coverage" }
@@ -96,6 +101,7 @@ project "Sandbox"
 	sysincludedirs
 	{
 		"C++/include/",
+		"C++/src/",--To allow for accessing internals in test cases
 	}
 
 	links 
