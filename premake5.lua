@@ -3,6 +3,10 @@ newoption {
 	description = "Compile with code coverage enabled"
 }
 
+outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
+IncludeDir = {}
+
 workspace "Empire Serialization 2"
 	architecture "x64"
 	startproject "Sandbox"
@@ -11,11 +15,26 @@ workspace "Empire Serialization 2"
 	{
 		"Debug",
 		"Release",
+		"Release-Size",
 	}
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+	filter "configurations:Debug"
+		runtime "Debug"
+		symbols "on"
+		floatingpoint "Strict"
 
-IncludeDir = {}
+
+	filter "configurations:Release"
+		runtime "Release"
+		optimize "speed"
+		inlining "auto"
+		floatingpoint "Fast"
+
+	filter "configurations:Release-Size"
+		runtime "Release"
+		optimize "size"
+		inlining "auto"
+		floatingpoint "Fast"
 
 
 
@@ -28,13 +47,8 @@ project "C++"
 	intrinsics "on"
 	systemversion "latest"
 
-	vectorextensions "AVX"
-
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	configuration "coverage"
-		buildoptions { "--coverage" }
 
 	files
 	{
@@ -45,63 +59,17 @@ project "C++"
 	includedirs
 	{
 		"%{prj.name}/src/",
-	}
-
-	links 
-	{ 
-
-	}
-
-	defines
-	{
-
+		"%{prj.name}/include/",
+		"%{prj.name}/include/EmpireSerialization/",
 	}
 	
-	filter "action:vs*"
-		defines
-		{
-			"EMPIRE_COMPILER_MSVC"
-		}
-		
+	configuration "coverage"
+		buildoptions { "--coverage" }
+
 	filter { "action:gmake*", "toolset:gcc" }
-		defines
-		{
-			"EMPIRE_COMPILER_GCC"
-		}
-		print "Using GCC"
-		buildoptions { "-fPIC", "-masm=intel" }
-
-	filter "system:windows"
-		defines
-		{
-			"EMPIRE_PLATFORM_WINDOWS",
-		}
+		buildoptions { "-masm=intel" }
 
 
-	filter "system:linux"
-		defines
-		{
-			"EMPIRE_PLATFORM_UNIX"
-		}
-
-	filter "system:macosx"
-		defines
-		{
-			"EMPIRE_PLATFORM_OSX",
-			"EMPIRE_PLATFORM_UNIX"
-		}
-
-	filter "configurations:Debug"
-		runtime "Debug"
-		symbols "on"
-		floatingpoint "Strict"
-
-
-	filter "configurations:Release"
-		runtime "Release"
-		optimize "speed"
-		inlining "auto"
-		floatingpoint "Fast"
 
 project "Sandbox"
 	location "Sandbox"
@@ -114,9 +82,6 @@ project "Sandbox"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
-	configuration "coverage"
-		links { "gcov" }
-
 	files
 	{
 		"%{prj.name}/src/**.h",
@@ -125,145 +90,19 @@ project "Sandbox"
 
 	includedirs
 	{
-		"./C++/src/",
 		"%{prj.name}/src/",
+	}
+
+	sysincludedirs
+	{
+		"C++/include/",
 	}
 
 	links 
 	{
 		"C++",
 	}
-
-	defines
-	{
-	}
-
-	filter "action:vs*"
-		defines
-		{
-			"EMPIRE_COMPILER_MSVC"
-		}
 		
 	filter { "action:gmake*", "toolset:gcc" }
-		defines
-		{
-			"EMPIRE_COMPILER_GCC"
-		}
-		buildoptions { "-fPIC", "-masm=intel" }
-	
-	filter "system:windows"
-		defines
-		{
-			"EMPIRE_PLATFORM_WINDOWS"
-		}
-
-
-	filter "system:linux"
-		defines
-		{
-			"EMPIRE_PLATFORM_UNIX"
-		}
-
-	filter "system:macosx"
-
-		defines
-		{
-			"EMPIRE_PLATFORM_OSX",
-			"EMPIRE_PLATFORM_UNIX"
-		}
-
-
-	filter "configurations:Debug"
-		runtime "Debug"
-		symbols "on"
-		floatingpoint "Strict"
-
-	filter "configurations:Release"
-		runtime "Release"
-		optimize "speed"
-		inlining "auto"
-		floatingpoint "Fast"
-
-
-project "Test"
-	location "Test"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-	vectorextensions "AVX"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	configuration "coverage"
-		links { "gcov" }
-		print "Code coverage is enabled for Test"
-	
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
-	}
-
-	includedirs
-	{
-		"./C++/src/",
-		"%{prj.name}/src/",
-		"%{prj.name}/vendor/",
-	}
-
-	links 
-	{
-		"C++",
-	}
-
-	defines
-	{
-	}
-
-	filter "action:vs*"
-		defines
-		{
-			"EMPIRE_COMPILER_MSVC"
-		}
-		
-	filter { "action:gmake*", "toolset:gcc" }
-		defines
-		{
-			"EMPIRE_COMPILER_GCC"
-		}
 		buildoptions { "-fPIC" }
-	
-	filter "system:windows"
-		defines
-		{
-			"EMPIRE_PLATFORM_WINDOWS"
-		}
 
-
-	filter "system:linux"
-		defines
-		{
-			"EMPIRE_PLATFORM_UNIX"
-		}
-
-	filter "system:macosx"
-
-		defines
-		{
-			"EMPIRE_PLATFORM_OSX",
-			"EMPIRE_PLATFORM_UNIX"
-		}
-
-
-	filter "configurations:Debug"
-		runtime "Debug"
-		symbols "on"
-		floatingpoint "Strict"
-
-	filter "configurations:Release"
-		runtime "Release"
-		optimize "speed"
-		inlining "auto"
-		floatingpoint "Fast"

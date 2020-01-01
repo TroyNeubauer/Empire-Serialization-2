@@ -1,4 +1,7 @@
-#include "Empire.h"
+
+#include <EmpireSerialization2.h>
+
+
 
 #define CATCH_CONFIG_RUNNER
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
@@ -14,5 +17,4 @@ int main(int argc, char* const argv[]) {
 
 
 #include "BufferTest.h"
-#include "FileSystemTest.h"
 

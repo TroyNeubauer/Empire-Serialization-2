@@ -5,12 +5,10 @@
 #include <typeinfo>
 #include <random>
 #include <map>
+#include <unordered_map>
+#include <cstdio>
 
-#include <stdio.h>
-
-#include "Empire.h"
-
-using namespace Empire;
+#include <EmpireSerialization2.h>
 
 struct Point {
 	int x, y;
@@ -25,7 +23,7 @@ struct BigClass
 
 int main()
 {
-	Type point = Type::CreateClass("Point",
+	/*Type point = Type::CreateClass("Point",
 	{ 
 		{ BuiltinTypes::INT, "x", offsetof(Point, x) }, 
 		{ BuiltinTypes::INT, "y", offsetof(Point, y) },
@@ -40,13 +38,13 @@ int main()
 		{ BuiltinTypes::INT, "m_RandInt", offsetof(BigClass, m_RandInt) },
 	});
 	std::cout << bigClass;
-	std::cin.get();
+	std::cin.get();*/
 }
 
 
 
 void VLETest() {
-	BufferedOutput out(1024);
+	/*BufferedOutput out(1024);
 	const int SIZE = 1000000;
 
 	std::random_device dev;
@@ -76,5 +74,5 @@ void VLETest() {
 		int value = in.ReadVLE<int>(empireError);
 		std::cout << value << std::endl;
 	}
-	int x = in.ReadVLE<int>(empireError);
+	int x = in.ReadVLE<int>(empireError);*/
 }
