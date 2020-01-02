@@ -8,6 +8,11 @@
 
 namespace ES {
 
+	template<typename T>
+	const Charset GetCharsetCode<T>::Code = Charset::UTF8;
+	
+
+
 	const Error& GetError()
 	{
 		return Internal::GetError();
@@ -84,7 +89,6 @@ namespace ES {
 
 	}
 
-	
 	void SetAllocErrorHandler(AllocErrorHandler handler)
 	{
 		Internal::SetAllocErrorHandler(handler);
