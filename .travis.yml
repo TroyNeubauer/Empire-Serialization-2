@@ -16,18 +16,26 @@ before_install:
 install:
 
 script:
-# Check versions of gcc, g++ and cmake
+  - export CC=/usr/bin/gcc-9
+  - export CXX=/usr/bin/g++-9
+# Check versions of gcc and g++
   - gcc -v && g++ -v --version
-# Create and run the project files with code coverage
+# Create the project files
   - ./premake5 gmake2 --coverage
-  - make config=debug
-  - ./bin/Debug-linux-x86_64/Test/Test
-  - ./GetCodeGCOV.sh
-  - bash <(curl -s https://codecov.io/bash)
 # Compile and run release
   - make config=release
   - ./bin/Release-linux-x86_64/Test/Test
 # Compile and run release-size
+  - rm -r bin
+  - rm -r bin-int
   - make config=release-size
   - ./bin/Release-Size-linux-x86_64/Test/Test
-
+# Run code coverage in debug mode
+  - rm -r bin
+  - rm -r bin-int
+  - make config=debug
+  - ./bin/Debug-linux-x86_64/Test/Test
+  - ./GetCodeGCOV.sh
+  - bash <(curl -s https://codecov.io/bash)
+after_success:
+  
