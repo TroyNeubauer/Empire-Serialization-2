@@ -115,15 +115,15 @@ namespace ES {
 	template<typename T>
 	struct GetCharsetCode
 	{
-		static const Charset Code;
+		//static constexpr Charset Code;
 	};
 
-	// template<> struct GetCharsetCode<utf8>	{ static const Charset Code =  Charset::UTF8; };
-	// template<> struct GetCharsetCode<utf16>	{ static const Charset Code = Charset::UTF16; };
-	// template<> struct GetCharsetCode<utf32>	{ static const Charset Code = Charset::UTF32; };
-	// template<> struct GetCharsetCode<esc4>	{ static const Charset Code =  Charset::ESC4; };
-	// template<> struct GetCharsetCode<esc6>	{ static const Charset Code =  Charset::ESC6; };
-	// template<> struct GetCharsetCode<esc8>	{ static const Charset Code =  Charset::ESC8; };
+	template<> struct GetCharsetCode<utf8>	{ static constexpr Charset Code =  Charset::UTF8; };
+	template<> struct GetCharsetCode<utf16>	{ static constexpr Charset Code = Charset::UTF16; };
+	template<> struct GetCharsetCode<utf32>	{ static constexpr Charset Code = Charset::UTF32; };
+	template<> struct GetCharsetCode<esc4>	{ static constexpr Charset Code =  Charset::ESC4; };
+	template<> struct GetCharsetCode<esc6>	{ static constexpr Charset Code =  Charset::ESC6; };
+	template<> struct GetCharsetCode<esc8>	{ static constexpr Charset Code =  Charset::ESC8; };
 
 
 	struct Error

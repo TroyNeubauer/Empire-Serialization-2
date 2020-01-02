@@ -65,7 +65,7 @@ project "C++"
 
 	
 	configuration "coverage"
-		buildoptions { "--coverage" }
+		buildoptions { "--coverage", "-fprofile-abs-path" }
 
 	filter { "action:gmake*", "toolset:gcc" }
 		buildoptions { "-masm=intel" }
@@ -107,10 +107,7 @@ project "Test"
 	}
 
 	configuration "coverage"
-		links
-		{
-			"gcov",
-		}	
+		buildoptions { "--coverage", "-fprofile-abs-path" }
 
 	filter { "action:gmake*", "toolset:gcc" }
 		buildoptions { "-fPIC" }
@@ -150,10 +147,7 @@ project "Sandbox"
 	}
 
 	configuration "coverage"
-		links
-		{
-			"gcov",
-		}
+		buildoptions { "--coverage", "-fprofile-abs-path" }
 
 	filter { "action:gmake*", "toolset:gcc" }
 		buildoptions { "-fPIC" }

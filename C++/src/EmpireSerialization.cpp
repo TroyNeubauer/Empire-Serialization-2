@@ -6,11 +6,7 @@
 #include <cstdio>
 #include <cinttypes>
 
-namespace ES {
-
-	template<typename T>
-	const Charset GetCharsetCode<T>::Code = Charset::UTF8;
-	
+namespace ES {	
 
 
 	const Error& GetError()
@@ -93,5 +89,14 @@ namespace ES {
 	{
 		Internal::SetAllocErrorHandler(handler);
 	}
+
+	//Instantiate templates
+	template struct GetCharsetCode<utf8>;
+	template struct GetCharsetCode<utf16>;
+	template struct GetCharsetCode<utf32>;
+	template struct GetCharsetCode<esc4>;
+	template struct GetCharsetCode<esc6>;
+	template struct GetCharsetCode<esc8>;
+
 
 }
