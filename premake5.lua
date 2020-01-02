@@ -104,10 +104,11 @@ project "Test"
 	links 
 	{
 		"C++",
+		"gcov",
 	}
 
 	configuration "coverage"
-		buildoptions { "--coverage", "-fprofile-abs-path" }
+		buildoptions { "-fprofile-abs-path" }
 
 	filter { "action:gmake*", "toolset:gcc" }
 		buildoptions { "-fPIC" }
@@ -144,10 +145,11 @@ project "Sandbox"
 	links 
 	{
 		"C++",
+		"gcov",
 	}
 
 	configuration "coverage"
-		buildoptions { "--coverage", "-fprofile-abs-path" }
+		buildoptions { "-fprofile-abs-path" }
 
 	filter { "action:gmake*", "toolset:gcc" }
 		buildoptions { "-fPIC" }
