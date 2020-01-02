@@ -13,18 +13,23 @@ before_install:
   - wget https://github.com/premake/premake-core/releases/download/v5.0.0-alpha14/premake-5.0.0-alpha14-linux.tar.gz -O premake.tar.gz
   - tar -xf premake.tar.gz
   - chmod +x premake5
-install: 
+install:
 
 script:
-  # Export CC and CXX to tell cmake which compiler to use
-  - export CC=/usr/bin/gcc-9
-  - export CXX=/usr/bin/g++-9
 # Check versions of gcc, g++ and cmake
   - gcc -v && g++ -v --version
+# Create and run the project files with code coverage
   - ./premake5 gmake2 --coverage
   - make config=debug
   - ./bin/Debug-linux-x86_64/Test/Test
-after_success:
   - ./GetCodeGCOV.sh
   - bash <(curl -s https://codecov.io/bash)
+# Compile and run release
+  - ./premake5 gmake2
+  - make config=release
+  - ./bin/Release-linux-x86_64/Test/Test
+# Compile and run release-size
+  - ./premake5 gmake2
+  - make config=release-size
+  - ./bin/Release-Size-linux-x86_64/Test/Test
 
