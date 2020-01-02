@@ -1,6 +1,8 @@
 # Empire-Serialization-2
 
-[![Coverage Status](https://coveralls.io/repos/github/TroyNeubauer/Empire-Serialization-2/badge.svg?branch=master)](https://coveralls.io/github/TroyNeubauer/Empire-Serialization-2?branch=master)
+[![Code Coverage](https://codecov.io/gh/TroyNeubauer/Empire-Serialization-2/branch/master/graph/badge.svg)](https://codecov.io/gh/TroyNeubauer/Empire-Serialization-2)
+
+
 
 Empire Serialization is an extremely fast and efficient serialization framework. It is cross language, cross platform and will have bindings for:
 * C/C++
