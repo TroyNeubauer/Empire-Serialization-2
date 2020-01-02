@@ -25,11 +25,9 @@ script:
   - ./GetCodeGCOV.sh
   - bash <(curl -s https://codecov.io/bash)
 # Compile and run release
-  - ./premake5 gmake2
   - make config=release
   - ./bin/Release-linux-x86_64/Test/Test
 # Compile and run release-size
-  - ./premake5 gmake2
   - make config=release-size
   - ./bin/Release-Size-linux-x86_64/Test/Test
 
