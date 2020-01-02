@@ -2,7 +2,6 @@
 #include <EmpireSerialization2.h>
 
 
-
 #define CATCH_CONFIG_RUNNER
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include <catch2/catch.hpp>
@@ -17,4 +16,4 @@ int main(int argc, char* const argv[]) {
 
 
 #include "BufferTest.h"
-
+#include "ConversionsTest.h"

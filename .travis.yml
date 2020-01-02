@@ -6,28 +6,25 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-7
-      - g++-7
+      - gcc-9
+      - g++-9
 
 before_install:
   - wget https://github.com/premake/premake-core/releases/download/v5.0.0-alpha14/premake-5.0.0-alpha14-linux.tar.gz -O premake.tar.gz
   - tar -xf premake.tar.gz
   - chmod +x premake5
-  - pip install --user pyyaml cpp-coveralls
 install: 
 
 script:
-# Link gcc-6 and g++-6 to their standard commands
-  - sudo ln -s /usr/bin/gcc-7 /usr/local/bin/gcc
-  - sudo ln -s /usr/bin/g++-7 /usr/local/bin/g++
   # Export CC and CXX to tell cmake which compiler to use
-  - export CC=/usr/bin/gcc-7
-  - export CXX=/usr/bin/g++-7
+  - export CC=/usr/bin/gcc-9
+  - export CXX=/usr/bin/g++-9
 # Check versions of gcc, g++ and cmake
   - gcc -v && g++ -v --version
   - ./premake5 gmake2 --coverage
   - make config=debug
   - ./bin/Debug-linux-x86_64/Test/Test
 after_success:
-  - coveralls
+  - ./GetCodeGCOV.sh
+  - bash <(curl -s https://codecov.io/bash)
 

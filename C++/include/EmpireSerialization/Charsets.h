@@ -35,7 +35,7 @@ namespace ES {
 
 	//XXX_DECODE allows users to obtain the unicode value for the character value in another encoding scheme
 	//XXX_ENCODE is the mathmatical inverse function XXX_DECODE
-	constexpr const std::array<char, 16> ESC4_DECODE = { 'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'c', 'u', 'm', 'w', 'f' };
+	constexpr const std::array<char, 16> ESC4_DECODE = { 'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'u', 'c', 'm', 'w', 'f' };
 	static constexpr const std::size_t ESC4_ENCODE_SIZE = EncodingSize(ESC4_DECODE);
 	constexpr const std::array<char, ESC4_ENCODE_SIZE> ESC4_ENCODE = ConstructEncoding<char, ESC4_DECODE.size(), ESC4_ENCODE_SIZE>(ESC4_DECODE);
 

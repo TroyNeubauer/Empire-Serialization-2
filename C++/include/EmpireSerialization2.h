@@ -42,14 +42,46 @@ namespace ES {
 	typedef uint32_t utf32;
 
 	struct esc4 {
+		esc4() {}
+		esc4(uint8_t value) : Value(value) {}
+		
+		bool operator==(const esc4& other) const { return Value == other.Value; }
+		bool operator<(const esc4& other) const { return Value < other.Value; }
+		bool operator>(const esc4& other) const { return Value > other.Value; }
+		bool operator<=(const esc4& other) const { return Value <= other.Value; }
+		bool operator>=(const esc4& other) const { return Value >= other.Value; }
+		esc4 operator=(const esc4& other) { return Value = other.Value; }
+
 		uint8_t Value;
 	};
 
 	struct esc6 {
+		esc6() {}
+		esc6(uint8_t value) : Value(value) {}
+
+		bool operator==(const esc6& other) const { return Value == other.Value; }
+		bool operator<(const esc6& other) const { return Value < other.Value; }
+		bool operator>(const esc6& other) const { return Value > other.Value; }
+		bool operator<=(const esc6& other) const { return Value <= other.Value; }
+		bool operator>=(const esc6& other) const { return Value >= other.Value; }
+		esc6 operator=(const esc6& other) { return Value = other.Value; }
+
+
 		uint8_t Value;
 	};
 
 	struct esc8 {
+		esc8() {}
+		esc8(uint8_t value) : Value(value) {}
+
+		bool operator==(const esc8& other) const { return Value == other.Value; }
+		bool operator<(const esc8& other) const { return Value < other.Value; }
+		bool operator>(const esc8& other) const { return Value > other.Value; }
+		bool operator<=(const esc8& other) const { return Value <= other.Value; }
+		bool operator>=(const esc8& other) const { return Value >= other.Value; }
+		esc8 operator=(const esc8& other) { return Value = other.Value; }
+
+
 		uint8_t Value;
 	};
 
@@ -79,6 +111,20 @@ namespace ES {
 	{
 		UTF8, UTF16, UTF32, ESC4, ESC6, ESC8
 	};
+
+	template<typename T>
+	struct GetCharsetCode
+	{
+		//static constexpr Charset Code;
+	};
+
+	template<> struct GetCharsetCode<utf8>	{ static constexpr Charset Code =  Charset::UTF8; };
+	template<> struct GetCharsetCode<utf16>	{ static constexpr Charset Code = Charset::UTF16; };
+	template<> struct GetCharsetCode<utf32>	{ static constexpr Charset Code = Charset::UTF32; };
+	template<> struct GetCharsetCode<esc4>	{ static constexpr Charset Code =  Charset::ESC4; };
+	template<> struct GetCharsetCode<esc6>	{ static constexpr Charset Code =  Charset::ESC6; };
+	template<> struct GetCharsetCode<esc8>	{ static constexpr Charset Code =  Charset::ESC8; };
+
 
 	struct Error
 	{
