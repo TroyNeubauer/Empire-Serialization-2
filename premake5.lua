@@ -108,7 +108,13 @@ project "Sandbox"
 	{
 		"C++",
 	}
-		
+
+	configuration "coverage"
+		links
+		{
+			"gcov",
+		}	
+
 	filter { "action:gmake*", "toolset:gcc" }
 		buildoptions { "-fPIC" }
 

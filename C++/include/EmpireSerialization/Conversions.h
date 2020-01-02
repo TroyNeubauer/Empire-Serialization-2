@@ -5,12 +5,6 @@
 namespace ES {
 	namespace Conversions {
 
-		struct StringCodingData
-		{
-			std::size_t Characters;
-			std::size_t Bytes;
-		};
-
 		template<typename SrcType, typename DestType>
 		struct Exists
 		{

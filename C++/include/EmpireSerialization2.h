@@ -53,6 +53,13 @@ namespace ES {
 		uint8_t Value;
 	};
 
+	struct StringCodingData
+	{
+		std::size_t Characters;
+		std::size_t Bytes;
+	};
+
+
 	const int ES_ASSERT_LEVEL_NONE = 0;
 
 	const int ES_ASSERT_LEVEL_MIN = 1;
@@ -83,7 +90,7 @@ namespace ES {
 			{
 				uint32_t Char;
 				Charset CharacterSet;
-				es_length Offset;//The index of the bad character
+				StringCodingData Position;//The index of the bad character
 			} InvalidCharacter;
 			
 			struct
@@ -109,7 +116,7 @@ namespace ES {
 	void SetAllocErrorHandler(AllocErrorHandler handler);
 
 	namespace ToString {
-		void PrintError(Formatter& formatter, Error& error);
+		void PrintError(Formatter& formatter, const Error& error);
 		const char* GetErrorCodeString(ErrorCode codr);
 		const char* GetCharsetString(Charset charset);
 

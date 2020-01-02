@@ -25,10 +25,15 @@ struct BigClass
 
 int main()
 {
-	char in[] = "test!";
-	ES::esc4 dest[100];
-	ES::Conversions::StringCodingData data;
-	ES::Conversions::Convert<ES::utf8, ES::esc4>(in, sizeof(in), dest, sizeof(dest), data);
+	char in[] = "testa";
+	ES::esc6 dest[100];
+	ES::StringCodingData data;
+	if (ES::Conversions::Convert<ES::utf8, ES::esc6>(in, std::strlen(in) + 1, dest, sizeof(dest), data))
+	{
+		ES::DefaultFormatter formatter;
+		ES::ToString::PrintError(formatter, ES::GetError());
+		printf("Error converting string %s", formatter.c_str());
+	}
 	for (int i = 0; i < data.Bytes; i++)
 	{
 		printf("%d (%c)\n", dest[i], dest[i]);

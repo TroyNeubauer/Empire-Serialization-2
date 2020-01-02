@@ -1,3 +1,4 @@
+#include "EmpireSerialization2.h"
 #include "EmpireSerialization/Conversions.h"
 #include "Internal.h"
 
@@ -61,7 +62,7 @@ namespace ES {
 					Error& error = Internal::GetError();
 					error.InvalidCharacter.Char = c;
 					error.InvalidCharacter.CharacterSet = Charset::UTF32;
-					error.InvalidCharacter.Offset = i;
+					error.InvalidCharacter.Position = data;
 					return error.Type = INVALID_CHARACTER;
 				}
 				else
@@ -89,23 +90,24 @@ namespace ES {
 			data.Characters = 0;
 			data.Bytes = 0;
 			for (std::size_t& i = data.Characters; i < srcBytes / sizeof(utf32); i++)
-			{
+			{ 
 				utf32 codepoint = src[i];
-				if (codepoint >= ESC4_ENCODE.size() || ESC4_ENCODE[codepoint] == -1)
+				int8_t encoded;
+				if (codepoint >= ESC4_ENCODE.size() || (encoded = ESC4_ENCODE[codepoint]) == -1)
 				{
 					Error& error = Internal::GetError();
 					error.InvalidCharacter.Char = codepoint;
 					error.InvalidCharacter.CharacterSet = Charset::ESC4;
-					error.InvalidCharacter.Offset = i;
+					error.InvalidCharacter.Position = data;
 					return error.Type = INVALID_CHARACTER;
 				}
 				if (start)
 				{
-					part = ESC4_ENCODE[codepoint] << 4;
+					part = encoded << 4;
 				}
 				else
 				{
-					part |= ESC4_ENCODE[codepoint];
+					part |= encoded;
 					dest[data.Bytes++].Value = part & 0xFF;
 				}
 				start = !start;
@@ -118,8 +120,79 @@ namespace ES {
 			return ErrorCode::NONE;
 		}
 
+		template<>
+		ErrorCode Convert<utf32, esc6>(const utf32* src, size_t srcBytes, esc6* dest, size_t destCapacity, StringCodingData& data)
+		{
+			uint32_t part;
+			uint8_t state = 0;
+			
+			data.Characters = 0;
+			data.Bytes = 0;
+			for (std::size_t& i = data.Characters; i < srcBytes / sizeof(utf32); i++)
+			{
+				utf32 codepoint = src[i];
+				int8_t encoded;
+				if (codepoint >= ESC6_ENCODE.size() || (encoded = ESC6_ENCODE[codepoint]) == -1)
+				{
+					Error& error = Internal::GetError();
+					error.InvalidCharacter.Char = codepoint;
+					error.InvalidCharacter.CharacterSet = Charset::ESC6;
+					error.InvalidCharacter.Position = data;
+					return error.Type = INVALID_CHARACTER;
+				}
+				if (state == 0)
+				{
+					part = encoded << 18;//top 6 bits of 24 bit word
+					state++;
+				}
+				else if (state == 1)
+				{
+					part |= encoded << 12;
+					state++;
+				}
+				else if (state == 2)
+				{
+					part |= encoded << 6;
+					state++;
+				}
+				else if (state == 3)
+				{
+					part |= encoded << 6;
+					//Write all three bytes
+					dest[data.Bytes++].Value = (part >> 16) & 0xFF;
+					dest[data.Bytes++].Value = (part >>  8) & 0xFF;
+					dest[data.Bytes++].Value = (part >>  0) & 0xFF;
+
+					state = 0;
+				}
+				
+			}
+
+			//Write the remaining characters if the string wasnt a mutiple of 4
+			if (state == 1)//Top byte
+			{//Bytes 18-24 have data
+				dest[data.Bytes++].Value = (part >> 16) & 0xFF;
+			}
+			else if (state == 2)
+			{//Bytes 12-24 have data
+				dest[data.Bytes++].Value = (part >> 16) & 0xFF;
+				dest[data.Bytes++].Value = (part >>  8) & 0xFF;
+				
+			}
+			else if (state == 3)
+			{//Bytes 6-24 have data
+				dest[data.Bytes++].Value = (part >> 16) & 0xFF;
+				dest[data.Bytes++].Value = (part >>  8) & 0xFF;
+				dest[data.Bytes++].Value = (part >>  0) & 0xFF;
+			}
+			
+			return ErrorCode::NONE;
+		}
+
+
 
 		template ErrorCode Convert<utf8, esc4>(const utf8*, size_t, esc4*, size_t, StringCodingData&);
+		template ErrorCode Convert<utf8, esc6>(const utf8*, size_t, esc6*, size_t, StringCodingData&);
 
 	}
 }

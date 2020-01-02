@@ -20,7 +20,7 @@ namespace ES {
 
 	namespace ToString {
 
-		void PrintError(Formatter& formatter, Error& error)
+		void PrintError(Formatter& formatter, const Error& error)
 		{
 			switch(error.Type)
 			{
@@ -32,13 +32,14 @@ namespace ES {
 					if (unicode < 128)
 					{
 						formatter.W("Invalid character U+").Base(unicode, 16) << " (" << static_cast<char>(unicode) << 
-							") at location " << error.InvalidCharacter.Offset << " for charset " << GetCharsetString(error.InvalidCharacter.CharacterSet);
+							") at character " << error.InvalidCharacter.Position.Characters << " (byte " << error.InvalidCharacter.Position.Bytes << 
+							") for charset " << GetCharsetString(error.InvalidCharacter.CharacterSet);
 					}
 					else
 					{
 						//Dont attempt to print non ASCII characters because of bad terminal handling
-						formatter.W("Invalid character U+").Base(unicode, 16) << ") at location " << error.InvalidCharacter.Offset
-							<< " for charset " << GetCharsetString(error.InvalidCharacter.CharacterSet);
+						formatter.W("Invalid character U+").Base(unicode, 16) << ") at character " << error.InvalidCharacter.Position.Characters <<
+							" (byte " << error.InvalidCharacter.Position.Bytes << ") for charset " << GetCharsetString(error.InvalidCharacter.CharacterSet);
 					}
 					
 					break;

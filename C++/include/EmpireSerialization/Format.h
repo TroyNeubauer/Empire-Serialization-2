@@ -9,10 +9,6 @@
 
 namespace ES {
 
-	static const char UPPER_DIGITS[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-	static const char LOWER_DIGITS[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-
-
 	class Formatter
 	{
 	public:
@@ -125,7 +121,7 @@ namespace ES {
 
 		inline const char* c_str() { return m_Wrapper.c_str(); }
 		inline operator const char*() { return c_str(); }
-		inline operator Formatter&() const { return m_Wrapper; }
+		inline operator Formatter&() { return m_Wrapper; }
 
 		template<typename T>
 		inline Formatter& operator<<(T value) { return m_Wrapper << value; }
