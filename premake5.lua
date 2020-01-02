@@ -53,6 +53,12 @@ workspace "Empire Serialization 2"
 		"Release",
 		"Release-Size",
 	}
+	
+	if _OPTIONS["coverage"] then
+		add_new_gcc_toolset("gcc-9", "/usr/bin/", "-9")--Force gcc9
+		toolset "gcc-9"
+		print "Forcing gcc-9"
+	end
 
 	filter "configurations:Debug"
 		runtime "Debug"
@@ -72,9 +78,6 @@ workspace "Empire Serialization 2"
 		inlining "auto"
 		floatingpoint "Fast"
 
-	configuration "coverage"
-		add_new_gcc_toolset("gcc-9", "/usr/bin/", "-9")--Force gcc9
-		toolset "gcc-9"
 
 
 
@@ -104,8 +107,9 @@ project "C++"
 	}
 
 	
-	configurations "coverage"
+	if _OPTIONS["coverage"] then
 		buildoptions { "--coverage", "-fprofile-abs-path" }
+	end
 
 	filter { "toolset:gcc*" }
 		buildoptions { "-masm=intel" }
@@ -147,8 +151,9 @@ project "Test"
 		"gcov",
 	}
 
-	configuration "coverage"
+	if _OPTIONS["coverage"] then
 		buildoptions { "-fprofile-abs-path" }
+	end
 
 
 project "Sandbox"
@@ -185,6 +190,7 @@ project "Sandbox"
 		"gcov",
 	}
 
-	configuration "coverage"
+	if _OPTIONS["coverage"] then
 		buildoptions { "-fprofile-abs-path" }
+	end
 
