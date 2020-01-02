@@ -63,10 +63,6 @@ project "C++"
 		"%{prj.name}/include/EmpireSerialization/",
 	}
 
-	sysincludedirs
-	{
-		"C++/src/",--To allow for accessing internals in test cases
-	}
 	
 	configuration "coverage"
 		buildoptions { "--coverage" }
@@ -74,6 +70,50 @@ project "C++"
 	filter { "action:gmake*", "toolset:gcc" }
 		buildoptions { "-masm=intel" }
 
+
+
+project "Test"
+	location "Test"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+	vectorextensions "AVX"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs
+	{
+		"%{prj.name}/src/",
+	}
+
+	sysincludedirs
+	{
+		"C++/include/",
+		"C++/src/",--To allow for accessing internals in test cases
+		"Test/vendor/",
+	}
+
+	links 
+	{
+		"C++",
+	}
+
+	configuration "coverage"
+		links
+		{
+			"gcov",
+		}	
+
+	filter { "action:gmake*", "toolset:gcc" }
+		buildoptions { "-fPIC" }
 
 
 project "Sandbox"
@@ -113,7 +153,7 @@ project "Sandbox"
 		links
 		{
 			"gcov",
-		}	
+		}
 
 	filter { "action:gmake*", "toolset:gcc" }
 		buildoptions { "-fPIC" }
