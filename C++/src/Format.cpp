@@ -8,6 +8,14 @@ namespace ES {
 	const char Formatter::LOWER_DIGITS[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
 
+		const char* Formatter::c_str()
+		{
+			ES_ASSERT(m_Offset < m_Capacity, "Formatter has no space for the null termination character! "
+				"m_Offset should always save space for the null byte!");
+			m_Buf[m_Offset] = '\0';
+			return m_Buf;
+		}
+
 		Formatter& Formatter::operator<<(uint8_t value)
 		{
 			PrintUnsignedInteger(value);

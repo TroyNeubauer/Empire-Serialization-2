@@ -6,7 +6,7 @@ namespace ES {
 
 	namespace Internal {
 
-		static Error s_Error;
+		static thread_local Error s_Error;
 
 		Error& GetError()
 		{

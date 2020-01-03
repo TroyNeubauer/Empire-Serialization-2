@@ -14,8 +14,11 @@ namespace ES {
 	public:
 		inline Formatter(char* buf, std::size_t capacity) : m_Buf(buf), m_Capacity(capacity) {}
 
-		inline const char* c_str() { m_Buf[m_Offset] = '\0'; return m_Buf; }
+		const char* c_str();
 		inline operator const char*() { return c_str(); }
+
+		inline std::size_t Capacity() const { return m_Capacity; }
+		inline std::size_t Size() const { return m_Offset; }
 
 		Formatter& operator<<(uint8_t value);
 		Formatter& operator<<(uint16_t value);
@@ -38,8 +41,9 @@ namespace ES {
 		{
 			//Always treat value as unsigned
 			typedef typename std::make_unsigned<T>::type UnsignedType;
-			UnsignedType unsignedValue;
 
+			//Convert to the unsigned type using memcpy instead of a cast to make the compiler happy
+			UnsignedType unsignedValue;
 			std::memcpy(&unsignedValue, &value, sizeof(value));
 			PrintUnsignedInteger(unsignedValue, base);
 			return *this;
@@ -113,21 +117,28 @@ namespace ES {
 	};
 
 
-	template<std::size_t Capacity>
+	template<std::size_t Cap>
 	class SizedFormatter
 	{
 	public:
-		inline SizedFormatter() : m_Wrapper(m_Buf, Capacity) {}
+		inline SizedFormatter() : m_Wrapper(m_Buf, Cap) {}
 
+		//Proxy all functions to the wrapper
 		inline const char* c_str() { return m_Wrapper.c_str(); }
 		inline operator const char*() { return c_str(); }
 		inline operator Formatter&() { return m_Wrapper; }
 
-		template<typename T>
-		inline Formatter& operator<<(T value) { return m_Wrapper << value; }
+		inline std::size_t Capacity() const { return m_Wrapper.Capacity(); }
+		inline std::size_t Size() const { return m_Wrapper.Size(); }
+
+
+		template<typename T> inline Formatter& operator<<(T value) { return m_Wrapper << value; }
+		template<typename T> inline Formatter& Base(T value, uint8_t base) { return m_Wrapper.Base(value, base); }
+		template<typename T> inline Formatter& Write(T value) { return m_Wrapper.Write(value); }
+		template<typename T> inline Formatter& W(T value) { return m_Wrapper.W(value); }
 
 	private:
-		char m_Buf[Capacity];
+		char m_Buf[Cap];
 		Formatter m_Wrapper;
 	};
 

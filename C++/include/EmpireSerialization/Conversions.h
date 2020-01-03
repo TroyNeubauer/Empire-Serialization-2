@@ -24,11 +24,8 @@ namespace ES {
 				);
 		};
 
-		template<typename SrcType, typename DestType>
-		std::size_t RequiredCapacity(std::size_t bytes);
-
 		template<typename SameType>
-		ErrorCode Convert(const SameType* src, size_t srcBytes, SameType* dest, size_t destCapacity, StringCodingData& data)
+		ErrorCode Convert(const SameType* src, size_t srcBytes, SameType* dest, size_t destBytes, StringCodingData& data)
 		{
 			//Nop. SrcType and DestType are the same
 
@@ -36,10 +33,7 @@ namespace ES {
 		}
 
 		template<typename SrcType, typename DestType>
-		ErrorCode Convert(const SrcType* src, size_t srcBytes, DestType* dest, size_t destCapacity, StringCodingData& data);
-
-
-		//Explicit specializations
+		ErrorCode Convert(const SrcType* src, size_t srcBytes, DestType* dest, size_t destBytes, StringCodingData& data);
 
 	}
 
