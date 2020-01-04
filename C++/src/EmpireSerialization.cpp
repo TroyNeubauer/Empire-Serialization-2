@@ -2,6 +2,8 @@
 
 #include "Internal.h"
 
+#include "EmpireSerialization/String.h"
+
 #include <cstring>
 #include <cstdio>
 #include <cinttypes>
@@ -81,68 +83,6 @@ namespace ES {
 	void ClearError()
 	{
 		Internal::GetError().Type = ErrorCode::NONE;
-	}
-
-	namespace ToString {
-
-		void PrintError(Formatter& formatter, const Error& error)
-		{
-			switch(error.Type)
-			{
-				case ErrorCode::NONE: formatter << "No Error"; break;
-				
-				case ErrorCode::UNSUPPORTED_CHARACTER:
-				{
-					uint32_t unicode = error.UnsupportedCharacter.Char;
-					if (unicode < 128)
-					{
-						formatter.W("Unsupported character U+").Base(unicode, 16) << " (" << static_cast<char>(unicode) << 
-							") at character " << error.UnsupportedCharacter.Position.Character << " (word " << error.UnsupportedCharacter.Position.Word << 
-							") for charset " << GetCharsetString(error.UnsupportedCharacter.CharacterSet);
-					}
-					else
-					{
-						//Dont attempt to print non ASCII characters because of bad terminal handling
-						formatter.W("Unsupported character U+").Base(unicode, 16) << ") at character " << error.UnsupportedCharacter.Position.Character <<
-							" (word " << error.UnsupportedCharacter.Position.Word << ") for charset " << GetCharsetString(error.UnsupportedCharacter.CharacterSet);
-					}
-					
-					break;
-				}
-				case ErrorCode::NOT_IMPLEMENTED:
-					formatter << "Feature \"" << error.NotImplemented.Feature << "\" is not implemented in this build of Empier Serialization!";
-					break;
-				
-				case ErrorCode::BUFFER_OVERFLOW:
-					formatter << "Buffer overflow. Not enough space to hold new bytes. Buffer size " 
-						<< error.BufferOverflow.BufferSize << " bytes, size needed " << error.BufferOverflow.RequiredSize << " bytes";
-					break;
-
-				case ErrorCode::BUFFER_UNDERFLOW:
-					formatter << "Buffer underflow. Buffer is out of bytes to read. Buffer size " 
-						<< error.BufferUnderflow.BufferSize << " bytes, size needed " << error.BufferUnderflow.RequiredSize << " bytes";
-					break;
-			}
-		}
-
-		const char* GetErrorCodeString(ErrorCode code)
-		{
-			switch(code)
-			{
-				case ErrorCode::NONE: return "No Error";
-				case ErrorCode::UNSUPPORTED_CHARACTER: return "Unsupported Character";
-				case ErrorCode::NOT_IMPLEMENTED: return "Not Implemented";
-				case ErrorCode::BUFFER_OVERFLOW: return "Buffer Overflow";
-				default: ES_ABORT("Invalid error code!");
-			}
-			
-		}
-
-		const char* GetCharsetString(Charset charset)
-		{
-			return GetCharsetInfo(charset).Name;
-		}
-
 	}
 
 	void SetAllocErrorHandler(AllocErrorHandler handler)

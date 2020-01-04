@@ -17,3 +17,6 @@ int main(int argc, char* const argv[]) {
 
 #include "BufferTest.h"
 #include "ConversionsTest.h"
+#include "InternalTest.h"
+
+

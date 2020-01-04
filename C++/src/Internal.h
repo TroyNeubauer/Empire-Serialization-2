@@ -187,80 +187,53 @@ namespace ES {
 			T DivideCeli(T value, T divide) { return (value + divide - 1) / divide; }
 		}
 
-		template<std::uint64_t n, typename T>
-		inline bool BottomBitsFromTopSize(T value)
+		template<int8_t n, typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
+		inline UnsignedType BottomBitsFromTopSize(T value)
+		{
+			static_assert(n <= sizeof(T) * CHAR_BIT, "Cannot evaluate bits outside the range of T");
+			return BottomBits(sizeof(T) * CHAR_BIT - n, value);
+		}
+
+		template<typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
+		inline UnsignedType BottomBits(T value, int8_t n)
+		{
+			//Convert to the unsigned type using memcpy instead of a cast to make the compiler happy
+			UnsignedType unsignedValue;
+			memcpy(&unsignedValue, &value, sizeof(T));
+
+			//If they want the entire value dont do bit shifting
+			if (n == sizeof(T) * CHAR_BIT)
+			{
+				return unsignedValue;
+			}
+			ES_ASSERT(n >= 0, "N cannot be negitive");
+
+			UnsignedType mask = (static_cast<UnsignedType>(1) << n) - 1;
+			return unsignedValue & mask;
+		}
+
+		template<int8_t n, typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
+		inline UnsignedType BottomBits(T value)
+		{
+			return BottomBits(value, n);
+		}
+
+		template<int8_t n, typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
+		inline UnsignedType TopNBits(T value)
 		{
 			constexpr std::uint64_t totalBits = sizeof(T) * CHAR_BIT;
-			static_assert(totalBits >= n, "Cannot evaluate bits outside the range of T");
-			constexpr std::uint64_t bottomBits = totalBits - n;
-			T mask = 0;
-			//Turn all the lower bits on
-			for (int i = 0; i < bottomBits; i++)
-			{
-				mask |= (0b1 << i);
-			}
-			return value & mask;
+			static_assert(n <= sizeof(T) * CHAR_BIT, "Cannot evaluate bits outside the range of T");
+
+			UnsignedType unsignedValue;
+			std::memcpy(&unsignedValue, &value, sizeof(T));
+			return unsignedValue >> (totalBits - n);
 		}
 
-		template<std::uint64_t n, typename T>
-		inline bool BottomBits(T value)
+		template<uint8_t n, std::size_t expecting, typename T>
+		bool TopNBitsAre(T value)
 		{
-			T mask = 0;
-			//Turn all the lower bits on
-			for (int i = 0; i < n; i++)
-			{
-				mask |= (0b1 << i);
-			}
-			return value & mask;
+			return TopNBits<n, T>(value) == expecting;
 		}
-
-		template<typename T>
-		inline bool BottomBits(std::size_t n, T value)
-		{
-			if (std::is_signed<T>::value)
-			{
-				typedef typename std::make_unsigned<T>::type UnsignedType;
-				//Convert to the unsigned type using memcpy instead of a cast to make the compiler happy
-				UnsignedType unsignedValue;
-				std::memcpy(&unsignedValue, &value, sizeof(value));
-				return BottomBits<UnsignedType>(n, unsignedValue);
-			}
-			else
-			{
-				T mask = 0;
-				//Turn all the lower bits on
-				for (int i = 0; i < n; i++)
-				{
-					mask |= (0b1 << i);
-				}
-				return value & mask;
-			}
-		}
-
-		template<std::uint64_t n, std::uint64_t bits, typename T>
-		inline bool TopNBitsAre(T value)
-		{
-			if (std::is_signed<T>::value)
-			{
-				typedef typename std::make_unsigned<T>::type UnsignedType;
-				//Convert to the unsigned type using memcpy instead of a cast to make the compiler happy
-				UnsignedType unsignedValue;
-				std::memcpy(&unsignedValue, &value, sizeof(value));
-				return TopNBitsAre<n, bits, UnsignedType>(unsignedValue);
-			}
-			else
-			{
-				constexpr std::uint64_t totalBits = sizeof(T) * CHAR_BIT;
-				static_assert(totalBits >= n, "Cannot evaluate bits outside the range of T");
-				constexpr std::uint64_t shiftCount = totalBits - n;
-				return (value >> shiftCount) == bits;
-
-			}
-
-		}
-
-
-		
 	}
 }
 

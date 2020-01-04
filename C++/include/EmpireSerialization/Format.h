@@ -1,7 +1,10 @@
 #pragma once
 
+#include <unistd.h>
 #include <cstdint>
 #include <cstring>
+#include <cmath>
+
 #include <string>
 #include <limits>
 #include <algorithm>
@@ -19,6 +22,7 @@ namespace ES {
 
 		inline std::size_t Capacity() const { return m_Capacity; }
 		inline std::size_t Size() const { return m_Offset; }
+		inline void Clear() { m_Offset = 0; }
 
 		Formatter& operator<<(uint8_t value);
 		Formatter& operator<<(uint16_t value);
@@ -50,14 +54,14 @@ namespace ES {
 		}
 
 		template<typename T>
-		inline Formatter& Write(T value)
+		inline Formatter& Write(const T& value)
 		{
 			*this << value;
 			return *this;
 		}
 
 		template<typename T>
-		inline Formatter& W(T value)
+		inline Formatter& W(const T& value)
 		{
 			return Write(value);
 		}
@@ -132,10 +136,10 @@ namespace ES {
 		inline std::size_t Size() const { return m_Wrapper.Size(); }
 
 
-		template<typename T> inline Formatter& operator<<(T value) { return m_Wrapper << value; }
-		template<typename T> inline Formatter& Base(T value, uint8_t base) { return m_Wrapper.Base(value, base); }
-		template<typename T> inline Formatter& Write(T value) { return m_Wrapper.Write(value); }
-		template<typename T> inline Formatter& W(T value) { return m_Wrapper.W(value); }
+		template<typename T> inline Formatter& operator<<(const T& value) { return m_Wrapper << value; }
+		template<typename T> inline Formatter& Base(const T& value, uint8_t base) { return m_Wrapper.Base(value, base); }
+		template<typename T> inline Formatter& Write(const T& value) { return m_Wrapper.Write(value); }
+		template<typename T> inline Formatter& W(const T& value) { return m_Wrapper.W(value); }
 
 	private:
 		char m_Buf[Cap];
@@ -143,6 +147,66 @@ namespace ES {
 	};
 
 	using DefaultFormatter = SizedFormatter<256>;
+
+#ifndef ES_FORMAT_FILE_BUF_SIZE
+	#define ES_FORMAT_FILE_BUF_SIZE 512
+#endif
+
+	template<typename T>
+	static std::size_t MaxDigits(T value, uint8_t base = 10)
+	{
+		return log(value) / log(base)+ 2;
+	}
+
+	class FormatFile
+	{
+	public:
+		FormatFile(int fd) : m_Wrapper(m_Buf, sizeof(m_Buf)), m_FD(fd) {}
+
+		template<typename T> FormatFile& operator<<(const T& value) { return Write(value); }
+		template<typename T> FormatFile& Base(const T& value, uint8_t base) { TryFlush(MaxDigits<T>(value, base)); m_Wrapper.Base(value, base); return *this; }
+		template<typename T> FormatFile& W(const T& value) { return Write(value); }
+		template<typename T> FormatFile& Write(const T& value) { WriteImpl(value); return *this; }
+
+		FormatFile& WriteImpl(uint8_t);
+		FormatFile& WriteImpl(uint16_t);
+		FormatFile& WriteImpl(uint32_t);
+		FormatFile& WriteImpl(uint64_t);
+		FormatFile& WriteImpl(int8_t);
+		FormatFile& WriteImpl(int16_t);
+		FormatFile& WriteImpl(int32_t);
+		FormatFile& WriteImpl(int64_t);
+
+		FormatFile& WriteImpl(const std::string&);
+		FormatFile& WriteImpl(const char*);
+
+		inline void F() { Flush(); }
+		inline void Flush() { TryFlush(m_Wrapper.Capacity()); }
+		//This will force it to flush
+		~FormatFile() { Flush(); }
+	private:
+
+		void TryFlush(std::size_t requiredBytes);
+		void WriteStringImpl(const char*, std::size_t length = 0);
+
+		template<typename T> void WriteIntegral(T value)
+		{
+			TryFlush(std::numeric_limits<T>::digits10); m_Wrapper.Write(value);
+		}
+
+	private:
+
+		char m_Buf[ES_FORMAT_FILE_BUF_SIZE];
+		Formatter m_Wrapper;
+		int m_FD;
+	};
+	class Print
+	{
+	public:
+		static FormatFile OUT;
+		static FormatFile ERR;
+
+	};
 
 }
 

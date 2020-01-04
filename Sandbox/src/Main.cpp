@@ -10,6 +10,7 @@
 
 #include <EmpireSerialization2.h>
 #include <EmpireSerialization/Conversions.h>
+#include <EmpireSerialization/Format.h>
 #include <Internal.h>
 
 struct Point {
@@ -23,8 +24,21 @@ struct BigClass
 	Point m_DefaultPoint;
 };
 
+using namespace ES;
+
 int main()
 {
+	std::string s;
+	s.reserve(1000000);
+	for (int i = 0; i < s.capacity(); i += 2)
+	{
+		s.push_back('C');
+		s.push_back('!');
+	}
+	Print::OUT.Write(s);
+	Print::OUT.Write("test");
+	Print::OUT.Write(7).Write(" ").Base(100, 16).W(" : ")
+		.Base(127, 2).Flush();
 
 	/*Type point = Type::CreateClass("Point",
 	{ 

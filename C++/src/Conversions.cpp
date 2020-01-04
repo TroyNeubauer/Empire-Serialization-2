@@ -40,6 +40,7 @@ namespace ES {
 			
 			std::size_t CharacterIndex;
 
+			StringCodingData* DataPtr;
 		};
 
 		static StringConversionsState s_StringState;
@@ -74,9 +75,10 @@ namespace ES {
 				Charset destCharsetCode = GetCharsetCode<DestType>::Code;
 
 				data.Characters = 0;
-				data.Words = 0;
-				data.CharacterSet = Charset::INVALID;
+				data.SrcCharacterSet = srcCharsetCode;
+				data.DestCharacterSet = destCharsetCode;
 
+				s_StringState.DataPtr = &data;
 				s_StringState.CharacterIndex = 0;
 				s_StringState.SrcCharset = srcCharsetCode;
 				s_StringState.DestCharset = Charset::UTF32;
@@ -88,6 +90,9 @@ namespace ES {
 				{
 					return errorCode;
 				}
+				data.WordsRead = s_StringState.WordReadIndex;
+				std::size_t initalCharactersPassed = s_StringState.CharacterIndex;
+				
 				size_t wordsWritten = s_StringState.WordWriteIndex;
 				//Reset the state
 				s_StringState.CharacterIndex = 0;
@@ -101,9 +106,14 @@ namespace ES {
 					return errorCode;
 				}
 				
-				data.Words = s_StringState.WordWriteIndex;
+				data.WordsWritten = s_StringState.WordWriteIndex;
 				data.Characters = s_StringState.CharacterIndex;
-				data.CharacterSet = destCharsetCode;
+				if (s_StringState.CharacterIndex != initalCharactersPassed)
+				{
+					//TODO Internal error
+				}
+
+				s_StringState.DataPtr = nullptr;
 
 				return ErrorCode::NONE;
 			}
@@ -118,6 +128,11 @@ namespace ES {
 			error.InvalidCharacter.Position.Word = s_StringState.WordReadIndex - 1;//minus one because end points to the next character to be read
 			error.InvalidCharacter.Position.Character = s_StringState.CharacterIndex;
 
+			s_StringState.DataPtr->Characters = s_StringState.CharacterIndex;
+			s_StringState.DataPtr->WordsRead = s_StringState.WordReadIndex;
+			s_StringState.DataPtr->WordsWritten = s_StringState.WordWriteIndex;
+			
+			s_StringState.DataPtr = nullptr;
 			return error.Type = ErrorCode::INVALID_CHARACTER;
 		}
 
@@ -130,6 +145,7 @@ namespace ES {
 			error.UnsupportedCharacter.Position.Word = s_StringState.WordReadIndex - 1;
 			error.UnsupportedCharacter.Position.Character = s_StringState.CharacterIndex;
 
+			s_StringState.DataPtr = nullptr;
 			return error.Type = ErrorCode::UNSUPPORTED_CHARACTER;
 		}
 
@@ -140,6 +156,7 @@ namespace ES {
 			error.BufferOverflow.BufferSize = (end - begin) * sizeof(begin[0]);
 			error.BufferOverflow.RequiredSize = error.BufferOverflow.BufferSize + GetCharsetInfo(GetCharsetCode<ErrorCharset>::Code).WordSize;
 
+			s_StringState.DataPtr = nullptr;
 			return error.Type = ErrorCode::BUFFER_OVERFLOW;
 		}
 
@@ -150,6 +167,7 @@ namespace ES {
 			error.BufferUnderflow.BufferSize = (end - begin) * sizeof(begin[0]);
 			error.BufferUnderflow.RequiredSize = error.BufferUnderflow.BufferSize + GetCharsetInfo(GetCharsetCode<ErrorCharset>::Code).WordSize;
 
+			s_StringState.DataPtr = nullptr;
 			return error.Type = ErrorCode::BUFFER_UNDERFLOW;
 		}
 
@@ -170,8 +188,9 @@ namespace ES {
 		}
 
 		template<typename CharsetType, typename DestPtr = CharsetType*>
-		static ErrorCode WriteCharacter(CharsetType c, DestPtr& dest, DestPtr destEnd)
+		static ErrorCode WriteWord(CharsetType c, DestPtr& dest, DestPtr destEnd)
 		{
+			if (dest == nullptr) return ErrorCode::NONE;
 #if ES_ASSERT_LEVEL >= ES_ASSERT_LEVEL_MIN
 			if (dest >= destEnd)
 			{
@@ -197,18 +216,26 @@ namespace ES {
 			s_StringState.DestCharset = destCharsetCode;
 			s_StringState.WordReadIndex = 0;
 			s_StringState.WordWriteIndex = 0;
+			
+			s_StringState.DataPtr = &data;
+			data.SrcCharacterSet = GetCharsetCode<SrcType>::Code;
+			data.DestCharacterSet = GetCharsetCode<DestType>::Code;
+
 			if (errorCode = ConvertStringImpl<SrcType, DestType>(src, srcBytes / GetCharsetInfo(srcCharsetCode).WordSize, 
 				dest, destBytes / GetCharsetInfo(destCharsetCode).WordSize, s_StringState.CharacterIndex, Internal::GetError().AdditionalMessage))
 			{
 				return errorCode;
 			}
 			
-			data.Words = s_StringState.WordWriteIndex;
+			data.WordsRead = s_StringState.WordReadIndex;
+			data.WordsWritten = s_StringState.WordWriteIndex;
 			data.Characters = s_StringState.CharacterIndex;
-			data.CharacterSet = destCharsetCode;
+			data.SrcCharacterSet = srcCharsetCode;
+			data.DestCharacterSet = destCharsetCode;
+
+			s_StringState.DataPtr = nullptr;
 
 			return ErrorCode::NONE;
-			return ErrorCode::NOT_IMPLEMENTED;
 		}
 
 		template<>
@@ -265,7 +292,7 @@ namespace ES {
 				if (surrogateCount != 0)
 				{
 					//Save bottom X bytes of the first byte according to the utf8 pattern
-					codepoint = Internal::BottomBits(6 - surrogateCount, c);
+					codepoint = Internal::BottomBits(c, 6 - surrogateCount);
 					int i = 0;
 					while (surrogateCount)
 					{
@@ -284,7 +311,8 @@ namespace ES {
 					}
 				}
 				
-				if (code = WriteCharacter(codepoint, dest, destEnd)) return code;
+				if (code = WriteWord(codepoint, dest, destEnd)) return code;
+				characters++;
 
 			}
 
@@ -314,7 +342,7 @@ namespace ES {
 				else
 				{
 					result |= encoded;
-					if (error = WriteCharacter(result, dest, destEnd)) return error;
+					if (error = WriteWord(result, dest, destEnd)) return error;
 				}
 				characters++;
 				
@@ -322,7 +350,7 @@ namespace ES {
 
 			//Write the last byte if there is an odd number of characters
 			if (characters % 2 == 1)
-				if (error = WriteCharacter(result, dest, destEnd)) return error;
+				if (error = WriteWord(result, dest, destEnd)) return error;
 			
 			return ErrorCode::NONE;
 		}
@@ -360,9 +388,9 @@ namespace ES {
 				{
 					part |= (encoded << 6);
 					//Write all three bytes
-					if (error = WriteCharacter(static_cast<esc6>((part >> 16) & 0xFF), dest, destEnd)) return error;
-					if (error = WriteCharacter(static_cast<esc6>((part >>  8) & 0xFF), dest, destEnd)) return error;
-					if (error = WriteCharacter(static_cast<esc6>((part >>  0) & 0xFF), dest, destEnd)) return error;
+					if (error = WriteWord(static_cast<esc6>((part >> 16) & 0xFF), dest, destEnd)) return error;
+					if (error = WriteWord(static_cast<esc6>((part >>  8) & 0xFF), dest, destEnd)) return error;
+					if (error = WriteWord(static_cast<esc6>((part >>  0) & 0xFF), dest, destEnd)) return error;
 				}
 				characters++;
 			}
@@ -371,20 +399,20 @@ namespace ES {
 			if (characters % 4 == 1)//Top byte
 			{
 				//Bytes 18-24 have data
-				if (error = WriteCharacter(static_cast<esc6>((part >> 16) & 0xFF), dest, destEnd)) return error;
+				if (error = WriteWord(static_cast<esc6>((part >> 16) & 0xFF), dest, destEnd)) return error;
 			}
 			else if (characters % 4 == 2)
 			{
 				//Bytes 12-24 have data
-				if (error = WriteCharacter(static_cast<esc6>((part >> 16) & 0xFF), dest, destEnd)) return error;
-				if (error = WriteCharacter(static_cast<esc6>((part >>  8) & 0xFF), dest, destEnd)) return error;
+				if (error = WriteWord(static_cast<esc6>((part >> 16) & 0xFF), dest, destEnd)) return error;
+				if (error = WriteWord(static_cast<esc6>((part >>  8) & 0xFF), dest, destEnd)) return error;
 			}
 			else if (characters % 4 == 3)
 			{
 				//Bytes 6-24 have data
-				if (error = WriteCharacter(static_cast<esc6>((part >> 16) & 0xFF), dest, destEnd)) return error;
-				if (error = WriteCharacter(static_cast<esc6>((part >>  8) & 0xFF), dest, destEnd)) return error;
-				if (error = WriteCharacter(static_cast<esc6>((part >>  0) & 0xFF), dest, destEnd)) return error;
+				if (error = WriteWord(static_cast<esc6>((part >> 16) & 0xFF), dest, destEnd)) return error;
+				if (error = WriteWord(static_cast<esc6>((part >>  8) & 0xFF), dest, destEnd)) return error;
+				if (error = WriteWord(static_cast<esc6>((part >>  0) & 0xFF), dest, destEnd)) return error;
 			}
 			
 			return ErrorCode::NONE;

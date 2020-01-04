@@ -24,6 +24,9 @@ namespace ES {
 				);
 		};
 
+		//Converts arrays of one type to arrays of another
+		//Most commonly this is used for string conversions
+		//Errors include BufferOverflow, BufferUnderflow, InvalidCharacter and UnsupportedCharacter
 		template<typename SameType>
 		ErrorCode Convert(const SameType* src, size_t srcBytes, SameType* dest, size_t destBytes, StringCodingData& data)
 		{

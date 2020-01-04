@@ -40,7 +40,7 @@ namespace ES {
 
 	enum class Charset
 	{
-		UTF8, UTF16, UTF32, ESC4, ESC6, ESC8, INVALID
+		UTF8, UTF16, UTF32, ESC4, ESC6, ESC8
 	};
 
 	struct CharsetInfo
@@ -118,16 +118,22 @@ namespace ES {
 		//For a utf8 string of two emojies, Characters will be 2  
 		std::size_t Characters;
 
-		//The number of (encoding dependent) words used by this string.
-		//The storage type for utf8 is uint8_t, uint16_t for utf16 etc.
-		//For a utf8 string of two emojies, Words will be 2 
-		std::size_t Words;
+		//The number of (encoding dependent) words in src that were read while converting this string.
+		std::size_t WordsRead;
+
+		//The number of (encoding dependent) words in dest that were written while converting this string.
+		std::size_t WordsWritten;
 		
 		//The character set this string was encoded with
-		Charset CharacterSet;
+		Charset SrcCharacterSet;
+
+		//The character set this string was encoded with
+		Charset DestCharacterSet;
 
 		//Quick getter for figuring how how many bytes this string uses
-		inline std::size_t GetNumBytes() const { return GetCharsetInfo(CharacterSet).WordSize * Words; }
+		inline std::size_t NumBytesRead() const { return GetCharsetInfo(SrcCharacterSet).WordSize * WordsRead; }
+		inline std::size_t NumBytesWritten() const { return GetCharsetInfo(DestCharacterSet).WordSize * WordsWritten; }
+
 	};
 
 	//Stores the location of a character within a string of a given charset
@@ -224,11 +230,4 @@ namespace ES {
 
 	void SetAllocErrorHandler(AllocErrorHandler handler);
 
-	namespace ToString {
-		void PrintError(Formatter& formatter, const Error& error);
-		const char* GetErrorCodeString(ErrorCode codr);
-		const char* GetCharsetString(Charset charset);
-
-	}
-	
 }
