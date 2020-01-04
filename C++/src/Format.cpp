@@ -103,34 +103,42 @@ namespace ES {
 	FormatFile& FormatFile::WriteImpl(uint8_t value)
 	{
 		WriteIntegral(value);
+		return *this;
 	}
 	FormatFile& FormatFile::WriteImpl(uint16_t value)
 	{
 		WriteIntegral(value);
+		return *this;
 	}
 	FormatFile& FormatFile::WriteImpl(uint32_t value)
 	{
 		WriteIntegral(value);
+		return *this;
 	}
 	FormatFile& FormatFile::WriteImpl(uint64_t value)
 	{
 		WriteIntegral(value);
+		return *this;
 	}
 	FormatFile& FormatFile::WriteImpl(int8_t value)
 	{
 		WriteIntegral(value);
+		return *this;
 	}
 	FormatFile& FormatFile::WriteImpl(int16_t value)
 	{
 		WriteIntegral(value);
+		return *this;
 	}
 	FormatFile& FormatFile::WriteImpl(int32_t value)
 	{
 		WriteIntegral(value);
+		return *this;
 	}
 	FormatFile& FormatFile::WriteImpl(int64_t value)
 	{
 		WriteIntegral(value);
+		return *this;
 	}
 
 	FormatFile& FormatFile::WriteImpl(const std::string& value)
