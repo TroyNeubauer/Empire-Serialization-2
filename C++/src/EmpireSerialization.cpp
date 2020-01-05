@@ -99,4 +99,8 @@ namespace ES {
 	template struct GetCharsetCode<esc8>;
 
 
+
+	std::size_t StringCodingData::NumBytesRead() const { return GetCharsetInfo(SrcCharacterSet).WordSize * WordsRead; }
+	std::size_t StringCodingData::NumBytesWritten() const { return GetCharsetInfo(DestCharacterSet).WordSize * WordsWritten; }
+
 }

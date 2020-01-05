@@ -1,9 +1,20 @@
+//===================================================================================
+// MIT Liscense
+// Copyright (c) 2020, Troy Neubauer
+//
+//	File: Charsets.h
+//	Contains definitions for encoding and decoding cutsom charsets. 
+//
+
 #pragma once
 
 #include <cstdint>
 #include <array>
 
 namespace ES {
+
+	const CharsetInfo& GetCharsetInfo(Charset charset);
+
 
 	template<typename T, std::size_t Len>
 	constexpr std::size_t EncodingSize(const std::array<T, Len>& decoding)

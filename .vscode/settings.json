@@ -63,6 +63,7 @@
 		"format.h": "c",
 		"shared_mutex": "cpp",
 		"bit": "cpp",
-		"conversions.h": "c"
+		"conversions.h": "c",
+		"forwardtypes.h": "c"
 	}
 }

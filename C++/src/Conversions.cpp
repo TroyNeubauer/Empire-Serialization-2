@@ -119,7 +119,7 @@ namespace ES {
 			}
 		}
 
-		static ErrorCode InvalidCharacterError(uint32_t invalidChar)
+		static ErrorCode InvalidCharacterError(u32 invalidChar)
 		{
 			Error& error = Internal::GetError();
 			error.InvalidCharacter.Char = invalidChar;
@@ -136,7 +136,7 @@ namespace ES {
 			return error.Type = ErrorCode::INVALID_CHARACTER;
 		}
 
-		static ErrorCode UnsupportedCharacterError(uint32_t unsupportedChar)
+		static ErrorCode UnsupportedCharacterError(u32 unsupportedChar)
 		{
 			Error& error = Internal::GetError();
 			error.UnsupportedCharacter.Char = unsupportedChar;
@@ -358,7 +358,7 @@ namespace ES {
 		template<>
 		ErrorCode ConvertStringImpl<utf32, esc6>(const utf32* src, std::size_t srcLength, esc6* dest, std::size_t destLength, std::size_t& characters, Formatter& errorFormatter)
 		{
-			uint32_t part;
+			u32 part;
 			ErrorCode error;
 			
 			const utf32* srcEnd = src + srcLength;

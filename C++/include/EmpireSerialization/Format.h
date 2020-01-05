@@ -1,14 +1,35 @@
+//===================================================================================
+// MIT Liscense
+// Copyright (c) 2020, Troy Neubauer
+//
+//	File: Format.h
+//	Contains definitions Empier Serialization's high performanace string formatting and
+//		logging sub-library
+//
+
 #pragma once
 
-#include <unistd.h>
+#include <cstdio>
 #include <cstdint>
 #include <cstring>
 #include <cmath>
+#include <climits>
 
 #include <string>
 #include <limits>
 #include <algorithm>
 
+#include "ForwardTypes.h"
+
+#if CHAR_MIN == 0
+	#define ES_UNSIGNED_CHAR
+
+#elif CHAR_MIN == SCHAR_MIN
+	#define ES_SIGNED_CHAR
+
+#else
+	#error Unknown char type
+#endif
 
 namespace ES {
 
@@ -24,24 +45,29 @@ namespace ES {
 		inline std::size_t Size() const { return m_Offset; }
 		inline void Clear() { m_Offset = 0; }
 
-		Formatter& operator<<(uint8_t value);
-		Formatter& operator<<(uint16_t value);
-		Formatter& operator<<(uint32_t value);
-		Formatter& operator<<(uint64_t value);
+		Formatter& operator<<(char value);
+//If char is signed we can provide an operator that prints an byte
+#ifdef ES_SIGNED_CHAR
+		Formatter& operator<<(u8 value);
+#endif
 
-		Formatter& operator<<(int8_t value);
-		Formatter& operator<<(int16_t value);
-		Formatter& operator<<(int32_t value);
-		Formatter& operator<<(int64_t value);
+		Formatter& operator<<(u16 value);
+		Formatter& operator<<(s16 value);
+
+		Formatter& operator<<(u32 value);
+		Formatter& operator<<(s32 value);
+
+		Formatter& operator<<(u64 value);
+		Formatter& operator<<(s64 value);
 
 		Formatter& operator<<(float value);
 		Formatter& operator<<(double value);
-		Formatter& operator<<(char value);
+
 		Formatter& operator<<(const char* value);
 		Formatter& operator<<(const std::string& value);
 
 		template<typename T>
-		Formatter& Base(T value, uint8_t base)
+		Formatter& Base(T value, u8 base)
 		{
 			//Always treat value as unsigned
 			typedef typename std::make_unsigned<T>::type UnsignedType;
@@ -81,7 +107,7 @@ namespace ES {
 		}
 
 		template<typename T>
-		inline void PrintUnsignedInteger(T value, uint8_t base = 10)
+		inline void PrintUnsignedInteger(T value, u8 base = 10)
 		{
 			if (value == static_cast<T>(0))
 			{
@@ -100,7 +126,7 @@ namespace ES {
 		}
 
 		template<typename T>
-		inline void PrintSignedInteger(T value, uint8_t base = 10)
+		inline void PrintSignedInteger(T value, u8 base = 10)
 		{
 			if (value < static_cast<T>(0))
 			{
@@ -115,6 +141,7 @@ namespace ES {
 		char* m_Buf;
 		std::size_t m_Capacity;
 		std::size_t m_Offset = 0;
+
 	};
 
 
@@ -135,7 +162,7 @@ namespace ES {
 
 
 		template<typename T> inline Formatter& operator<<(const T& value) { return m_Wrapper << value; }
-		template<typename T> inline Formatter& Base(const T& value, uint8_t base) { return m_Wrapper.Base(value, base); }
+		template<typename T> inline Formatter& Base(const T& value, u8 base) { return m_Wrapper.Base(value, base); }
 		template<typename T> inline Formatter& Write(const T& value) { return m_Wrapper.Write(value); }
 		template<typename T> inline Formatter& W(const T& value) { return m_Wrapper.W(value); }
 
@@ -151,7 +178,7 @@ namespace ES {
 #endif
 
 	template<typename T>
-	static std::size_t MaxDigits(T value, uint8_t base = 10)
+	static std::size_t MaxDigits(T value, u8 base = 10)
 	{
 		return log(value) / log(base)+ 2;
 	}
@@ -159,21 +186,23 @@ namespace ES {
 	class FormatFile
 	{
 	public:
-		FormatFile(int fd) : m_Wrapper(m_Buf, sizeof(m_Buf)), m_FD(fd) {}
+		FormatFile(FILE* file) : m_Wrapper(m_Buf, sizeof(m_Buf)), m_File(file) {}
 
 		template<typename T> FormatFile& operator<<(const T& value) { return Write(value); }
-		template<typename T> FormatFile& Base(const T& value, uint8_t base) { TryFlush(MaxDigits<T>(value, base)); m_Wrapper.Base(value, base); return *this; }
+		template<typename T> FormatFile& Base(const T& value, u8 base) { TryFlush(MaxDigits<T>(value, base)); m_Wrapper.Base(value, base); return *this; }
 		template<typename T> FormatFile& W(const T& value) { return Write(value); }
 		template<typename T> FormatFile& Write(const T& value) { WriteImpl(value); return *this; }
 
-		FormatFile& WriteImpl(uint8_t);
-		FormatFile& WriteImpl(uint16_t);
-		FormatFile& WriteImpl(uint32_t);
-		FormatFile& WriteImpl(uint64_t);
-		FormatFile& WriteImpl(int8_t);
-		FormatFile& WriteImpl(int16_t);
-		FormatFile& WriteImpl(int32_t);
-		FormatFile& WriteImpl(int64_t);
+		FormatFile& WriteImpl(char);
+#ifdef ES_SIGNED_CHAR
+		FormatFile& WriteImpl(u8);
+#endif
+		FormatFile& WriteImpl(u16);
+		FormatFile& WriteImpl(s16);
+		FormatFile& WriteImpl(u32);
+		FormatFile& WriteImpl(s32);
+		FormatFile& WriteImpl(u64);
+		FormatFile& WriteImpl(s64);
 
 		FormatFile& WriteImpl(const std::string&);
 		FormatFile& WriteImpl(const char*);
@@ -196,7 +225,7 @@ namespace ES {
 
 		char m_Buf[ES_FORMAT_FILE_BUF_SIZE];
 		Formatter m_Wrapper;
-		int m_FD;
+		FILE* m_File;
 	};
 	class Print
 	{

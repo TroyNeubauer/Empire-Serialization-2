@@ -1,3 +1,13 @@
+//===================================================================================
+// MIT Liscense
+// Copyright (c) 2020, Troy Neubauer
+//
+//	File: Conversions.h
+//	Contains definitions for converting arrays of types to other types. For now a 
+//		string of any charset to any other charset. This will be expanded later to
+//		support converting arrays of primitive types. 
+//
+
 #pragma once
 
 #include "EmpireSerialization2.h"

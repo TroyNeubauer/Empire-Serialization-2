@@ -7,8 +7,8 @@ namespace ES {
 	const char Formatter::UPPER_DIGITS[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	const char Formatter::LOWER_DIGITS[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-	FormatFile Print::OUT = STDOUT_FILENO;
-	FormatFile Print::ERR = STDERR_FILENO;
+	FormatFile Print::OUT = stdout;
+	FormatFile Print::ERR = stderr;
 
 
 	const char* Formatter::c_str()
@@ -19,50 +19,56 @@ namespace ES {
 		return m_Buf;
 	}
 
-	Formatter& Formatter::operator<<(uint8_t value)
+
+	//TODO better handling of signed vs unsigned char with regard to u8
+	Formatter& Formatter::operator<<(char value)
+	{
+		//Interpret as a character
+		PrintChar(static_cast<char>(value));
+		return *this;
+	}
+
+#ifdef ES_SIGNED_CHAR
+	Formatter& Formatter::operator<<(u8 value)
+	{
+		//Interpret as a single byte
+		PrintUnsignedInteger<u8>(value);
+		return *this;
+	}
+#endif
+
+	Formatter& Formatter::operator<<(u16 value)
 	{
 		PrintUnsignedInteger(value);
 		return *this;
 	}
 
-	Formatter& Formatter::operator<<(uint16_t value)
-	{
-		PrintUnsignedInteger(value);
-		return *this;
-	}
-
-	Formatter& Formatter::operator<<(uint32_t value)
-	{
-		PrintUnsignedInteger(value);
-		return *this;
-	}
-
-	Formatter& Formatter::operator<<(uint64_t value)
-	{
-		PrintUnsignedInteger(value);
-		return *this;
-	}
-
-	Formatter& Formatter::operator<<(int8_t value)
-	{
-		PrintSignedInteger(value);
-		return *this;
-	}
-
-	Formatter& Formatter::operator<<(int16_t value)
+	Formatter& Formatter::operator<<(s16 value)
 	{
 		PrintSignedInteger(value);
 
 		return *this;
 	}
 
-	Formatter& Formatter::operator<<(int32_t value)
+	Formatter& Formatter::operator<<(u32 value)
+	{
+		PrintUnsignedInteger(value);
+		return *this;
+	}
+
+	Formatter& Formatter::operator<<(s32 value)
 	{
 		PrintSignedInteger(value);
 		return *this;
 	}
+	
+	Formatter& Formatter::operator<<(u64 value)
+	{
+		PrintUnsignedInteger(value);
+		return *this;
+	}
 
-	Formatter& Formatter::operator<<(int64_t value)
+	Formatter& Formatter::operator<<(s64 value)
 	{
 		PrintSignedInteger(value);
 		return *this;
@@ -80,11 +86,6 @@ namespace ES {
 		return *this;
 	}
 
-	Formatter& Formatter::operator<<(char value)
-	{
-		PrintChar(value);
-		return *this;
-	}
 
 	Formatter& Formatter::operator<<(const char* value)
 	{
@@ -100,42 +101,47 @@ namespace ES {
 		return *this;
 	}
 
-	FormatFile& FormatFile::WriteImpl(uint8_t value)
+	FormatFile& FormatFile::WriteImpl(char value)
+	{
+		TryFlush(1);
+		m_Wrapper << value;
+		return *this;
+	}
+#ifdef ES_SIGNED_CHAR
+	FormatFile& FormatFile::WriteImpl(u8 value)
+	{
+		TryFlush(1);
+		m_Wrapper << value;
+		return *this;
+	}
+#endif
+
+	FormatFile& FormatFile::WriteImpl(u16 value)
 	{
 		WriteIntegral(value);
 		return *this;
 	}
-	FormatFile& FormatFile::WriteImpl(uint16_t value)
+	FormatFile& FormatFile::WriteImpl(s16 value)
 	{
 		WriteIntegral(value);
 		return *this;
 	}
-	FormatFile& FormatFile::WriteImpl(uint32_t value)
+	FormatFile& FormatFile::WriteImpl(u32 value)
 	{
 		WriteIntegral(value);
 		return *this;
 	}
-	FormatFile& FormatFile::WriteImpl(uint64_t value)
+	FormatFile& FormatFile::WriteImpl(s32 value)
 	{
 		WriteIntegral(value);
 		return *this;
 	}
-	FormatFile& FormatFile::WriteImpl(int8_t value)
+	FormatFile& FormatFile::WriteImpl(u64 value)
 	{
 		WriteIntegral(value);
 		return *this;
 	}
-	FormatFile& FormatFile::WriteImpl(int16_t value)
-	{
-		WriteIntegral(value);
-		return *this;
-	}
-	FormatFile& FormatFile::WriteImpl(int32_t value)
-	{
-		WriteIntegral(value);
-		return *this;
-	}
-	FormatFile& FormatFile::WriteImpl(int64_t value)
+	FormatFile& FormatFile::WriteImpl(s64 value)
 	{
 		WriteIntegral(value);
 		return *this;
@@ -159,7 +165,7 @@ namespace ES {
 		{
 			//flush the current data and then print the string directly
 			Flush();
-			std::size_t bytesWritten = write(m_FD, value, length);
+			std::size_t bytesWritten = fwrite(m_Buf, 1, m_Wrapper.Size(), m_File);
 			ES_ASSERT(bytesWritten == length, "Failed to write to STDOut");
 			Flush();//fsync
 		}
@@ -177,12 +183,12 @@ namespace ES {
 		{
 			if (m_Wrapper.Size())
 			{
-				std::size_t bytesWritten = write(m_FD, m_Buf, m_Wrapper.Size());
+				std::size_t bytesWritten = fwrite(m_Buf, 1, m_Wrapper.Size(), m_File);
 				ES_ASSERT(bytesWritten == m_Wrapper.Size(), "Failed to write to STDOut");
 				m_Wrapper.Clear();
 			}
 			
-			fsync(m_FD);
+			fflush(m_File);
 		}
 	}
 

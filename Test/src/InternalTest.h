@@ -20,7 +20,7 @@ TEST_CASE("Internal::BottomBits(value, bits)")
 	REQUIRE(Internal::BottomBits(0xFFFFFFFFFFFFFFFFL, 64) == 0xFFFFFFFFFFFFFFFFL);
 
 	//Make sure negitive signed types are treated only as bits
-	int64_t value = std::numeric_limits<int64_t>::min();
+	s64 value = std::numeric_limits<s64>::min();
 	REQUIRE(Internal::BottomBits(value, 64) == 0x8000000000000000L);
 	value = -1;
 	REQUIRE(Internal::BottomBits(value, 64) == 0xFFFFFFFFFFFFFFFFL);
@@ -39,7 +39,7 @@ TEST_CASE("Internal::BottomBits<n>(value)")
 	REQUIRE(Internal::BottomBits<64>(0xFFFFFFFFFFFFFFFFL) == 0xFFFFFFFFFFFFFFFFL);
 
 	//Make sure negitive signed types are treated only as bits
-	int64_t value = std::numeric_limits<int64_t>::min();
+	s64 value = std::numeric_limits<s64>::min();
 	REQUIRE(Internal::BottomBits<64>(value) == 0x8000000000000000L);
 	value = -1;
 	REQUIRE(Internal::BottomBits<64>(value) == 0xFFFFFFFFFFFFFFFFL);

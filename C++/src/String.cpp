@@ -14,7 +14,7 @@ namespace ES {
 				
 				case ErrorCode::UNSUPPORTED_CHARACTER:
 				{
-					uint32_t unicode = error.UnsupportedCharacter.Char;
+					u32 unicode = error.UnsupportedCharacter.Char;
 					if (unicode < 128)
 					{
 						formatter.W("Unsupported character U+").Base(unicode, 16) << " (" << static_cast<char>(unicode) << 

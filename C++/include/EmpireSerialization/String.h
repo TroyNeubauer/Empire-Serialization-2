@@ -1,3 +1,19 @@
+//===================================================================================
+// MIT Liscense
+// Copyright (c) 2020, Troy Neubauer
+//
+//	File: String.h
+//	Contains definitions for querying information on strings. For a given string:
+//
+//	- Wordcount Refers to the number of words charset dependent words needed to
+//		store the characters of the string. Wordcount() is identical strlen() returns
+//		except we provide
+//		implementations for all charsets (utf8, utf16, utf32, esc4, esc6, esc8...)
+//
+//	- Bytes Which returns the number of bytes needed to store the string Wordcount * the
+//		size of a word. 
+//
+
 #pragma once
 
 #include "EmpireSerialization2.h"

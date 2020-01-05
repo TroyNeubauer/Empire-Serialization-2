@@ -1,4 +1,5 @@
 #pragma once
+
 #include "EmpireSerialization2.h"
 #include <climits>
 
@@ -177,8 +178,8 @@ namespace ES {
 			template<typename T>
 			inline std::size_t ByteDifference(const T* a, const T* b)
 			{
-				if (a > b)	return reinterpret_cast<const uint8_t*>(a) - reinterpret_cast<const uint8_t*>(b);
-				else 		return reinterpret_cast<const uint8_t*>(b) - reinterpret_cast<const uint8_t*>(a); 
+				if (a > b)	return reinterpret_cast<const u8*>(a) - reinterpret_cast<const u8*>(b);
+				else 		return reinterpret_cast<const u8*>(b) - reinterpret_cast<const u8*>(a); 
 			}
 		}
 
@@ -187,7 +188,7 @@ namespace ES {
 			T DivideCeli(T value, T divide) { return (value + divide - 1) / divide; }
 		}
 
-		template<int8_t n, typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
+		template<u8 n, typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
 		inline UnsignedType BottomBitsFromTopSize(T value)
 		{
 			static_assert(n <= sizeof(T) * CHAR_BIT, "Cannot evaluate bits outside the range of T");
@@ -195,7 +196,7 @@ namespace ES {
 		}
 
 		template<typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
-		inline UnsignedType BottomBits(T value, int8_t n)
+		inline UnsignedType BottomBits(T value, u8 n)
 		{
 			//Convert to the unsigned type using memcpy instead of a cast to make the compiler happy
 			UnsignedType unsignedValue;
@@ -212,16 +213,16 @@ namespace ES {
 			return unsignedValue & mask;
 		}
 
-		template<int8_t n, typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
+		template<u8 n, typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
 		inline UnsignedType BottomBits(T value)
 		{
 			return BottomBits(value, n);
 		}
 
-		template<int8_t n, typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
+		template<u8 n, typename T, typename UnsignedType = typename std::make_unsigned<T>::type>
 		inline UnsignedType TopNBits(T value)
 		{
-			constexpr std::uint64_t totalBits = sizeof(T) * CHAR_BIT;
+			constexpr u64 totalBits = sizeof(T) * CHAR_BIT;
 			static_assert(n <= sizeof(T) * CHAR_BIT, "Cannot evaluate bits outside the range of T");
 
 			UnsignedType unsignedValue;
@@ -229,14 +230,11 @@ namespace ES {
 			return unsignedValue >> (totalBits - n);
 		}
 
-		template<uint8_t n, std::size_t expecting, typename T>
+		template<u8 n, std::size_t expecting, typename T>
 		bool TopNBitsAre(T value)
 		{
 			return TopNBits<n, T>(value) == expecting;
 		}
 	}
 }
-
-
-
 
