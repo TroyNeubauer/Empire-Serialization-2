@@ -104,13 +104,10 @@ namespace ES {
 		{
 			if (value < static_cast<T>(0))
 			{
-				value = -value;
 				PrintChar('-');
+				value = -value;
 			}
-			else
-			{
-				PrintUnsignedInteger(value, base);
-			}
+			PrintUnsignedInteger(value, base);
 		}
 
 	
@@ -134,6 +131,7 @@ namespace ES {
 
 		inline std::size_t Capacity() const { return m_Wrapper.Capacity(); }
 		inline std::size_t Size() const { return m_Wrapper.Size(); }
+		inline void Clear() { m_Wrapper.Clear(); }
 
 
 		template<typename T> inline Formatter& operator<<(const T& value) { return m_Wrapper << value; }
