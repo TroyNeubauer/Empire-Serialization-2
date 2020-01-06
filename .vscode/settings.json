@@ -60,6 +60,10 @@
 		"typeinfo": "cpp",
 		"variant": "cpp",
 		"cinttypes": "cpp",
-		"format.h": "c"
+		"format.h": "c",
+		"shared_mutex": "cpp",
+		"bit": "cpp",
+		"conversions.h": "c",
+		"forwardtypes.h": "c"
 	}
 }

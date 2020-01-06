@@ -1,3 +1,13 @@
+//===================================================================================
+// MIT Liscense
+// Copyright (c) 2020, Troy Neubauer
+//
+//	File: Conversions.h
+//	Contains definitions for converting arrays of types to other types. For now a 
+//		string of any charset to any other charset. This will be expanded later to
+//		support converting arrays of primitive types. 
+//
+
 #pragma once
 
 #include "EmpireSerialization2.h"
@@ -24,11 +34,11 @@ namespace ES {
 				);
 		};
 
-		template<typename SrcType, typename DestType>
-		std::size_t RequiredCapacity(std::size_t bytes);
-
+		//Converts arrays of one type to arrays of another
+		//Most commonly this is used for string conversions
+		//Errors include BufferOverflow, BufferUnderflow, InvalidCharacter and UnsupportedCharacter
 		template<typename SameType>
-		ErrorCode Convert(const SameType* src, size_t srcBytes, SameType* dest, size_t destCapacity, StringCodingData& data)
+		ErrorCode Convert(const SameType* src, size_t srcBytes, SameType* dest, size_t destBytes, StringCodingData& data)
 		{
 			//Nop. SrcType and DestType are the same
 
@@ -36,10 +46,7 @@ namespace ES {
 		}
 
 		template<typename SrcType, typename DestType>
-		ErrorCode Convert(const SrcType* src, size_t srcBytes, DestType* dest, size_t destCapacity, StringCodingData& data);
-
-
-		//Explicit specializations
+		ErrorCode Convert(const SrcType* src, size_t srcBytes, DestType* dest, size_t destBytes, StringCodingData& data);
 
 	}
 

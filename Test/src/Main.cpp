@@ -15,5 +15,8 @@ int main(int argc, char* const argv[]) {
 }
 
 
+#include "FormatTest.h"
 #include "BufferTest.h"
 #include "ConversionsTest.h"
+#include "InternalTest.h"
+
