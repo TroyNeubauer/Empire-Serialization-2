@@ -9,7 +9,6 @@ using namespace ES;
 template<typename T>
 void TestIntegers(T& obj, s64 value)
 {
-	obj << ' ';
 	obj << static_cast<u64>(value); obj << ":";
 	obj << static_cast<s64>(value); obj << ' ';
 
