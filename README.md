@@ -2,6 +2,8 @@
 
 [![Code Coverage](https://codecov.io/gh/TroyNeubauer/Empire-Serialization-2/branch/master/graph/badge.svg)](https://codecov.io/gh/TroyNeubauer/Empire-Serialization-2)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/70b065c8eb3148baa0440f341b5e4939)](https://www.codacy.com/manual/TroyNeubauer/Empire-Serialization-2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TroyNeubauer/Empire-Serialization-2&amp;utm_campaign=Badge_Grade)
+
 
 
 Empire Serialization is an extremely fast and efficient serialization framework. It is cross language, cross platform and will have bindings for:
