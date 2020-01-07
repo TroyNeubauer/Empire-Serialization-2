@@ -7,31 +7,6 @@
 namespace ES {
 	namespace Conversions {
 
-		template<typename SrcType, typename DestType>
-		std::size_t RequiredCapacity(std::size_t bytes)
-		{
-			ES_ABORT("Conversion not allowed!");
-		}
-
-//utf32 can store any codepoint the smaller encodings can store in 1 word
-		template<> std::size_t RequiredCapacity <utf8, utf32>(std::size_t words) { return words; }
-		template<> std::size_t RequiredCapacity<utf16, utf32>(std::size_t words) { return words; }
-		template<> std::size_t RequiredCapacity <esc4, utf32>(std::size_t words) { return words; }
-		template<> std::size_t RequiredCapacity <esc6, utf32>(std::size_t words) { return words; }
-		template<> std::size_t RequiredCapacity <esc8, utf32>(std::size_t words) { return words; }
-
-//1 word in utf32 can take more words in utr8/utf16 for the worst case
-		template<> std::size_t RequiredCapacity<utf32,  utf8>(std::size_t words) { return words * 4; }
-		template<> std::size_t RequiredCapacity<utf32, utf16>(std::size_t words) { return words * 2; }
-
-//If esc4/esc6 can't store things they cant support. So compilant utf32 strings -> esc4/esc6 will always be 1-1
-		template<> std::size_t RequiredCapacity<utf32, esc4>(std::size_t words) { return words; }
-		template<> std::size_t RequiredCapacity<utf32, esc6>(std::size_t words) { return words; }
-
-//esc8 uses VLE which can be bloated to up to 3 words per utf32 codepoint if it has a high unicode value
-		template<> std::size_t RequiredCapacity<utf32, esc8>(std::size_t words) { return words * 3; }
-
-
 		struct StringConversionsState
 		{
 			Charset SrcCharset;
@@ -489,6 +464,25 @@ namespace ES {
 
 		template ErrorCode Convert<utf8, esc4>(const utf8*, size_t, esc4*, size_t, StringCodingData&);
 		template ErrorCode Convert<utf8, esc6>(const utf8*, size_t, esc6*, size_t, StringCodingData&);
+
+//utf32 can store any codepoint the smaller encodings can store in 1 word
+		template<> std::size_t RequiredCapacity <utf8, utf32>(std::size_t words) { return words; }
+		template<> std::size_t RequiredCapacity<utf16, utf32>(std::size_t words) { return words; }
+		template<> std::size_t RequiredCapacity <esc4, utf32>(std::size_t words) { return words; }
+		template<> std::size_t RequiredCapacity <esc6, utf32>(std::size_t words) { return words; }
+		template<> std::size_t RequiredCapacity <esc8, utf32>(std::size_t words) { return words; }
+
+//1 word in utf32 can take more words in utr8/utf16 for the worst case
+		template<> std::size_t RequiredCapacity<utf32,  utf8>(std::size_t words) { return words * 4; }
+		template<> std::size_t RequiredCapacity<utf32, utf16>(std::size_t words) { return words * 2; }
+
+//If esc4/esc6 can't store things they cant support. So compilant utf32 strings -> esc4/esc6 will always be 1-1
+		template<> std::size_t RequiredCapacity<utf32, esc4>(std::size_t words) { return words; }
+		template<> std::size_t RequiredCapacity<utf32, esc6>(std::size_t words) { return words; }
+
+//esc8 uses VLE which can be bloated to up to 3 words per utf32 codepoint if it has a high unicode value
+		template<> std::size_t RequiredCapacity<utf32, esc8>(std::size_t words) { return words * 3; }
+
 
 	}
 }

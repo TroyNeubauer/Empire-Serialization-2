@@ -177,7 +177,9 @@ namespace ES {
 			inline void* StackPointer()
 			{
 #if defined(ES_PLATFORM_UNIX)
-
+				void* result;
+    			asm("mov result,rsp");
+				return result;
 #else
 				int x;
 				return &x;
@@ -248,7 +250,7 @@ namespace ES {
 		template<typename T, class = std::enable_if<std::is_unsigned<T>::value>>
 		s8 MaxBitPlace(T value)
 		{
-			for (int i = sizeof(T) * CHAR_BIT - 1; i >= 0; i++)
+			for (int i = sizeof(T) * CHAR_BIT - 1; i >= 0; i--)
 			{
 				if ((value >> i) & 0x01) return i;
 			}

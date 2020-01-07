@@ -48,6 +48,10 @@ namespace ES {
 		template<typename SrcType, typename DestType>
 		ErrorCode Convert(const SrcType* src, size_t srcBytes, DestType* dest, size_t destBytes, StringCodingData& data);
 
+
+		template<typename SrcType, typename DestType>
+		std::size_t RequiredCapacity(std::size_t srcWords);
+		
 	}
 
 }

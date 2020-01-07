@@ -79,6 +79,26 @@ static void Test(const SrcType* src, std::initializer_list<DestType> expectedWor
 	}
 }
 
+template<typename SrcCharset, typename CharsetA, typename FinalCharset>
+static void ConversionLoopHelper(CharsetA* src, std::size_t wordCount)
+{
+	Internal::TempBuffer<FinalCharset> temp(Conversions::RequiredCapacity<CharsetA, FinalCharset>(wordCount));
+}
+
+
+template<typename SrcCharset, typename CharsetA, typename CharsetB, typename... Args>
+static void ConversionLoopHelper(CharsetA* src, std::size_t wordCount)
+{
+
+}
+
+template<typename SrcCharset, typename... Args>
+static void ConversionLoop(SrcCharset* src, std::size_t wordCount)
+{
+	return ConversionLoopHelper<SrcCharset, Args...>()
+}
+
+
 TEST_CASE("utf8->esc4 \"test\"", "[conversions]")
 {
 	Test<utf8, esc4>("test", { 0x10, 0x61 });
@@ -211,3 +231,40 @@ TEST_CASE("utf8->utf32 misaligned character #3", "[conversions]")
 	Test<utf8, utf32>(buf, { aCode, aCode, aCode, bCode, cCode, dCode, eCode, fCode }, error, wordsReadCount, characterCount);
 }
 
+TEST_CASE("utf8->utf32 invalid utf32 header bit format", "[conversions]")
+{
+	char badChar = 0b11111000;
+	char str[4];
+	str[0] = 'A';
+	str[1] = 'B';
+	str[2] = badChar;
+	str[3] = 0x00;
+	Error error;
+	error.Type = INVALID_CHARACTER;
+	error.InvalidCharacter.Char = badChar;
+	error.InvalidCharacter.CharacterSet = Charset::UTF8;
+	error.InvalidCharacter.Position.Character = 2;
+	error.InvalidCharacter.Position.Word = 2;
+
+	std::size_t wordsReadCount = 3, characterCount = 2;
+	Test<utf8, utf32>(str, { 'A', 'B' }, error, wordsReadCount, characterCount);
+}
+
+TEST_CASE("utf8->utf32 invalid utf32 surrogate", "[conversions]")
+{
+	char badChar = 0b11111000;
+	char str[4];
+	str[0] = 'A';
+	str[1] = 'B';
+	str[2] = 0b11100000;
+	str[3] = badChar;
+	Error error;
+	error.Type = INVALID_CHARACTER;
+	error.InvalidCharacter.Char = badChar;
+	error.InvalidCharacter.CharacterSet = Charset::UTF8;
+	error.InvalidCharacter.Position.Character = 2;
+	error.InvalidCharacter.Position.Word = 3;
+
+	std::size_t wordsReadCount = 4, characterCount = 2;
+	Test<utf8, utf32>(str, { 'A', 'B' }, error, wordsReadCount, characterCount);
+}
