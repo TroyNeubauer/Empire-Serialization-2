@@ -2,7 +2,10 @@
 
 #include <cstddef>
 #include <cstdint>
+
 #include <type_traits>
+#include <vector>
+#include <string>
 
 
 namespace ES {
@@ -39,7 +42,10 @@ namespace ES {
 
 	enum class Charset
 	{
-		UTF8, UTF16, UTF32, ESC4, ESC6, ESC8
+		ESC4, ESC6, ESC8, UTF8, UTF16, UTF32, 
+		//Any charset exists here only for obtaining its name and CharsetCode with GetCharsetInfo
+		//Any Charset is a wrapper for another charset so an "instance" of Any Charset will never really exist
+		ANY_CHARSET
 	};
 
 	struct CharsetInfo
@@ -55,6 +61,7 @@ namespace ES {
 
 		//The number of bytes a single word occupies
 		u8 WordSize;
+		u8 CharsetCode;
 	};
 	
 	typedef char utf8;
@@ -145,6 +152,96 @@ namespace ES {
 		std::size_t Word;
 	};
 
+	using TypeID = es_length;
+
+	namespace DefaultTypes {
+		static constexpr TypeID
+			INVALID = 0,
+			S8 = 1,
+			U8 = 2,
+			S16 = 3,
+			U16 = 4,
+			S32 = 5,
+			U32 = 6,
+			S64 = 7,
+			U64 = 8,
+			S128 = 9,
+			U128 = 10,
+			S256 = 11,
+			U256 = 12,
+			BIG_INTEGER = 13,
+
+			F8 = 14,
+			F16 = 15,
+			F32 = 16,
+			F64 = 17,
+			F128 = 18,
+			BIG_FLOAT = 19,
+
+			UTF8_STRING = 20,
+			UTF16_STRING = 21,
+			UTF32_STRING = 22,
+			ESC4_STRING = 23,
+			ESC6_STRING = 24,
+			ESC8_PLUS_STRING = 25;
+	}
+
+	enum class SequenceType
+	{
+		LIST, MAP
+	};
+
+	struct MemberVariable
+	{
+		std::string Name;
+		TypeID Type;
+		u32 Offset;
+	};
 
 
+	struct Type
+	{
+		TypeID ID;
+
+		union 
+		{
+			//No additional data for primitive types because the logic to handle them is hardcoded based on their TypeID
+
+			struct
+			{
+				std::string Name;
+				std::vector<MemberVariable> MemberVariables;
+			} Class;
+			
+			struct
+			{
+				//A sequence can have a dynamic length (where the length is variable and written before the data for each sequence)
+				//One registered sequence type can be used to encode a sequence of those types for any length
+				//The static length sequence fixes the length of itself at type creation time so that it can encode sequences of only
+				//that length (thus allowing the serializer to omit the length of the sequence because the sequence type rtains the length)
+				//This is like std::vector (dynamic-length sequence) vs std::array (static-length sequence)
+				//If IsStaticLength is false (indicating a dynamic-length sequence) then the valud of StaticLength is unspecified
+				es_length StaticLength;
+				SequenceType Type;
+				bool IsStaticLength;
+
+				//Each kind of sequence needs to store different data
+				union 
+				{
+					struct
+					{
+						TypeID ListType;
+					} ListSeqnence;
+
+					struct
+					{
+						TypeID KeyType;
+						TypeID ValueType;
+					} MapSeqnence;
+				};
+				
+			} Sequence;
+
+		};
+	};
 }

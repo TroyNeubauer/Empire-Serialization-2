@@ -13,21 +13,23 @@ namespace ES {
 			ES_ABORT("Conversion not allowed!");
 		}
 
+//utf32 can store any codepoint the smaller encodings can store in 1 word
+		template<> std::size_t RequiredCapacity <utf8, utf32>(std::size_t words) { return words; }
+		template<> std::size_t RequiredCapacity<utf16, utf32>(std::size_t words) { return words; }
+		template<> std::size_t RequiredCapacity <esc4, utf32>(std::size_t words) { return words; }
+		template<> std::size_t RequiredCapacity <esc6, utf32>(std::size_t words) { return words; }
+		template<> std::size_t RequiredCapacity <esc8, utf32>(std::size_t words) { return words; }
 
-		//In the worst case, utf8 storing ASCII will be 4x larger
-		template<> std::size_t RequiredCapacity <utf8, utf32>(std::size_t bytes) { return bytes * 4; }
-		template<> std::size_t RequiredCapacity<utf16, utf32>(std::size_t bytes) { return bytes * 2; }
-		template<> std::size_t RequiredCapacity <esc4, utf32>(std::size_t bytes) { return bytes * 8; }
-		template<> std::size_t RequiredCapacity <esc6, utf32>(std::size_t bytes) { return bytes * 6; }
-		template<> std::size_t RequiredCapacity <esc8, utf32>(std::size_t bytes) { return bytes * 2; }
+//1 word in utf32 can take more words in utr8/utf16 for the worst case
+		template<> std::size_t RequiredCapacity<utf32,  utf8>(std::size_t words) { return words * 4; }
+		template<> std::size_t RequiredCapacity<utf32, utf16>(std::size_t words) { return words * 2; }
 
-		//a utf8/utf16 string will never be longer than a utf32 one
-		template<> std::size_t RequiredCapacity<utf32,  utf8>(std::size_t bytes) { return bytes; }
-		template<> std::size_t RequiredCapacity<utf32, utf16>(std::size_t bytes) { return bytes; }
-		//esc* will be much smaller (assuming the utf32 doesnt use any unsupported characters)
-		template<> std::size_t RequiredCapacity<utf32,  esc4>(std::size_t bytes) { return Internal::Math::DivideCeli<std::size_t>(bytes, 8); }
-		template<> std::size_t RequiredCapacity<utf32,  esc6>(std::size_t bytes) { return Internal::Math::DivideCeli<std::size_t>(bytes, 6); }
-		template<> std::size_t RequiredCapacity<utf32,  esc8>(std::size_t bytes) { return Internal::Math::DivideCeli<std::size_t>(bytes, 4); }
+//If esc4/esc6 can't store things they cant support. So compilant utf32 strings -> esc4/esc6 will always be 1-1
+		template<> std::size_t RequiredCapacity<utf32, esc4>(std::size_t words) { return words; }
+		template<> std::size_t RequiredCapacity<utf32, esc6>(std::size_t words) { return words; }
+
+//esc8 uses VLE which can be bloated to up to 3 words per utf32 codepoint if it has a high unicode value
+		template<> std::size_t RequiredCapacity<utf32, esc8>(std::size_t words) { return words * 3; }
 
 
 		struct StringConversionsState
@@ -54,7 +56,7 @@ namespace ES {
 
 		//Uses other specalized conversions and a transient intermediate Type to convert between two otherwise inconvertable types
 		template<typename SrcType, typename DestType>
-		ErrorCode Convert(const SrcType* src, size_t srcBytes, DestType* dest, size_t destBytes, StringCodingData& data)
+		ErrorCode Convert(const SrcType* src, size_t srcWords, DestType* dest, size_t destWords, StringCodingData& data)
 		{
 			static_assert(!std::is_same<SrcType, DestType>::value, "Types must be different!");
 			static_assert(Exists<SrcType, DestType>::value, "Invalid conversion!");
@@ -66,7 +68,7 @@ namespace ES {
 				static_assert(std::is_same<DestType, utf8>::value || std::is_same<DestType, utf16>::value || std::is_same<DestType, utf32>::value 
 					|| std::is_same<DestType, esc4>::value || std::is_same<DestType, esc6>::value || std::is_same<DestType, esc8>::value);
 				
-				std::size_t tempWords = RequiredCapacity<SrcType, utf32>(srcBytes);
+				std::size_t tempWords = RequiredCapacity<SrcType, utf32>(srcWords);
 				Internal::TempBuffer<utf32> temp(tempWords);
 
 				ErrorCode errorCode = ErrorCode::NONE;
@@ -85,8 +87,7 @@ namespace ES {
 				s_StringState.WordReadIndex = 0;
 				s_StringState.WordWriteIndex = 0;
 				//Perform the conversion returning errors to the caller
-				if (errorCode = ConvertStringImpl<SrcType, utf32>(src, srcBytes / GetCharsetInfo(srcCharsetCode).WordSize,
-					temp.Get(), tempWords, s_StringState.CharacterIndex, currentError.AdditionalMessage))
+				if (errorCode = ConvertStringImpl<SrcType, utf32>(src, srcWords, temp.Get(), tempWords, s_StringState.CharacterIndex, currentError.AdditionalMessage))
 				{
 					return errorCode;
 				}
@@ -100,8 +101,7 @@ namespace ES {
 				s_StringState.DestCharset = destCharsetCode;
 				s_StringState.WordReadIndex = 0;
 				s_StringState.WordWriteIndex = 0;
-				if (errorCode = ConvertStringImpl<utf32, DestType>(temp.Get(), wordsWritten, 
-					dest, destBytes / GetCharsetInfo(destCharsetCode).WordSize, s_StringState.CharacterIndex, currentError.AdditionalMessage))
+				if (errorCode = ConvertStringImpl<utf32, DestType>(temp.Get(), wordsWritten, dest, destWords, s_StringState.CharacterIndex, currentError.AdditionalMessage))
 				{
 					return errorCode;
 				}
@@ -111,6 +111,7 @@ namespace ES {
 				if (s_StringState.CharacterIndex != initalCharactersPassed)
 				{
 					//TODO Internal error
+					ES_ASSERT(false, "Non compliant ConvertStringImpl! s_StringState.CharacterIndex != initalCharactersPassed");
 				}
 
 				s_StringState.DataPtr = nullptr;
@@ -153,7 +154,7 @@ namespace ES {
 		static ErrorCode BufferOverflowError(ErrorCharset* begin, ErrorCharset* end)
 		{
 			Error& error = Internal::GetError();
-			error.BufferOverflow.BufferSize = (end - begin) * sizeof(begin[0]);
+			error.BufferOverflow.BufferSize = (end - begin) * sizeof(ErrorCharset);
 			error.BufferOverflow.RequiredSize = error.BufferOverflow.BufferSize + GetCharsetInfo(GetCharsetCode<ErrorCharset>::Code).WordSize;
 
 			s_StringState.DataPtr = nullptr;
@@ -164,7 +165,7 @@ namespace ES {
 		static ErrorCode BufferUnderflowError(const ErrorCharset* begin, const ErrorCharset* end)
 		{
 			Error& error = Internal::GetError();
-			error.BufferUnderflow.BufferSize = (end - begin) * sizeof(begin[0]);
+			error.BufferUnderflow.BufferSize = (end - begin) * sizeof(ErrorCharset);
 			error.BufferUnderflow.RequiredSize = error.BufferUnderflow.BufferSize + GetCharsetInfo(GetCharsetCode<ErrorCharset>::Code).WordSize;
 
 			s_StringState.DataPtr = nullptr;
@@ -205,7 +206,7 @@ namespace ES {
 
 
 		template<typename SrcType, typename DestType>
-		ErrorCode ConvertStringImplWrapper(const SrcType* src, size_t srcBytes, DestType* dest, size_t destBytes, StringCodingData& data)
+		ErrorCode ConvertStringImplWrapper(const SrcType* src, size_t srcWords, DestType* dest, size_t destWords, StringCodingData& data)
 		{
 			ErrorCode errorCode;
 			Charset srcCharsetCode = GetCharsetCode<SrcType>::Code;
@@ -221,8 +222,7 @@ namespace ES {
 			data.SrcCharacterSet = GetCharsetCode<SrcType>::Code;
 			data.DestCharacterSet = GetCharsetCode<DestType>::Code;
 
-			if (errorCode = ConvertStringImpl<SrcType, DestType>(src, srcBytes / GetCharsetInfo(srcCharsetCode).WordSize, 
-				dest, destBytes / GetCharsetInfo(destCharsetCode).WordSize, s_StringState.CharacterIndex, Internal::GetError().AdditionalMessage))
+			if (errorCode = ConvertStringImpl<SrcType, DestType>(src, srcWords, dest, destWords, s_StringState.CharacterIndex, Internal::GetError().AdditionalMessage))
 			{
 				return errorCode;
 			}
@@ -239,9 +239,9 @@ namespace ES {
 		}
 
 		template<>
-		ErrorCode Convert<utf8, utf32>(const utf8* src, size_t srcBytes, utf32* dest, size_t destBytes, StringCodingData& data)
+		ErrorCode Convert<utf8, utf32>(const utf8* src, size_t srcWords, utf32* dest, size_t destWords, StringCodingData& data)
 		{
-			return ConvertStringImplWrapper(src, srcBytes, dest, destBytes, data);
+			return ConvertStringImplWrapper(src, srcWords, dest, destWords, data);
 		}
 
 		//Implement core to/from UTF32 functions
@@ -319,6 +319,73 @@ namespace ES {
 			return ErrorCode::NONE;
 
 		}
+
+
+
+		template<>
+		ErrorCode ConvertStringImpl<utf32, utf8>(const utf32* src, std::size_t srcLength, utf8* dest, std::size_t destLength, std::size_t& characters, Formatter& errorFormatter)
+		{
+			ErrorCode code;
+
+			//Constants to make byte/length calculations easier
+			const utf32* srcEnd = src + srcLength;
+			utf8* destEnd = dest + destLength;
+			while (src != srcEnd)
+			{
+				std::size_t surrogateCount = 0;
+				utf32 c;
+				if (code = ReadCharacter(c, src, srcEnd)) return code;
+				s8 bits = Internal::MaxBitPlace(c);
+				if (bits == 0 || bits <= 7)
+				{
+					//ASCII
+					utf8 utf8Char = static_cast<utf8>(c);
+					WriteWord(utf8Char, dest, destEnd);
+				}
+				else
+				{
+					utf8 byte;
+					//Fix bits to specific size based on the utf8 template
+					if (bits <= 11)
+					{
+						byte = (0b110 << 5) | (c >> 6);
+						bits = 6;//6 more bits to encode
+					}
+					else if (bits <= 16)
+					{
+						byte = (0b1110 << 4) | (c >> 12);
+						bits = 12;//12 more bits to encode
+					}
+					else if (bits <= 21)
+					{
+						byte = (0b11110 << 3) | (c >> 18);
+						bits = 18;//18 more bits to encode
+					}
+					else
+					{
+						errorFormatter.Write("Character is outside the allowed range for a unicode codepoint");
+						return InvalidCharacterError(c);
+					}
+					//Write the first byte
+					WriteWord(byte, dest, destEnd);
+					//Encode the remaining 6-18 bits
+					while (bits > 0)
+					{
+						byte = static_cast<utf8>((c >> (bits - 6)) & 0b00111111);
+						byte |= 0b10000000;
+						WriteWord(byte, dest, destEnd);
+
+						bits -= 6;
+					}
+					ES_ASSERT(bits == 0, "utf32 codepoint was not fully encoded!");
+				}
+				
+
+			}
+			return ErrorCode::NONE;
+
+		}
+
 
 		template<>
 		ErrorCode ConvertStringImpl<utf32, esc4>(const utf32* src, std::size_t srcLength, esc4* dest, std::size_t destLength, std::size_t& characters, Formatter& errorFormatter)

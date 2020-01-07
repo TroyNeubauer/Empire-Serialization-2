@@ -67,6 +67,15 @@
 	#error Unknown architecture
 #endif
 
+//Include intrinsic headers
+#if defined(ES_X86_64) || defined(ES_X86)
+	#include <immintrin.h>
+
+#else
+	#Add new case and intrinsics header here!
+
+#endif
+
 
 #ifdef ES_DEBUG
 		// debug break
@@ -235,6 +244,35 @@ namespace ES {
 		{
 			return TopNBits<n, T>(value) == expecting;
 		}
+
+		template<typename T, class = std::enable_if<std::is_unsigned<T>::value>>
+		s8 MaxBitPlace(T value)
+		{
+			for (int i = sizeof(T) * CHAR_BIT - 1; i >= 0; i++)
+			{
+				if ((value >> i) & 0x01) return i;
+			}
+			return -1;
+		}
+
+#if defined(ES_COMPILER_GCC) || defined(ES_COMPILER_CLANG)
+//TODO
+/*		template<> s8 MaxBitPlace(u32 value) { return _bit_scan_reverse(value); }
+		template<> s8 MaxBitPlace(u16 value) { return _bit_scan_reverse(value); }
+		template<> s8 MaxBitPlace( u8 value) { return _bit_scan_reverse(value); }
+*/
+#elif defined(ES_COMPILER_MSVC)
+		template<> s8 MaxBitPlace(u64 value) { unsigned long result; if (_BitScanReverse64(&result, value)) return result; else return -1; }
+		template<> s8 MaxBitPlace(u32 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return result; else return -1; }
+		template<> s8 MaxBitPlace(u16 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return result; else return -1; }
+		template<> s8 MaxBitPlace( u8 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return result; else return -1; }
+
+#else
+
+	#warning No special implementation for this compiler
+#endif
+
+
 	}
 }
 

@@ -46,4 +46,8 @@ TEST_CASE("Internal::BottomBits<n>(value)")
 
 }
 
+TEST_CASE("Internal::MaxBitPlace")
+{
+	REQUIRE(Internal::MaxBitPlace<u8>(0xFF) == 7);
 
+}

@@ -21,6 +21,7 @@ namespace ES {
 				UTF8Info.Name = "UTF-8";
 				UTF8Info.WordSize = sizeof(utf8);
 				UTF8Info.CharactersPerWord = CharsetInfo::VARIABLE_CHARACTERS_PER_WORD;
+				UTF8Info.CharsetCode = 3;
 
 				return UTF8Info;
 			}
@@ -30,6 +31,7 @@ namespace ES {
 				UTF16Info.Name = "UTF-16";
 				UTF16Info.WordSize = sizeof(utf8);
 				UTF16Info.CharactersPerWord = CharsetInfo::VARIABLE_CHARACTERS_PER_WORD;
+				UTF16Info.CharsetCode = 4;
 
 				return UTF16Info;
 			}
@@ -39,6 +41,7 @@ namespace ES {
 				UTF32Info.Name = "UTF-8";
 				UTF32Info.WordSize = sizeof(utf8);
 				UTF32Info.CharactersPerWord = CharsetInfo::VARIABLE_CHARACTERS_PER_WORD;
+				UTF32Info.CharsetCode = 5;
 
 				return UTF32Info;
 			}
@@ -48,6 +51,7 @@ namespace ES {
 				ESC4Info.Name = "ESC4";
 				ESC4Info.WordSize = sizeof(esc4);
 				ESC4Info.CharactersPerWord = 2.0;
+				ESC4Info.CharsetCode = 0;
 
 				return ESC4Info;
 			}
@@ -57,6 +61,7 @@ namespace ES {
 				ESC6Info.Name = "ESC6";
 				ESC6Info.WordSize = sizeof(esc6);
 				ESC6Info.CharactersPerWord = 4.0 / 3.0;//4 characters per every three words
+				ESC6Info.CharsetCode = 1;
 
 				return ESC6Info;
 			}
@@ -66,8 +71,19 @@ namespace ES {
 				ESC8Info.Name = "ESC8+";
 				ESC8Info.WordSize = sizeof(esc8);
 				ESC8Info.CharactersPerWord = CharsetInfo::VARIABLE_CHARACTERS_PER_WORD;
+				ESC8Info.CharsetCode = 2;
 
 				return ESC8Info;
+			}
+			case Charset::ANY_CHARSET:
+			{
+				static CharsetInfo AnyCharsetInfo;
+				AnyCharsetInfo.Name = "Any Charset";
+				AnyCharsetInfo.WordSize = 0;
+				AnyCharsetInfo.CharactersPerWord = 0.0;
+				AnyCharsetInfo.CharsetCode = 6;
+
+				return AnyCharsetInfo;
 			}
 			default: ES_ABORT("Invalid charset!");
 		}

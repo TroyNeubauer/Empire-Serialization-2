@@ -116,6 +116,45 @@ project "C++"
 
 
 
+project "Bench"
+	location "Bench"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+	vectorextensions "AVX"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs
+	{
+		"%{prj.name}/src/",
+	}
+
+	sysincludedirs
+	{
+		"C++/include/",
+		"C++/src/",
+		"Test/vendor/",--For catch
+	}
+
+	links 
+	{
+		"C++",
+		"gcov",
+	}
+
+	if _OPTIONS["coverage"] then
+		buildoptions { "-fprofile-abs-path" }
+	end
+
 project "Test"
 	location "Test"
 	kind "ConsoleApp"
