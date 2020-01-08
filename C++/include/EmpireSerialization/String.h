@@ -40,14 +40,9 @@ namespace ES {
 			return wordCount * GetCharsetInfo(GetCharsetCode<T>::Code).WordSize;
 		}
 
-		template<typename T> std::size_t CharacterCount(const T* string)
-		{
-			StringCodingData data;
-			std::size_t bytes = Bytes<T>(string);
-			if (bytes == UNABLE_TO_QUERY_BYTES) return UNABLE_TO_QUERY_CHARACTER_COUNT;
-			Conversions::Convert<T, utf32>(string, bytes, nullptr, 0, data);
-			return data.Characters;
-		}
+		template<typename T>
+		std::size_t CharacterCount(const T* string);
+
 	}
 }
 

@@ -15,43 +15,28 @@
 namespace ES {
 	namespace Conversions {
 
+		//Determines how large the worst case buffer needs to be when converting 
 		template<typename SrcType, typename DestType>
-		struct Exists
+		std::size_t RequiredCapacity(std::size_t srcWords)
 		{
-			static const bool value =
-				(//string to string
-					(std::is_same<SrcType, utf8>::value || std::is_same<SrcType, utf16>::value || std::is_same<SrcType, utf32>::value ||
-						std::is_same<SrcType, esc4>::value || std::is_same<SrcType, esc6>::value || std::is_same<SrcType, esc8>::value
-					) 
-					&&
-					(std::is_same<DestType, utf8>::value || std::is_same<DestType, utf16>::value || std::is_same<DestType, utf32>::value ||
-						std::is_same<DestType, esc4>::value || std::is_same<DestType, esc6>::value || std::is_same<DestType, esc8>::value
-					)
-				)
-				||
-				(//numeric to numeric
-					false
-				);
-		};
-
-		//Converts arrays of one type to arrays of another
-		//Most commonly this is used for string conversions
-		//Errors include BufferOverflow, BufferUnderflow, InvalidCharacter and UnsupportedCharacter
-		template<typename SameType>
-		ErrorCode Convert(const SameType* src, size_t srcBytes, SameType* dest, size_t destBytes, StringCodingData& data)
-		{
-			//Nop. SrcType and DestType are the same
-
-			return ErrorCode::NONE;
+			if (std::is_same<SrcType, DestType>::value)
+			{
+				//Converting somthing to itself always requires only the same amount of words
+				return srcWords;
+			}
+			else
+			{
+				std::size_t utf32Words = RequiredCapacity<SrcType, utf32>(srcWords);
+				return RequiredCapacity<utf32, DestType>(utf32Words);
+			}
 		}
 
+		//Converts strings or arrays from one type to another
 		template<typename SrcType, typename DestType>
-		ErrorCode Convert(const SrcType* src, size_t srcBytes, DestType* dest, size_t destBytes, StringCodingData& data);
+		ErrorCode Convert(const SrcType* src, size_t srcWords, DestType* dest, size_t destWords);
 
 
-		template<typename SrcType, typename DestType>
-		std::size_t RequiredCapacity(std::size_t srcWords);
-		
+
 	}
 
 }

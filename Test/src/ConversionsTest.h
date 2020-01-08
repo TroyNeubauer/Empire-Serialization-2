@@ -5,6 +5,7 @@
 #include <EmpireSerialization2.h>
 #include <EmpireSerialization/Conversions.h>
 #include <EmpireSerialization/String.h>
+#include <Internal.h>
 
 using namespace ES;
 
@@ -12,17 +13,22 @@ Error NoError { ErrorCode::NONE };
 
 constexpr std::size_t FILLER = static_cast<std::size_t>(-1);
 
+
 template<typename SrcType, typename DestType>
 static void Test(const SrcType* src, std::initializer_list<DestType> expectedWords, const Error& expectedError = NoError,
-	std::size_t wordsReadOverride = FILLER, std::size_t charactersOverride = FILLER)
+	std::size_t wordsReadOverride = FILLER, std::size_t charactersOverride = FILLER,
+	std::size_t srcWordsOverride = FILLER, std::size_t destWordsOverride = FILLER)
 {
+	const int DEST_LENGTH = 2048;
+	DestType dest[DEST_LENGTH];
+	//Assign default parameters real values if the user doesnt specity any
 	if (wordsReadOverride == FILLER) wordsReadOverride = String::WordCount(src);
 	if (charactersOverride == FILLER) charactersOverride = String::CharacterCount(src);
+	if (srcWordsOverride == FILLER) srcWordsOverride = String::WordCount(src);
+	if (destWordsOverride == FILLER) destWordsOverride = DEST_LENGTH;
 
-
-	DestType dest[2048];
 	StringCodingData data;
-	ErrorCode error = Conversions::Convert<SrcType, DestType>(src, String::Bytes(src), dest, sizeof(dest), data);
+	ErrorCode error = Conversions::Convert<SrcType, DestType>(src, srcWordsOverride, dest, destWordsOverride, data);
 	if (error && expectedError.Type == ErrorCode::NONE)
 	{
 		DefaultFormatter formatter;
@@ -30,13 +36,13 @@ static void Test(const SrcType* src, std::initializer_list<DestType> expectedWor
 		printf("Error converting string %s", formatter.c_str());
 	}
 
-	REQUIRE(error == expectedError.Type);
 	REQUIRE(data.SrcCharacterSet == GetCharsetCode<SrcType>::Code);
 	REQUIRE(data.DestCharacterSet == GetCharsetCode<DestType>::Code);
 	REQUIRE(data.WordsRead == wordsReadOverride);
 	REQUIRE(data.WordsWritten == expectedWords.size());
 	REQUIRE(data.Characters  == charactersOverride);
 	
+	REQUIRE(error == expectedError.Type);
 	//Make sure the expected error information matches the generated error information
 	switch (expectedError.Type)
 	{
@@ -79,23 +85,62 @@ static void Test(const SrcType* src, std::initializer_list<DestType> expectedWor
 	}
 }
 
-template<typename SrcCharset, typename CharsetA, typename FinalCharset>
-static void ConversionLoopHelper(CharsetA* src, std::size_t wordCount)
+
+//Converts a string through a circular loop of three or more charsets and checks to see if the final string came back the same
+
+
+//Base case
+template<typename SrcCharset, typename SrcCharsetUnused>
+static void ConversionLoopHelper(const SrcCharset* src, std::size_t srcWords, const SrcCharset* current, std::size_t wordCount)
 {
-	Internal::TempBuffer<FinalCharset> temp(Conversions::RequiredCapacity<CharsetA, FinalCharset>(wordCount));
+	static_assert(std::is_same<SrcCharset, SrcCharsetUnused>::value, "The charsets must match for the base case");
+	REQUIRE(wordCount == srcWords);
+	for (int i = 0; i < srcWords; i++)
+	{
+		REQUIRE(src[i] == current[i]);
+	}
+}
+
+template<typename SrcCharset, typename CharsetA, typename CharsetB, typename... Charsets>
+static void ConversionLoopHelper(const SrcCharset* src, std::size_t srcWords, const CharsetA* current, std::size_t wordCount)
+{
+	std::size_t destWords = Conversions::RequiredCapacity<CharsetA, CharsetB>(wordCount);
+	Internal::TempBuffer<CharsetB> temp(destWords);
+	StringCodingData data;
+	ErrorCode error;
+
+	if (error = Conversions::Convert<CharsetA, CharsetB>(current, wordCount, temp.Get(), destWords, data))
+	{
+		DefaultFormatter formatter;
+		String::PrintError(formatter, GetError());
+		Print::OUT.Write("Error while doing string conversion: ").Write(formatter.c_str()).Flush();
+		REQUIRE(false);
+	}
+
+	//Convert to the next charset
+	ConversionLoopHelper<SrcCharset, CharsetB, Charsets...>(src, srcWords, temp.Get(), data.WordsWritten);
+	
 }
 
 
-template<typename SrcCharset, typename CharsetA, typename CharsetB, typename... Args>
-static void ConversionLoopHelper(CharsetA* src, std::size_t wordCount)
+template<typename SrcCharset, typename... Charsets>
+static void ConversionLoop(const SrcCharset* src, std::size_t wordCount)
 {
-
+	//Invoke the helper with the source charset being the first and last conversion that is done
+	ConversionLoopHelper<SrcCharset, SrcCharset, Charsets..., SrcCharset>(src, wordCount, src, wordCount);
 }
 
-template<typename SrcCharset, typename... Args>
-static void ConversionLoop(SrcCharset* src, std::size_t wordCount)
+
+TEST_CASE("utf8->utf32->utf16 loop", "[conversions]")
 {
-	return ConversionLoopHelper<SrcCharset, Args...>()
+	const char* src = "Test string. Convert me many times";
+	ConversionLoop<utf8, utf32, utf16>(src, String::WordCount(src));
+}
+
+TEST_CASE("utf8->utf16->utf32 loop", "[conversions]")
+{
+	const char* src = "Test string. Convert me many times";
+	ConversionLoop<utf8, utf16, utf32>(src, String::WordCount(src));
 }
 
 
@@ -268,3 +313,38 @@ TEST_CASE("utf8->utf32 invalid utf32 surrogate", "[conversions]")
 	std::size_t wordsReadCount = 4, characterCount = 2;
 	Test<utf8, utf32>(str, { 'A', 'B' }, error, wordsReadCount, characterCount);
 }
+
+TEST_CASE("utf8 buffer underflow", "[conversions]")
+{
+	utf8 src[5];
+	src[0] = 'a';
+	src[1] = 'b';
+	src[2] = 'c';
+	src[3] = 0b11000000;//Trick the converter into thinking there is another byte
+	src[4] = 0x00;
+
+	Error error;
+	error.Type = BUFFER_UNDERFLOW;
+	error.BufferUnderflow.BufferSize = 4;
+	error.BufferUnderflow.RequiredSize = 5;
+
+	StringCodingData data;
+	std::size_t wordsReadCount = 4, characterCount = 3;//Only three valid characters are processed
+
+	Test<utf8, utf32>(src, {97, 98, 99}, error, wordsReadCount, characterCount);
+}
+
+
+TEST_CASE("utf16->utf32 (empty)", "[conversions]")
+{
+	utf16 src = 0x0000;
+	Test<utf16, utf32>(&src, {});
+}
+
+TEST_CASE("utf32->utf8 (empty)", "[conversions]")
+{
+	utf32 src = 0x00000000;
+	Test<utf32, utf8>(&src, {});
+}
+
+

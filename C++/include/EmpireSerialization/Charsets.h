@@ -61,4 +61,43 @@ namespace ES {
 	constexpr const std::array<char, ESC6_ENCODE_SIZE> ESC6_ENCODE = ConstructEncoding<char, ESC6_DECODE.size(), ESC6_ENCODE_SIZE>(ESC6_DECODE);
 
 
+	//Represents an abstract reader
+	//The Read method can be called to obtain decoded unicode codepoints from the buffer
+	//This class is not functional. Its only purpose it to cleanly illustrate the API because the actual 
+	//CharsetDecoder<utf8>, CharsetDecoder<utf16> implementations use a lot of macros and as a result look nasty.
+	template<typename T>
+	struct CharsetDecoder
+	{
+	private:
+		//Initalizes this reader with a bolb words for a particular charset
+		//that will be decoded into unicode codepoints
+		CharsetDecoder(const T::WordType* buf, std::size_t length);
+
+		//Reads a single character from this stream, and store its unicode value into codepoint.
+		//If an error happens while obtaining the character, the errorcode is returned to
+		//the user and GetError() is set appropiatly
+		ErrorCode Read(u32& codepoint);
+		
+		std::size_t BytesRead() const;
+		std::size_t WordsRead() const;
+		std::size_t CharactersRead() const;
+
+	};
+
+	template<typename T>
+	struct CharsetEncoder
+	{
+	private:
+		//Initalizes this reader with a binary bolb of data that will be used to write words of type T
+		CharsetEncoder(u8* buf, std::size_t bytes);
+
+		//Reads a single character from this stream into character. If an error happens while obtaining the character,
+		//the errorcode is returned to the user and GetError() is set appropiatly
+		ErrorCode Write(u32 unicode);
+
+		std::size_t BytesWritten() const;
+
+	};
+
+
 }

@@ -64,15 +64,17 @@ namespace ES {
 		u8 CharsetCode;
 	};
 	
-	typedef char utf8;
-	typedef u16 utf16;
-	typedef u32 utf32;
-
 	#define ES_BASIC_CHAR_TYPE(TypeName, ImplType)												\
 		ImplType Value;																			\
 																								\
 		TypeName() {}																			\
 		TypeName(ImplType value) : Value(value) {}												\
+		using WordType = ImplType;																\
+																								\
+		explicit operator u8() const { return static_cast<u8>(Value); }							\
+		explicit operator u16() const { return static_cast<u16>(Value); }						\
+		explicit operator u32() const { return static_cast<u32>(Value); }						\
+		explicit operator u64() const { return static_cast<u64>(Value); }						\
 																								\
 		inline bool operator==(const TypeName other) const { return Value == other.Value; }		\
 		inline bool operator<(const TypeName other) const { return Value < other.Value; }		\
@@ -91,6 +93,21 @@ namespace ES {
 		inline TypeName operator&(const TypeName other) const { return Value & other.Value; }	\
 		inline TypeName operator&=(const TypeName other) { return Value &= other.Value; }		\
 
+
+	struct utf8
+	{
+		ES_BASIC_CHAR_TYPE(utf8, u8)
+	};
+
+	struct utf16
+	{
+		ES_BASIC_CHAR_TYPE(utf16, u16)
+	};
+
+	struct utf32
+	{
+		ES_BASIC_CHAR_TYPE(utf32, u32)
+	};
 
 	struct esc4
 	{
@@ -119,31 +136,6 @@ namespace ES {
 	template<> struct GetCharsetCode<esc6>	{ static constexpr Charset Code =  Charset::ESC6; };
 	template<> struct GetCharsetCode<esc8>	{ static constexpr Charset Code =  Charset::ESC8; };
 
-
-	//The data given back to the caller when a string is encoded into a particular character set
-	struct StringCodingData
-	{
-		//A character is the a character code. For variable length encoding schemes one multi byte sequence is a character
-		//For a utf8 string of two emojies, Characters will be 2  
-		std::size_t Characters;
-
-		//The number of (encoding dependent) words in src that were read while converting this string.
-		std::size_t WordsRead;
-
-		//The number of (encoding dependent) words in dest that were written while converting this string.
-		std::size_t WordsWritten;
-		
-		//The character set this string was encoded with
-		Charset SrcCharacterSet;
-
-		//The character set this string was encoded with
-		Charset DestCharacterSet;
-
-		//Quick getter for figuring how how many bytes this string uses
-		std::size_t NumBytesRead() const;
-		std::size_t NumBytesWritten() const;
-	};
-
 	//Stores the location of a character within a string of a given charset
 	//Used for storing the location of problematic characters
 	struct CharacterIndex
@@ -153,6 +145,27 @@ namespace ES {
 	};
 
 	using TypeID = es_length;
+
+  template<typename, typename>
+    struct is_same
+    : public false_type { };
+
+  template<typename _Tp>
+    struct is_same<_Tp, _Tp>
+    : public true_type { };
+
+	namespace Info {
+		template<typename T>
+		struct IsCharacterType : public std::false_type {  };
+
+		template<> struct IsCharacterType<utf8> : public std::true_type {  };
+		template<> struct IsCharacterType<utf16> : public std::true_type {  };
+		template<> struct IsCharacterType<utf32> : public std::true_type {  };
+		template<> struct IsCharacterType<esc4> : public std::true_type {  };
+		template<> struct IsCharacterType<esc6> : public std::true_type {  };
+		template<> struct IsCharacterType<esc8> : public std::true_type {  };
+
+	}
 
 	namespace DefaultTypes {
 		static constexpr TypeID

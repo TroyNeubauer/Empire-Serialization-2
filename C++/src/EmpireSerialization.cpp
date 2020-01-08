@@ -99,6 +99,7 @@ namespace ES {
 	void ClearError()
 	{
 		Internal::GetError().Type = ErrorCode::NONE;
+		Internal::GetError().AdditionalMessage.Clear();
 	}
 
 	void SetAllocErrorHandler(AllocErrorHandler handler)

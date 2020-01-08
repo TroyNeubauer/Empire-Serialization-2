@@ -274,7 +274,14 @@ namespace ES {
 	#warning No special implementation for this compiler
 #endif
 
-
+		//TODO provide implenmentations for u32 and u64 that use builtin swap instrunctions if avilable
+		template<typename T>
+		void ByteSwap(T& value)
+		{
+			u8* begin = reinterpret_cast<u8*>(&value);
+			u8* end = begin + sizeof(T);
+			std::reverse(begin, end);
+		}
 	}
 }
 

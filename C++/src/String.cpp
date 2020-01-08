@@ -104,6 +104,19 @@ namespace ES {
 			return 0;//TODO
 		}
 
+		template<typename T>
+		std::size_t CharacterCount(const T* string)
+		{
+			
+			return WordCount(string);
+		}
 
+		template std::size_t CharacterCount(const utf8*);
+		template std::size_t CharacterCount(const utf16*);
+		template std::size_t CharacterCount(const utf32*);
+		template std::size_t CharacterCount(const esc4*);
+		template std::size_t CharacterCount(const esc6*);
+		template std::size_t CharacterCount(const esc8*);
 	}
 }
+
