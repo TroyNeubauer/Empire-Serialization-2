@@ -13,9 +13,10 @@
 #include "EmpireSerialization2.h"
 
 namespace ES {
+
 	namespace Conversions {
 
-		//Determines how large the worst case buffer needs to be when converting 
+		//Determines how large the worst case buffer needs to be when converting
 		template<typename SrcType, typename DestType>
 		std::size_t RequiredCapacity(std::size_t srcWords)
 		{
@@ -31,12 +32,8 @@ namespace ES {
 			}
 		}
 
-		//Converts strings or arrays from one type to another
 		template<typename SrcType, typename DestType>
-		ErrorCode Convert(const SrcType* src, size_t srcWords, DestType* dest, size_t destWords);
-
-
-
+		ErrorCode Convert(const SrcType* src, size_t srcWords, DestType* dest, size_t destWords, StringCodingData& data);
 	}
 
 }

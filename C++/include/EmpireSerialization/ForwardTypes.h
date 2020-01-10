@@ -101,12 +101,12 @@ namespace ES {
 
 	struct utf16
 	{
-		ES_BASIC_CHAR_TYPE(utf16, u16)
+		ES_BASIC_CHAR_TYPE(utf16, char16_t)
 	};
 
 	struct utf32
 	{
-		ES_BASIC_CHAR_TYPE(utf32, u32)
+		ES_BASIC_CHAR_TYPE(utf32, char32_t)
 	};
 
 	struct esc4
@@ -256,5 +256,29 @@ namespace ES {
 			} Sequence;
 
 		};
+	};
+
+	//The data given back to the caller when a string is encoded into a particular character set
+	struct StringCodingData
+	{
+		//A character is the a character code. For variable length encoding schemes one multi byte sequence is a character
+		//For a utf8 string of two emojies, Characters will be 2  
+		std::size_t Characters;
+
+		//The number of (encoding dependent) words in src that were read while converting this string.
+		std::size_t WordsRead;
+
+		//The number of (encoding dependent) words in dest that were written while converting this string.
+		std::size_t WordsWritten;
+
+		//The character set this string was encoded with
+		Charset SrcCharacterSet;
+
+		//The character set this string was encoded with
+		Charset DestCharacterSet;
+
+		//Quick getter for figuring how how many bytes this string uses
+		std::size_t NumBytesRead() const;
+		std::size_t NumBytesWritten() const;
 	};
 }

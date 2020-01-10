@@ -1,6 +1,6 @@
 
 #include "EmpireSerialization2.h"
-#include "String.h"
+#include "ESString.h"
 #include "Internal.h"
 
 namespace ES {
@@ -69,7 +69,7 @@ namespace ES {
 		static std::size_t NullTerminatedWordCount(const T* ptr)
 		{
 			const T* start = ptr;
-			while (*ptr)
+			while (ptr->Value)
 			{
 				ptr++;
 			}
@@ -101,7 +101,7 @@ namespace ES {
 		template<>
 		std::size_t WordCount(const esc8* string)
 		{
-			return 0;//TODO
+			return NullTerminatedWordCount(string);
 		}
 
 		template<typename T>

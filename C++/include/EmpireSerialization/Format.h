@@ -227,11 +227,13 @@ namespace ES {
 		Formatter m_Wrapper;
 		FILE* m_File;
 	};
+
+
 	class Print
 	{
 	public:
-		static FormatFile OUT;
-		static FormatFile ERR;
+		static FormatFile STDOUT;
+		static FormatFile STDERR;
 
 	};
 

@@ -43,6 +43,7 @@ namespace ES {
 		template<typename T>
 		std::size_t CharacterCount(const T* string);
 
+
 	}
 }
 

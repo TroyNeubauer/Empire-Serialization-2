@@ -13,6 +13,11 @@ namespace ES {
 			return s_Error;
 		}
 
+		void Init()
+		{
+
+		}
+
 		void DefaultAllocErrorHandler()
 		{
 			Log("[Empire Serialization 2] Critical Error! Failed to allocate memory! Program will terminate");

@@ -4,7 +4,7 @@
 
 #include <EmpireSerialization2.h>
 #include <EmpireSerialization/Conversions.h>
-#include <EmpireSerialization/String.h>
+#include <EmpireSerialization/ESString.h>
 #include <Internal.h>
 
 using namespace ES;
@@ -86,8 +86,8 @@ static void Test(const SrcType* src, std::initializer_list<DestType> expectedWor
 }
 
 
-//Converts a string through a circular loop of three or more charsets and checks to see if the final string came back the same
 
+//Converts a string through a circular loop of three or more charsets and checks to see if the final string came back the same
 
 //Base case
 template<typename SrcCharset, typename SrcCharsetUnused>
@@ -113,7 +113,7 @@ static void ConversionLoopHelper(const SrcCharset* src, std::size_t srcWords, co
 	{
 		DefaultFormatter formatter;
 		String::PrintError(formatter, GetError());
-		Print::OUT.Write("Error while doing string conversion: ").Write(formatter.c_str()).Flush();
+		Print::STDOUT.Write("Error while doing string conversion: ").Write(formatter.c_str()).Flush();
 		REQUIRE(false);
 	}
 
@@ -133,43 +133,43 @@ static void ConversionLoop(const SrcCharset* src, std::size_t wordCount)
 
 TEST_CASE("utf8->utf32->utf16 loop", "[conversions]")
 {
-	const char* src = "Test string. Convert me many times";
+	const utf8* src = SL("Test string. Convert me many times");
 	ConversionLoop<utf8, utf32, utf16>(src, String::WordCount(src));
 }
 
 TEST_CASE("utf8->utf16->utf32 loop", "[conversions]")
 {
-	const char* src = "Test string. Convert me many times";
+	const utf8* src = SL("Test string. Convert me many times");
 	ConversionLoop<utf8, utf16, utf32>(src, String::WordCount(src));
 }
 
 
 TEST_CASE("utf8->esc4 \"test\"", "[conversions]")
 {
-	Test<utf8, esc4>("test", { 0x10, 0x61 });
+	Test<utf8, esc4>(SL("test"), { 0x10, 0x61 });
 }
 
 TEST_CASE("utf8->esc4 \"etaoinshrdlucmwf\"", "[conversions]")
 {
-	Test<utf8, esc4>("etaoinshrdlucmwf", { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF });
+	Test<utf8, esc4>(SL("etaoinshrdlucmwf"), { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF });
 }
 
 TEST_CASE("utf8->esc4 \"fwmculdrhsnioate\"", "[conversions]")
 {
-	Test<utf8, esc4>("fwmculdrhsnioate", { 0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10 });
+	Test<utf8, esc4>(SL("fwmculdrhsnioate"), { 0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10 });
 }
 
 
 TEST_CASE("utf8->esc4 (empty)", "[conversions]")
 {
-	Test<utf8, esc4>("", {});
+	Test<utf8, esc4>(SL(""), {});
 }
 
 
 //https://onlineutf8tools.com/convert-utf8-to-utf32
 TEST_CASE("utf8->utf32 (emojis)", "[conversions]")
 {
-	Test<utf8, utf32>("JSON:😂I❤EmpireSerialization\n",
+	Test<utf8, utf32>(SL("JSON:😂I❤EmpireSerialization\n"),
 		{
 			0x0000004a, 0x00000053, 0x0000004f, 0x0000004e,
 			0x0000003a, 0x0001f602, 0x00000049, 0x00002764,
@@ -184,7 +184,7 @@ TEST_CASE("utf8->utf32 (emojis)", "[conversions]")
 
 TEST_CASE("utf8->utf32 (empty)", "[conversions]")
 {
-	Test<utf8, utf32>("", {});
+	Test<utf8, utf32>(SL(""), {});
 }
 
 //UTF8 errors
@@ -192,7 +192,7 @@ TEST_CASE("utf8->utf32 (empty)", "[conversions]")
 TEST_CASE("utf8->utf32 misaligned character #1", "[conversions]")
 {
 	char badChar = 0b10000000;
-	char str[2];
+	utf8 str[2];
 	str[0] = badChar;
 	str[1] = 0x00;
 	Error error;
@@ -209,7 +209,7 @@ TEST_CASE("utf8->utf32 misaligned character #1", "[conversions]")
 TEST_CASE("utf8->utf32 misaligned character #2", "[conversions]")
 {
 	char badChar = 0b10000000;
-	char str[4];
+	utf8 str[4];
 	str[0] = 'A';
 	str[1] = 'B';
 	str[2] = badChar;
@@ -231,7 +231,7 @@ constexpr std::size_t StrLen(const char* str)
 	else return 1 + StrLen(str + 1);
 }
 
-void AppendChar(char* buf, const char* c, std::size_t& index)
+void AppendChar(utf8* buf, const char* c, std::size_t& index)
 {
 	while (*c)
 	{
@@ -242,7 +242,7 @@ void AppendChar(char* buf, const char* c, std::size_t& index)
 
 TEST_CASE("utf8->utf32 misaligned character #3", "[conversions]")
 {
-	char buf[128];
+	utf8 buf[128];
 	char badChar = 0b10000000;
 	const char* emojiA = "🔥"; utf32 aCode = 0x1F525;
 	const char* emojiB = "💪"; utf32 bCode = 0x1F4AA;
@@ -279,7 +279,7 @@ TEST_CASE("utf8->utf32 misaligned character #3", "[conversions]")
 TEST_CASE("utf8->utf32 invalid utf32 header bit format", "[conversions]")
 {
 	char badChar = 0b11111000;
-	char str[4];
+	utf8 str[4];
 	str[0] = 'A';
 	str[1] = 'B';
 	str[2] = badChar;
@@ -298,7 +298,7 @@ TEST_CASE("utf8->utf32 invalid utf32 header bit format", "[conversions]")
 TEST_CASE("utf8->utf32 invalid utf32 surrogate", "[conversions]")
 {
 	char badChar = 0b11111000;
-	char str[4];
+	utf8 str[4];
 	str[0] = 'A';
 	str[1] = 'B';
 	str[2] = 0b11100000;
@@ -328,7 +328,6 @@ TEST_CASE("utf8 buffer underflow", "[conversions]")
 	error.BufferUnderflow.BufferSize = 4;
 	error.BufferUnderflow.RequiredSize = 5;
 
-	StringCodingData data;
 	std::size_t wordsReadCount = 4, characterCount = 3;//Only three valid characters are processed
 
 	Test<utf8, utf32>(src, {97, 98, 99}, error, wordsReadCount, characterCount);

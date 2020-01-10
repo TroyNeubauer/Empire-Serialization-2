@@ -80,21 +80,21 @@
 #ifdef ES_DEBUG
 		// debug break
 	#if defined(ES_PLATFORM_WINDOWS)
-		#define ES_DEBUGBREAK(file, line) __debugbreak()
+		#define ES_DEBUGBREAK() __debugbreak()
 
 	#elif defined(ES_PLATFORM_UNIX)
 		#include <signal.h>
-		#define ES_DEBUGBREAK(file, line) raise(SIGTRAP)
+		#define ES_DEBUGBREAK() raise(SIGTRAP)
 
 	#elif defined(ES_PLATFORM_EMSCRIPTEN)
-		#define ES_DEBUGBREAK(file, line) EM_ASM({ alert('Assertion failed at File $0, line $1'); }, file, line);
+		#define ES_DEBUGBREAK() EM_ASM({ alert('Assertion failed at File $0, line $1'); }, __FILE__, __LINE__);
 	
 	#else
 		#error No debug break!
 
 	#endif
 
-	#define ES_ASSERT(x, message) { if(!(x)) { ::ES::Internal::Log(message); ES_DEBUGBREAK(__FILE__, __LINE__); } }
+	#define ES_ASSERT(x, message) { if(!(x)) { ::ES::Internal::Log(message); ES_DEBUGBREAK(); } }
 
 #else
 	#define ES_ASSERT(x, message)
@@ -247,7 +247,7 @@ namespace ES {
 			return TopNBits<n, T>(value) == expecting;
 		}
 
-		template<typename T, class = std::enable_if<std::is_unsigned<T>::value>>
+		template<typename T>
 		s8 MaxBitPlace(T value)
 		{
 			for (int i = sizeof(T) * CHAR_BIT - 1; i >= 0; i--)
@@ -264,10 +264,10 @@ namespace ES {
 		template<> s8 MaxBitPlace( u8 value) { return _bit_scan_reverse(value); }
 */
 #elif defined(ES_COMPILER_MSVC)
-		template<> s8 MaxBitPlace(u64 value) { unsigned long result; if (_BitScanReverse64(&result, value)) return result; else return -1; }
-		template<> s8 MaxBitPlace(u32 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return result; else return -1; }
-		template<> s8 MaxBitPlace(u16 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return result; else return -1; }
-		template<> s8 MaxBitPlace( u8 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return result; else return -1; }
+		template<> s8 MaxBitPlace(u64 value) { unsigned long result; if (_BitScanReverse64(&result, value)) return static_cast<s8>(result); else return -1; }
+		template<> s8 MaxBitPlace(u32 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return static_cast<s8>(result); else return -1; }
+		template<> s8 MaxBitPlace(u16 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return static_cast<s8>(result); else return -1; }
+		template<> s8 MaxBitPlace( u8 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return static_cast<s8>(result); else return -1; }
 
 #else
 

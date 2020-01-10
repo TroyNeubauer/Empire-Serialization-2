@@ -114,6 +114,12 @@ project "C++"
 	filter { "toolset:gcc*" }
 		buildoptions { "-masm=intel" }
 
+	filter "configurations:Debug"
+		defines
+		{
+			"ES_DEBUG",
+		}
+
 
 
 project "Bench"
@@ -148,12 +154,17 @@ project "Bench"
 	links 
 	{
 		"C++",
-		"gcov",
 	}
 
 	if _OPTIONS["coverage"] then
 		buildoptions { "-fprofile-abs-path" }
 	end
+
+	filter "system:linux"
+		links
+		{
+			"gcov",
+		}
 
 project "Test"
 	location "Test"
@@ -187,12 +198,17 @@ project "Test"
 	links 
 	{
 		"C++",
-		"gcov",
 	}
 
 	if _OPTIONS["coverage"] then
 		buildoptions { "-fprofile-abs-path" }
 	end
+
+	filter "system:linux"
+		links
+		{
+			"gcov",
+		}
 
 
 project "Sandbox"
@@ -226,10 +242,15 @@ project "Sandbox"
 	links 
 	{
 		"C++",
-		"gcov",
 	}
 
 	if _OPTIONS["coverage"] then
 		buildoptions { "-fprofile-abs-path" }
 	end
+
+	filter "system:linux"
+		links
+		{
+			"gcov",
+		}
 
