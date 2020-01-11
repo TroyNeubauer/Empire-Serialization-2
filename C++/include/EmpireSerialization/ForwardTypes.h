@@ -146,14 +146,6 @@ namespace ES {
 
 	using TypeID = es_length;
 
-  template<typename, typename>
-    struct is_same
-    : public false_type { };
-
-  template<typename _Tp>
-    struct is_same<_Tp, _Tp>
-    : public true_type { };
-
 	namespace Info {
 		template<typename T>
 		struct IsCharacterType : public std::false_type {  };

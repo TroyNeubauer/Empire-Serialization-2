@@ -70,6 +70,13 @@ namespace ES {
 	//The Read method can be called to obtain decoded unicode codepoints from the buffer
 	template<typename T> struct CharsetDecoder;
 
+	template<> struct CharsetDecoder<utf8>;
+	template<> struct CharsetDecoder<utf16>;
+	template<> struct CharsetDecoder<utf32>;
+	template<> struct CharsetDecoder<esc4>;
+	template<> struct CharsetDecoder<esc6>;
+	template<> struct CharsetDecoder<esc8>;
+
 	//This class is not functional. Its only purpose it to cleanly illustrate the API because the actual 
 	//CharsetDecoder<utf8>, CharsetDecoder<utf16> implementations use a lot of macros and as a result look nasty.
 	//This classes methods are identical to the actual ones found in CharsetDecoder<utf8>, CharsetDecoder<esc4> etc.
@@ -99,6 +106,12 @@ namespace ES {
 	
 	template<typename T> struct CharsetEncoder;
 	
+	template<> struct CharsetEncoder<utf8>;
+	template<> struct CharsetEncoder<utf16>;
+	template<> struct CharsetEncoder<utf32>;
+	template<> struct CharsetEncoder<esc4>;
+	template<> struct CharsetEncoder<esc6>;
+	template<> struct CharsetEncoder<esc8>;
 
 	template<typename T>
 	struct CharsetEncoder_API
