@@ -10,6 +10,10 @@
 
 namespace ES {
 
+	void Init()
+	{
+		Internal::Init();
+	}
 
 	const Error& GetError()
 	{

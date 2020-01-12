@@ -116,3 +116,25 @@ TEST_CASE("DefualtFormatter #5", "[formatting]")
 	REQUIRE(string == formatter.c_str());
 }
 
+TEST_CASE("File formatter flush", "[formatting]")
+{
+	FILE* testFile = fopen("test.txt", "w");
+	REQUIRE(testFile);
+	FormatFile formatter(testFile);
+
+	//Each iteration prints way more than one byte so we will trigger a flush
+	for (int i = 0; i < formatter.BufferCapacity(); i++)
+	{
+		formatter << "Print me test string" << '\n' << 5;
+	}
+
+}
+
+TEST_CASE("DefualtFormatter Code coverage", "[formatting]")
+{
+	DefaultFormatter formatter;
+	formatter << 0.5f << 1.0;
+
+	REQUIRE(true);
+}
+

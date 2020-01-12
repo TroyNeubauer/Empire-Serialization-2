@@ -75,6 +75,22 @@ TEST_CASE("Internal::MaxBitPlace")
 	REQUIRE(Internal::MaxBitPlace<u64>(0x0100000000) == 32);
 	REQUIRE(Internal::MaxBitPlace<u64>(0b11) == 1);
 	REQUIRE(Internal::MaxBitPlace<u64>(0) == -1);
-
-
 }
+
+static int x = 0;
+
+static void NewAllocHandler()
+{
+	x = 5;
+}
+
+TEST_CASE("Internal Alloc handler functions")
+{
+	Internal::Log("Disregard the next message. It is being printed to test the error handler. No actual error happened");
+	Internal::InvokeAllocErrorHandler();
+	Internal::SetAllocErrorHandler(&NewAllocHandler);
+	Internal::InvokeAllocErrorHandler();
+
+	REQUIRE(x == 5);
+}
+

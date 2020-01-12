@@ -19,5 +19,6 @@ namespace ES {
 	using AllocErrorHandler = std::add_pointer<void()>::type;
 
 	void SetAllocErrorHandler(AllocErrorHandler handler);
+	void Init();
 
 }

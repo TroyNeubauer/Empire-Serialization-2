@@ -7,6 +7,7 @@
 #include <catch2/catch.hpp>
 
 int main(int argc, char* const argv[]) {
+	ES::Init();
 	int result = Catch::Session().run(argc, argv);
 
 #ifdef _MSC_VER

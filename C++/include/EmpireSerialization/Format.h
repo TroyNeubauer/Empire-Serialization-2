@@ -187,6 +187,7 @@ namespace ES {
 	{
 	public:
 		FormatFile(FILE* file) : m_Wrapper(m_Buf, sizeof(m_Buf)), m_File(file) {}
+		inline std::size_t BufferCapacity() const { return sizeof(m_Buf); }
 
 		template<typename T> FormatFile& operator<<(const T& value) { return Write(value); }
 		template<typename T> FormatFile& Base(const T& value, u8 base) { TryFlush(MaxDigits<T>(value, base)); m_Wrapper.Base(value, base); return *this; }
