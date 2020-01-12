@@ -264,10 +264,10 @@ namespace ES {
 		template<> s8 MaxBitPlace( u8 value) { return _bit_scan_reverse(value); }
 */
 #elif defined(ES_COMPILER_MSVC)
-		template<> s8 MaxBitPlace(u64 value) { unsigned long result; if (_BitScanReverse64(&result, value)) return static_cast<s8>(result); else return -1; }
-		template<> s8 MaxBitPlace(u32 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return static_cast<s8>(result); else return -1; }
-		template<> s8 MaxBitPlace(u16 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return static_cast<s8>(result); else return -1; }
-		template<> s8 MaxBitPlace( u8 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return static_cast<s8>(result); else return -1; }
+		template<> inline s8 MaxBitPlace(u64 value) { unsigned long result; if (_BitScanReverse64(&result, value)) return static_cast<s8>(result); else return -1; }
+		template<> inline s8 MaxBitPlace(u32 value) { unsigned long result; if (_BitScanReverse(&result, value)) return static_cast<s8>(result); else return -1; }
+		template<> inline s8 MaxBitPlace(u16 value) { unsigned long result; if (_BitScanReverse(&result, value)) return static_cast<s8>(result); else return -1; }
+		template<> inline s8 MaxBitPlace( u8 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return static_cast<s8>(result); else return -1; }
 
 #else
 

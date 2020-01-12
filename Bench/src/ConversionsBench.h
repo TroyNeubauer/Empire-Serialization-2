@@ -16,14 +16,17 @@ void TestFromFile(const char* benchName, const char* fileName, double fileMultip
 	std::ifstream file(fileName);
 	REQUIRE(file.good());
 	
-	std::vector<utf8> rawFile((std::istreambuf_iterator<utf8>(file)), std::istreambuf_iterator<utf8>());
+	std::vector<char> rawFile((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 	std::vector<utf8> finalChars;
 	const std::size_t characters = static_cast<std::size_t>(rawFile.size() * fileMultiplier);
 	std::size_t i = characters;
 	while (i > 0)
 	{
 		std::size_t copyCount = ES_MIN(rawFile.size(), i);
-		finalChars.insert(finalChars.begin(), rawFile.begin(), rawFile.begin() + copyCount);
+		for (int j = 0; j < copyCount; j++)
+		{
+			finalChars.emplace_back(rawFile[j]);
+		}
 		i -= copyCount;
 	}
 
@@ -33,20 +36,20 @@ void TestFromFile(const char* benchName, const char* fileName, double fileMultip
 	//We can use the file directly
 	if (std::is_same<SrcType, utf8>::value)
 	{
-		std::copy(finalChars.begin(), finalChars.begin() + characters, src.data());
+		//std::copy(finalChars.begin(), finalChars.begin() + characters, src.data());
 	}
 	else
 	{
 		//We need to convert from the utf8 file to the source type
 		StringCodingData data;
-		REQUIRE(Conversions::Convert<utf8, SrcType>(finalChars.data(), characters, src.data(), characters, data) == ErrorCode::NONE);
+		REQUIRE(Conversions::ConvertString<utf8, SrcType>(finalChars.data(), characters, src.data(), characters, data) == ErrorCode::NONE);
 		REQUIRE(data.Characters == characters);
 	}
 	
     BENCHMARK(benchName)
 	{
 		StringCodingData data;
-		ErrorCode error = Conversions::Convert<SrcType, DestType>(src.data(), characters, dest.data(), characters, data);
+		ErrorCode error = Conversions::ConvertString<SrcType, DestType>(src.data(), characters, dest.data(), characters, data);
 		if (error) REQUIRE(false);//Use this format for performanace
 		return error;
     };
@@ -70,19 +73,20 @@ void TestFromRandomCharset(const char* benchName, const std::array<char, Len>& c
 	int min = 0;
 
 	if (chars[0] == 0x00) min = 1;//Dont insert random null characters if this character set supports null characters
-	std::uniform_int_distribution<std::size_t> range(0, Len);
+	std::uniform_int_distribution<std::size_t> range(0, Len - 1);
 	
 	for (std::size_t i = 0; i < wordCount; i++)
 	{
-		srcUtf8.push_back(static_cast<utf8>(chars[range(rng)]));
+		int code = range(rng);
+		srcUtf8.push_back(static_cast<utf8>(chars[code]));
 	}
 	StringCodingData data;
-	REQUIRE(Conversions::Convert(srcUtf8.data(), srcUtf8.size(), src.data(), src.size(), data) == ErrorCode::NONE);
+	REQUIRE(Conversions::ConvertString(srcUtf8.data(), srcUtf8.size(), src.data(), src.size(), data) == ErrorCode::NONE);
 	std::size_t srcWords = data.WordsWritten;
 	BENCHMARK(benchName)
 	{
 		StringCodingData data;
-		ErrorCode error = Conversions::Convert<SrcType, DestType>(src.data(), srcWords, dest.data(), dest.size(), data);
+		ErrorCode error = Conversions::ConvertString<SrcType, DestType>(src.data(), srcWords, dest.data(), dest.size(), data);
 		if (error) REQUIRE(false);//Use this format for performanace
 		return error;
     };

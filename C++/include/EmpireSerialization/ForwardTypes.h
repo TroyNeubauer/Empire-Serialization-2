@@ -64,34 +64,33 @@ namespace ES {
 		u8 CharsetCode;
 	};
 	
-	#define ES_BASIC_CHAR_TYPE(TypeName, ImplType)												\
-		ImplType Value;																			\
-																								\
-		TypeName() {}																			\
-		TypeName(ImplType value) : Value(value) {}												\
-		using WordType = ImplType;																\
-																								\
-		explicit operator u8() const { return static_cast<u8>(Value); }							\
-		explicit operator u16() const { return static_cast<u16>(Value); }						\
-		explicit operator u32() const { return static_cast<u32>(Value); }						\
-		explicit operator u64() const { return static_cast<u64>(Value); }						\
-																								\
-		inline bool operator==(const TypeName other) const { return Value == other.Value; }		\
-		inline bool operator<(const TypeName other) const { return Value < other.Value; }		\
-		inline bool operator>(const TypeName other) const { return Value > other.Value; }		\
-		inline bool operator<=(const TypeName other) const { return Value <= other.Value; }		\
-		inline bool operator>=(const TypeName other) const { return Value >= other.Value; }		\
-		inline TypeName operator=(const TypeName other) { return Value = other.Value; }			\
-																								\
-		inline TypeName operator<<(std::size_t shift) const { return Value << shift; }			\
-		inline TypeName operator>>(std::size_t shift) const { return shift >> shift; }			\
-		inline TypeName operator<<=(std::size_t shift) { return Value <<= shift; }				\
-		inline TypeName operator>>=(std::size_t shift) { return shift >>= shift; }				\
-																								\
-		inline TypeName operator|(const TypeName other) const { return Value | other.Value; }	\
-		inline TypeName operator|=(const TypeName other) { return Value |= other.Value; }		\
-		inline TypeName operator&(const TypeName other) const { return Value & other.Value; }	\
-		inline TypeName operator&=(const TypeName other) { return Value &= other.Value; }		\
+	#define ES_BASIC_CHAR_TYPE(TypeName, ImplType)															\
+		ImplType Value;																						\
+		using WordType = ImplType;																			\
+																											\
+		TypeName() = default;																				\
+		TypeName(ImplType value) : Value(value) {}															\
+																											\
+		explicit operator u8() const { return static_cast<u8>(Value); }										\
+		explicit operator u16() const { return static_cast<u16>(Value); }									\
+		explicit operator u32() const { return static_cast<u32>(Value); }									\
+		explicit operator u64() const { return static_cast<u64>(Value); }									\
+																											\
+		inline bool operator==(const TypeName other) const { return Value == other.Value; }					\
+		inline bool operator< (const TypeName other) const { return Value < other.Value; }					\
+		inline bool operator> (const TypeName other) const { return Value > other.Value; }					\
+		inline bool operator<=(const TypeName other) const { return Value <= other.Value; }					\
+		inline bool operator>=(const TypeName other) const { return Value >= other.Value; }					\
+																											\
+		inline TypeName operator<<(std::size_t shift) const { return TypeName(Value << shift); }			\
+		inline TypeName operator>>(std::size_t shift) const { return TypeName(shift >> shift); }			\
+		inline TypeName operator<<=(std::size_t shift)		{ return TypeName(Value <<= shift); }			\
+		inline TypeName operator>>=(std::size_t shift)		{ return TypeName(shift >>= shift); }			\
+																											\
+		inline TypeName operator| (const TypeName other) const	{ return TypeName(Value | other.Value); }	\
+		inline TypeName operator|=(const TypeName other)		{ return TypeName(Value |= other.Value); }	\
+		inline TypeName operator& (const TypeName other) const	{ return TypeName(Value & other.Value); }	\
+		inline TypeName operator&=(const TypeName other)		{ return TypeName(Value &= other.Value); }	\
 
 
 	struct utf8

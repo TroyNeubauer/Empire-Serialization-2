@@ -3,6 +3,7 @@
 #include <initializer_list>
 
 #include <EmpireSerialization2.h>
+#include <EmpireSerialization/Charsets.h>
 #include <EmpireSerialization/Conversions.h>
 #include <EmpireSerialization/ESString.h>
 #include <Internal.h>
@@ -28,7 +29,7 @@ static void Test(const SrcType* src, std::initializer_list<DestType> expectedWor
 	if (destWordsOverride == FILLER) destWordsOverride = DEST_LENGTH;
 
 	StringCodingData data;
-	ErrorCode error = Conversions::Convert<SrcType, DestType>(src, srcWordsOverride, dest, destWordsOverride, data);
+	ErrorCode error = Conversions::ConvertString<SrcType, DestType>(src, srcWordsOverride, dest, destWordsOverride, data);
 	if (error && expectedError.Type == ErrorCode::NONE)
 	{
 		DefaultFormatter formatter;
@@ -109,7 +110,7 @@ static void ConversionLoopHelper(const SrcCharset* src, std::size_t srcWords, co
 	StringCodingData data;
 	ErrorCode error;
 
-	if (error = Conversions::Convert<CharsetA, CharsetB>(current, wordCount, temp.Get(), destWords, data))
+	if (error = Conversions::ConvertString<CharsetA, CharsetB>(current, wordCount, temp.Get(), destWords, data))
 	{
 		DefaultFormatter formatter;
 		String::PrintError(formatter, GetError());
@@ -146,17 +147,17 @@ TEST_CASE("utf8->utf16->utf32 loop", "[conversions]")
 
 TEST_CASE("utf8->esc4 \"test\"", "[conversions]")
 {
-	Test<utf8, esc4>(SL("test"), { 0x10, 0x61 });
+	Test<utf8, esc4>(SL("test"), { 0x21, 0x72 });
 }
 
-TEST_CASE("utf8->esc4 \"etaoinshrdlucmwf\"", "[conversions]")
+TEST_CASE("utf8->esc4 \"etaoinshrdlucmw\"", "[conversions]")
 {
-	Test<utf8, esc4>(SL("etaoinshrdlucmwf"), { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF });
+	Test<utf8, esc4>(SL("etaoinshrdlucmww"), { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xFF });
 }
 
 TEST_CASE("utf8->esc4 \"fwmculdrhsnioate\"", "[conversions]")
 {
-	Test<utf8, esc4>(SL("fwmculdrhsnioate"), { 0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10 });
+	Test<utf8, esc4>(SL("wwmculdrhsnioate"), { 0xFF, 0xED, 0xCB, 0xA9, 0x87, 0x65, 0x43, 0x21 });
 }
 
 
@@ -197,7 +198,7 @@ TEST_CASE("utf8->utf32 misaligned character #1", "[conversions]")
 	str[1] = 0x00;
 	Error error;
 	error.Type = INVALID_CHARACTER;
-	error.InvalidCharacter.Char = badChar;
+	error.InvalidCharacter.Char = static_cast<unsigned char>(badChar);
 	error.InvalidCharacter.CharacterSet = Charset::UTF8;
 	error.InvalidCharacter.Position.Character = 0;
 	error.InvalidCharacter.Position.Word = 0;
@@ -216,7 +217,7 @@ TEST_CASE("utf8->utf32 misaligned character #2", "[conversions]")
 	str[3] = 0x00;
 	Error error;
 	error.Type = INVALID_CHARACTER;
-	error.InvalidCharacter.Char = badChar;
+	error.InvalidCharacter.Char = static_cast<unsigned char>(badChar);
 	error.InvalidCharacter.CharacterSet = Charset::UTF8;
 	error.InvalidCharacter.Position.Character = 2;
 	error.InvalidCharacter.Position.Word = 2;
@@ -266,7 +267,7 @@ TEST_CASE("utf8->utf32 misaligned character #3", "[conversions]")
 
 	Error error;
 	error.Type = INVALID_CHARACTER;
-	error.InvalidCharacter.Char = badChar;
+	error.InvalidCharacter.Char = static_cast<unsigned char>(badChar);
 	error.InvalidCharacter.CharacterSet = Charset::UTF8;
 	error.InvalidCharacter.Position.Character = 8;
 	error.InvalidCharacter.Position.Word = index;
@@ -286,7 +287,7 @@ TEST_CASE("utf8->utf32 invalid utf32 header bit format", "[conversions]")
 	str[3] = 0x00;
 	Error error;
 	error.Type = INVALID_CHARACTER;
-	error.InvalidCharacter.Char = badChar;
+	error.InvalidCharacter.Char = static_cast<unsigned char>(badChar);
 	error.InvalidCharacter.CharacterSet = Charset::UTF8;
 	error.InvalidCharacter.Position.Character = 2;
 	error.InvalidCharacter.Position.Word = 2;
@@ -305,7 +306,7 @@ TEST_CASE("utf8->utf32 invalid utf32 surrogate", "[conversions]")
 	str[3] = badChar;
 	Error error;
 	error.Type = INVALID_CHARACTER;
-	error.InvalidCharacter.Char = badChar;
+	error.InvalidCharacter.Char = static_cast<unsigned char>(badChar);
 	error.InvalidCharacter.CharacterSet = Charset::UTF8;
 	error.InvalidCharacter.Position.Character = 2;
 	error.InvalidCharacter.Position.Word = 3;

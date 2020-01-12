@@ -2,6 +2,7 @@
 #include "EmpireSerialization2.h"
 #include "ESString.h"
 #include "Internal.h"
+#include "Charsets.h"
 
 namespace ES {
 	namespace String {
@@ -107,8 +108,14 @@ namespace ES {
 		template<typename T>
 		std::size_t CharacterCount(const T* string)
 		{
-			
-			return WordCount(string);
+			CharsetDecoder<T> decoder(string, WordCount(string));
+			u32 codepoint;
+			ErrorCode code;
+			while (decoder.HasChars())
+			{
+				if (code = decoder.Read(codepoint)) return UNABLE_TO_QUERY_CHARACTER_COUNT;
+			}
+			return decoder.CharactersRead();
 		}
 
 		template std::size_t CharacterCount(const utf8*);

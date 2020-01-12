@@ -5,70 +5,43 @@
 
 namespace ES {
 
-#define CHARSET_DECODER_PUBLIC_METHODS_DEF(ClassName)										\
-		CharsetDecoder(const ClassName* buf, std::size_t length)							\
-			: m_Buf(reinterpret_cast<const ClassName::WordType*>(buf)), m_BufEnd(m_Buf + length), m_BufInital(m_Buf) {}						\
-																							\
-		ErrorCode Read(u32& unicode);														\
-		inline std::size_t WordsRead() const { return m_Buf - m_BufInital; }				\
-		inline std::size_t BytesRead() const { return WordsRead() * sizeof(ClassName); }	\
-		inline std::size_t CharactersRead() const { return m_CharacterIndex; }				\
-		inline bool HasChars() const { return m_Buf != m_BufEnd; }							\
-
-
-
-
-#define CHARSET_DECODER_PRIVATE_METHODS(ClassName)							\
-		ErrorCode ReadWord(ClassName::WordType& word)						\
-		{																	\
-			if (m_Buf == m_BufEnd)											\
-			{																\
+#define CHARSET_DECODER_PRIVATE_METHODS(ClassName)															\
+		ErrorCode CharsetDecoder<ClassName>::ReadWord(ClassName::WordType& word)							\
+		{																									\
+			if (m_Buf == m_BufEnd)																			\
+			{																								\
 				Error& error = Internal::GetError();														\
 				error.BufferUnderflow.BufferSize = BytesRead();												\
 				error.BufferUnderflow.RequiredSize = BytesRead() + sizeof(ClassName);						\
 																											\
 				return error.Type = ErrorCode::BUFFER_UNDERFLOW;											\
 																											\
-			}																			\
-			word = *m_Buf++;															\
-			/*if (flip) Internal::ByteSwap(c);*/										\
-			m_CharacterIndex++;															\
-			return ErrorCode::NONE;														\
-		}																				\
-																						\
-		ErrorCode InvalidCharacterError()												\
-		{																				\
-			/*Its the character last returned*/											\
-			Error& error = Internal::GetError();										\
-			error.InvalidCharacter.Char = m_Buf[-1];									\
-			error.InvalidCharacter.CharacterSet = GetCharsetCode<ClassName>::Code;		\
-																						\
-			error.InvalidCharacter.Position.Word = WordsRead() - 1;						\
-			error.InvalidCharacter.Position.Character = m_CharacterIndex;				\
-																						\
-			return error.Type = ErrorCode::INVALID_CHARACTER;							\
-		}																				\
-																						\
+			}																								\
+			word = *m_Buf++;																				\
+			/*if (flip) Internal::ByteSwap(c);*/															\
+			return ErrorCode::NONE;																			\
+		}																									\
+																											\
+		ErrorCode CharsetDecoder<ClassName>::InvalidCharacterError()										\
+		{																									\
+			/*Its the character last returned*/																\
+			Error& error = Internal::GetError();															\
+			error.InvalidCharacter.Char = m_Buf[-1];														\
+			error.InvalidCharacter.CharacterSet = GetCharsetCode<ClassName>::Code;							\
+																											\
+			error.InvalidCharacter.Position.Word = WordsRead() - 1;											\
+			error.InvalidCharacter.Position.Character = m_CharacterIndex;									\
+																											\
+			return error.Type = ErrorCode::INVALID_CHARACTER;												\
+		}																									\
 
 
-
-#define CHARSET_DECODER_PRIVATE_MEMBER_VARIABLES(ClassName)		\
-		const ClassName::WordType* m_Buf;						\
-		const ClassName::WordType* m_BufEnd;					\
-		const ClassName::WordType* const m_BufInital;			\
-		std::size_t m_CharacterIndex = 0;						\
-	
-	template<>
-	struct CharsetDecoder<utf8>
-	{
-
-	public:  CHARSET_DECODER_PUBLIC_METHODS_DEF(utf8)
-
-	private: CHARSET_DECODER_PRIVATE_METHODS(utf8)
-
-	private: CHARSET_DECODER_PRIVATE_MEMBER_VARIABLES(utf8)
-
-	};
+	CHARSET_DECODER_PRIVATE_METHODS(utf8)
+	CHARSET_DECODER_PRIVATE_METHODS(utf16)
+	CHARSET_DECODER_PRIVATE_METHODS(utf32)
+	CHARSET_DECODER_PRIVATE_METHODS(esc4)
+	CHARSET_DECODER_PRIVATE_METHODS(esc6)
+	CHARSET_DECODER_PRIVATE_METHODS(esc8)
 
 	ErrorCode CharsetDecoder<utf8>::Read(u32& codepoint)
 	{
@@ -132,16 +105,6 @@ namespace ES {
 		return ErrorCode::NONE;
 	}
 
-	template<>
-	struct CharsetDecoder<utf16>
-	{
-
-	public: CHARSET_DECODER_PUBLIC_METHODS_DEF(utf16)
-
-	private: CHARSET_DECODER_PRIVATE_METHODS(utf16)
-
-	private: CHARSET_DECODER_PRIVATE_MEMBER_VARIABLES(utf16)
-	};
 
 	ErrorCode CharsetDecoder<utf16>::Read(u32& codepoint)
 	{
@@ -164,19 +127,6 @@ namespace ES {
 		return ErrorCode::NONE;
 	}
 
-
-	template<>
-	struct CharsetDecoder<utf32>
-	{
-
-	public: CHARSET_DECODER_PUBLIC_METHODS_DEF(utf32)
-
-	private: CHARSET_DECODER_PRIVATE_METHODS(utf32)
-
-	private: CHARSET_DECODER_PRIVATE_MEMBER_VARIABLES(utf32)
-	};
-
-
 	ErrorCode CharsetDecoder<utf32>::Read(u32& codepoint)
 	{
 		char32_t c;
@@ -195,19 +145,6 @@ namespace ES {
 		return ErrorCode::NONE;
 	}
 
-	template<>
-	struct CharsetDecoder<esc4>
-	{
-
-	public: CHARSET_DECODER_PUBLIC_METHODS_DEF(esc4)
-
-	private: CHARSET_DECODER_PRIVATE_METHODS(esc4)
-
-	private: CHARSET_DECODER_PRIVATE_MEMBER_VARIABLES(esc4)
-
-		bool m_Stale = true;
-		esc4::WordType m_CurrentWord;
-	};
 
 	ErrorCode CharsetDecoder<esc4>::Read(u32& codepoint)
 	{
@@ -223,29 +160,11 @@ namespace ES {
 			codepoint = (static_cast<u32>(m_CurrentWord) >> 0) & 0b1111;
 		}
 		m_Stale = !m_Stale;
+		m_CharacterIndex++;
 
 		return ErrorCode::NONE;
 	}
 
-	template<>
-	struct CharsetDecoder<esc6>
-	{
-
-	public: CHARSET_DECODER_PUBLIC_METHODS_DEF(esc6)
-
-	private: CHARSET_DECODER_PRIVATE_METHODS(esc6)
-
-	private: CHARSET_DECODER_PRIVATE_MEMBER_VARIABLES(esc6)
-
-		union
-		{
-			esc6::WordType m_Words[4];
-			u32 m_PackedWords;
-		};
-
-
-
-	};
 
 	ErrorCode CharsetDecoder<esc6>::Read(u32& codepoint)
 	{
@@ -269,21 +188,10 @@ namespace ES {
 		{
 			codepoint = (m_PackedWords >> 0) & 0b111111;
 		}
+
+		m_CharacterIndex++;
 		return ErrorCode::NONE;
 	}
-
-	template<>
-	struct CharsetDecoder<esc8>
-	{
-
-	public: CHARSET_DECODER_PUBLIC_METHODS_DEF(esc8)
-
-	private: CHARSET_DECODER_PRIVATE_METHODS(esc8)
-
-	private: CHARSET_DECODER_PRIVATE_MEMBER_VARIABLES(esc8)
-
-
-	};
 
 	ErrorCode CharsetDecoder<esc8>::Read(u32& codepoint)
 	{
@@ -294,20 +202,8 @@ namespace ES {
 	// ==================== CharsetEncoders ====================
 
 
-#define CHARSET_ENCODER_PUBLIC_METHODS_DEF(ClassName)											\
-		CharsetEncoder(ClassName* buf, std::size_t length)										\
-			: m_Buf(reinterpret_cast<ClassName::WordType*>(buf)), m_BufEnd(m_Buf + length), m_BufInital(m_Buf) {}						\
-																								\
-		ErrorCode Write(u32 unicode);															\
-		inline std::size_t WordsWritten() const { return m_Buf - m_BufInital; }					\
-		inline std::size_t BytesWritten() const { return WordsWritten() * sizeof(ClassName); }	\
-		inline std::size_t CharactersWritten() const { return m_CharacterIndex; }				\
-
-
-
-
 #define CHARSET_ENCODER_PRIVATE_METHODS(ClassName)										\
-		ErrorCode WriteWord(ClassName::WordType word)									\
+		ErrorCode CharsetEncoder<ClassName>::WriteWord(ClassName::WordType word)		\
 		{																				\
 			if (m_Buf == m_BufEnd)														\
 			{																			\
@@ -320,11 +216,10 @@ namespace ES {
 			}																			\
 			*m_Buf++ = word;															\
 			/*if (flip) Internal::ByteSwap(c);*/										\
-			m_CharacterIndex++;															\
 			return ErrorCode::NONE;														\
 		}																				\
 																						\
-		ErrorCode UnsupportedCharacterError(u32 unicode)								\
+		ErrorCode CharsetEncoder<ClassName>::UnsupportedCharacterError(u32 unicode)		\
 		{																				\
 			/*Its the character last returned*/											\
 			Error& error = Internal::GetError();										\
@@ -338,27 +233,12 @@ namespace ES {
 		}																				\
 																						\
 
-
-
-#define CHARSET_ENCODER_PRIVATE_MEMBER_VARIABLES(ClassName)		\
-		ClassName::WordType* m_Buf;								\
-		ClassName::WordType* const m_BufEnd;					\
-		ClassName::WordType* const m_BufInital;					\
-		std::size_t m_CharacterIndex = 0;						\
-
-
-
-	template<>
-	struct CharsetEncoder<utf8>
-	{
-
-	public:	 CHARSET_ENCODER_PUBLIC_METHODS_DEF(utf8)
-
-	private: CHARSET_ENCODER_PRIVATE_METHODS(utf8)
-				
-	private: CHARSET_ENCODER_PRIVATE_MEMBER_VARIABLES(utf8)
-
-	};
+	CHARSET_ENCODER_PRIVATE_METHODS(utf8)
+	CHARSET_ENCODER_PRIVATE_METHODS(utf16)
+	CHARSET_ENCODER_PRIVATE_METHODS(utf32)
+	CHARSET_ENCODER_PRIVATE_METHODS(esc4)
+	CHARSET_ENCODER_PRIVATE_METHODS(esc6)
+	CHARSET_ENCODER_PRIVATE_METHODS(esc8)
 
 	ErrorCode CharsetEncoder<utf8>::Write(u32 codepoint)
 	{
@@ -414,17 +294,6 @@ namespace ES {
 		return ErrorCode::NONE;
 	}
 
-	template<>
-	struct CharsetEncoder<utf16>
-	{
-
-	public:	 CHARSET_ENCODER_PUBLIC_METHODS_DEF(utf16)
-
-	private: CHARSET_ENCODER_PRIVATE_METHODS(utf16)
-
-	private: CHARSET_ENCODER_PRIVATE_MEMBER_VARIABLES(utf16)
-
-	};
 
 	ErrorCode CharsetEncoder<utf16>::Write(u32 codepoint)
 	{
@@ -450,43 +319,17 @@ namespace ES {
 
 
 
-
-	template<>
-	struct CharsetEncoder<utf32>
-	{
-
-	public:	 CHARSET_ENCODER_PUBLIC_METHODS_DEF(utf32)
-
-	private: CHARSET_ENCODER_PRIVATE_METHODS(utf32)
-
-	private: CHARSET_ENCODER_PRIVATE_MEMBER_VARIABLES(utf32)
-
-	};
-
 	ErrorCode CharsetEncoder<utf32>::Write(u32 codepoint)
 	{
 		ErrorCode code;
 		utf32::WordType word = codepoint;
 		if (code = WriteWord(word)) return code;
+
+		m_CharacterIndex++;
 		
 		return ErrorCode::NONE;
 	}
 
-
-
-
-
-	template<>
-	struct CharsetEncoder<esc4>
-	{
-
-	public:	 CHARSET_ENCODER_PUBLIC_METHODS_DEF(esc4)
-
-	private: CHARSET_ENCODER_PRIVATE_METHODS(esc4)
-
-	private: CHARSET_ENCODER_PRIVATE_MEMBER_VARIABLES(esc4)
-		esc4::WordType m_CurrentWord;
-	};
 
 	ErrorCode CharsetEncoder<esc4>::Write(u32 codepoint)
 	{
@@ -508,20 +351,6 @@ namespace ES {
 		return ErrorCode::NONE;
 	}
 
-
-
-
-	template<>
-	struct CharsetEncoder<esc6>
-	{
-
-	public:	 CHARSET_ENCODER_PUBLIC_METHODS_DEF(esc6)
-
-	private: CHARSET_ENCODER_PRIVATE_METHODS(esc6)
-
-	private: CHARSET_ENCODER_PRIVATE_MEMBER_VARIABLES(esc6)
-		u32 m_State;
-	};
 
 	ErrorCode CharsetEncoder<esc6>::Write(u32 codepoint)
 	{
@@ -556,19 +385,6 @@ namespace ES {
 		return ErrorCode::NONE;
 	}
 
-
-
-	template<>
-	struct CharsetEncoder<esc8>
-	{
-
-	public:	 CHARSET_ENCODER_PUBLIC_METHODS_DEF(esc8)
-
-	private: CHARSET_ENCODER_PRIVATE_METHODS(esc8)
-
-	private: CHARSET_ENCODER_PRIVATE_MEMBER_VARIABLES(esc8)
-
-	};
 
 	ErrorCode CharsetEncoder<esc8>::Write(u32 codepoint)
 	{

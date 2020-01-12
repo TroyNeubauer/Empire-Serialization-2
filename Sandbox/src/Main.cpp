@@ -35,9 +35,9 @@ int main()
 		s.push_back('C');
 		s.push_back('!');
 	}
-	Print::OUT.Write(s);
-	Print::OUT.Write("test");
-	Print::OUT.Write(7).Write(" ").Base(100, 16).W(" : ")
+	Print::STDOUT.Write(s);
+	Print::STDOUT.Write("test");
+	Print::STDOUT.Write(7).Write(" ").Base(100, 16).W(" : ")
 		.Base(127, 2).Flush();
 
 	/*Type point = Type::CreateClass("Point",
