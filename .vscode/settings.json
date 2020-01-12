@@ -64,6 +64,9 @@
 		"shared_mutex": "cpp",
 		"bit": "cpp",
 		"conversions.h": "c",
-		"forwardtypes.h": "c"
+		"forwardtypes.h": "c",
+		"immintrin.h": "c",
+		"mmintrin.h": "c",
+		"climits": "c"
 	}
 }

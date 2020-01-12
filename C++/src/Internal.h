@@ -67,25 +67,34 @@
 	#error Unknown architecture
 #endif
 
+//Include intrinsic headers
+#if defined(ES_X86_64) || defined(ES_X86)
+	#include <immintrin.h>
+
+#else
+	#Add new case and intrinsics header here!
+
+#endif
+
 
 #ifdef ES_DEBUG
 		// debug break
 	#if defined(ES_PLATFORM_WINDOWS)
-		#define ES_DEBUGBREAK(file, line) __debugbreak()
+		#define ES_DEBUGBREAK() __debugbreak()
 
 	#elif defined(ES_PLATFORM_UNIX)
 		#include <signal.h>
-		#define ES_DEBUGBREAK(file, line) raise(SIGTRAP)
+		#define ES_DEBUGBREAK() raise(SIGTRAP)
 
 	#elif defined(ES_PLATFORM_EMSCRIPTEN)
-		#define ES_DEBUGBREAK(file, line) EM_ASM({ alert('Assertion failed at File $0, line $1'); }, file, line);
+		#define ES_DEBUGBREAK() EM_ASM({ alert('Assertion failed at File $0, line $1'); }, __FILE__, __LINE__);
 	
 	#else
 		#error No debug break!
 
 	#endif
 
-	#define ES_ASSERT(x, message) { if(!(x)) { ::ES::Internal::Log(message); ES_DEBUGBREAK(__FILE__, __LINE__); } }
+	#define ES_ASSERT(x, message) { if(!(x)) { ::ES::Internal::Log(message); ES_DEBUGBREAK(); } }
 
 #else
 	#define ES_ASSERT(x, message)
@@ -168,7 +177,9 @@ namespace ES {
 			inline void* StackPointer()
 			{
 #if defined(ES_PLATFORM_UNIX)
-
+				void* result;
+    			asm("mov result,rsp");
+				return result;
 #else
 				int x;
 				return &x;
@@ -234,6 +245,42 @@ namespace ES {
 		bool TopNBitsAre(T value)
 		{
 			return TopNBits<n, T>(value) == expecting;
+		}
+
+		template<typename T>
+		s8 MaxBitPlace(T value)
+		{
+			for (int i = sizeof(T) * CHAR_BIT - 1; i >= 0; i--)
+			{
+				if ((value >> i) & 0x01) return i;
+			}
+			return -1;
+		}
+
+#if defined(ES_COMPILER_GCC) || defined(ES_COMPILER_CLANG)
+//TODO
+/*		template<> s8 MaxBitPlace(u32 value) { return _bit_scan_reverse(value); }
+		template<> s8 MaxBitPlace(u16 value) { return _bit_scan_reverse(value); }
+		template<> s8 MaxBitPlace( u8 value) { return _bit_scan_reverse(value); }
+*/
+#elif defined(ES_COMPILER_MSVC)
+		template<> inline s8 MaxBitPlace(u64 value) { unsigned long result; if (_BitScanReverse64(&result, value)) return static_cast<s8>(result); else return -1; }
+		template<> inline s8 MaxBitPlace(u32 value) { unsigned long result; if (_BitScanReverse(&result, value)) return static_cast<s8>(result); else return -1; }
+		template<> inline s8 MaxBitPlace(u16 value) { unsigned long result; if (_BitScanReverse(&result, value)) return static_cast<s8>(result); else return -1; }
+		template<> inline s8 MaxBitPlace( u8 value) { unsigned long result; if (_BitScanReverse  (&result, value)) return static_cast<s8>(result); else return -1; }
+
+#else
+
+	#warning No special implementation for this compiler
+#endif
+
+		//TODO provide implenmentations for u32 and u64 that use builtin swap instrunctions if avilable
+		template<typename T>
+		void ByteSwap(T& value)
+		{
+			u8* begin = reinterpret_cast<u8*>(&value);
+			u8* end = begin + sizeof(T);
+			std::reverse(begin, end);
 		}
 	}
 }

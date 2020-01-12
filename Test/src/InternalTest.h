@@ -46,4 +46,35 @@ TEST_CASE("Internal::BottomBits<n>(value)")
 
 }
 
+TEST_CASE("Internal::MaxBitPlace")
+{
+	REQUIRE(Internal::MaxBitPlace<u8>(0xFF) == 7);
+	REQUIRE((int) Internal::MaxBitPlace<u8>(0b11) == 1);
+	REQUIRE(Internal::MaxBitPlace<u8>(0) == -1);
 
+	REQUIRE(Internal::MaxBitPlace<u16>(0xFF) == 7);
+	REQUIRE(Internal::MaxBitPlace<u16>(0xFFFF) == 15);
+	REQUIRE(Internal::MaxBitPlace<u16>(0x0100) == 8);
+	REQUIRE(Internal::MaxBitPlace<u16>(0b11) == 1);
+	REQUIRE(Internal::MaxBitPlace<u16>(0) == -1);
+
+	REQUIRE(Internal::MaxBitPlace<u32>(0xFF) == 7);
+	REQUIRE(Internal::MaxBitPlace<u32>(0xFFFF) == 15);
+	REQUIRE(Internal::MaxBitPlace<u32>(0x0100) == 8);
+	REQUIRE(Internal::MaxBitPlace<u32>(0xFFFFFFFF) == 31);
+	REQUIRE(Internal::MaxBitPlace<u32>(0x010000) == 16);
+	REQUIRE(Internal::MaxBitPlace<u32>(0b11) == 1);
+	REQUIRE(Internal::MaxBitPlace<u32>(0) == -1);
+
+	REQUIRE(Internal::MaxBitPlace<u64>(0xFF) == 7);
+	REQUIRE(Internal::MaxBitPlace<u64>(0xFFFF) == 15);
+	REQUIRE(Internal::MaxBitPlace<u64>(0x0100) == 8);
+	REQUIRE(Internal::MaxBitPlace<u64>(0xFFFFFFFF) == 31);
+	REQUIRE(Internal::MaxBitPlace<u64>(0x010000) == 16);
+	REQUIRE(Internal::MaxBitPlace<u64>(0xFFFFFFFFFFFFFFFF) == 63);
+	REQUIRE(Internal::MaxBitPlace<u64>(0x0100000000) == 32);
+	REQUIRE(Internal::MaxBitPlace<u64>(0b11) == 1);
+	REQUIRE(Internal::MaxBitPlace<u64>(0) == -1);
+
+
+}

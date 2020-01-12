@@ -3,6 +3,7 @@
 
 
 #define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include <catch2/catch.hpp>
 
 int main(int argc, char* const argv[]) {
@@ -15,9 +16,6 @@ int main(int argc, char* const argv[]) {
 	return result;
 }
 
+#include "ConversionsBench.h"
 
-#include "FormatTest.h"
-#include "BufferTest.h"
-#include "ConversionsTest.h"
-#include "InternalTest.h"
 

@@ -48,7 +48,7 @@ namespace ES {
 			//Thrown during character set conversions when a character cannot be represented in the destination charset
 			struct
 			{
-				u32 Char;
+				u32 Char;// unicode value
 				Charset CharacterSet;
 				CharacterIndex Position;//Information about where the unsupported character is. In bytes and characters
 			} UnsupportedCharacter;

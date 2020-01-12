@@ -1,7 +1,8 @@
 
 #include "EmpireSerialization2.h"
-#include "String.h"
+#include "ESString.h"
 #include "Internal.h"
+#include "Charsets.h"
 
 namespace ES {
 	namespace String {
@@ -69,7 +70,7 @@ namespace ES {
 		static std::size_t NullTerminatedWordCount(const T* ptr)
 		{
 			const T* start = ptr;
-			while (*ptr)
+			while (ptr->Value)
 			{
 				ptr++;
 			}
@@ -101,9 +102,28 @@ namespace ES {
 		template<>
 		std::size_t WordCount(const esc8* string)
 		{
-			return 0;//TODO
+			return NullTerminatedWordCount(string);
 		}
 
+		template<typename T>
+		std::size_t CharacterCount(const T* string)
+		{
+			CharsetDecoder<T> decoder(string, WordCount(string));
+			u32 codepoint;
+			ErrorCode code;
+			while (decoder.HasChars())
+			{
+				if (code = decoder.Read(codepoint)) return UNABLE_TO_QUERY_CHARACTER_COUNT;
+			}
+			return decoder.CharactersRead();
+		}
 
+		template std::size_t CharacterCount(const utf8*);
+		template std::size_t CharacterCount(const utf16*);
+		template std::size_t CharacterCount(const utf32*);
+		template std::size_t CharacterCount(const esc4*);
+		template std::size_t CharacterCount(const esc6*);
+		template std::size_t CharacterCount(const esc8*);
 	}
 }
+
