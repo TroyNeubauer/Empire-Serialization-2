@@ -20,7 +20,7 @@ namespace ES {
 
 		void DefaultAllocErrorHandler()
 		{
-			Log("[Empire Serialization 2] Critical Error! Failed to allocate memory! Program will terminate");
+			Log("Critical Error! Failed to allocate memory! Program will terminate");
 		}
 
 		
@@ -38,7 +38,7 @@ namespace ES {
 
 		void Log(const char* message)
 		{
-			printf("[Empire Serialization 2]: %s", message);
+			printf("[Empire Serialization 2]: %s\n", message);
 		}
 
 	}

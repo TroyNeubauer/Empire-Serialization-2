@@ -159,6 +159,10 @@ namespace ES {
 		{
 			codepoint = (static_cast<u32>(m_CurrentWord) >> 0) & 0b1111;
 		}
+		if ((codepoint = ESC4_DECODE[codepoint]) == -1)
+		{
+			return InvalidCharacterError();
+		}
 		m_Stale = !m_Stale;
 		m_CharacterIndex++;
 
@@ -187,6 +191,10 @@ namespace ES {
 		else if (m_CharacterIndex % 4 == 3)
 		{
 			codepoint = (m_PackedWords >> 0) & 0b111111;
+		}
+		if ((codepoint = ESC6_DECODE[codepoint]) == -1)
+		{
+			return InvalidCharacterError();
 		}
 
 		m_CharacterIndex++;
@@ -359,20 +367,20 @@ namespace ES {
 		esc6::WordType encoded;
 		if (codepoint >= ESC6_ENCODE.size() || (encoded = ESC6_ENCODE[codepoint]) == -1) return UnsupportedCharacterError(codepoint);
 
-		if (m_CharacterIndex % 2 == 0)
+		if (m_CharacterIndex % 4 == 0)
 		{
 			//top 6 bits of 24 bit word
 			m_State = (encoded << 18);
 		}
-		else if (m_CharacterIndex % 2 == 1)
+		else if (m_CharacterIndex % 4 == 1)
 		{
 			m_State |= (encoded << 12);
 		}
-		else if (m_CharacterIndex % 2 == 2)
+		else if (m_CharacterIndex % 4 == 2)
 		{
 			m_State |= (encoded << 6);
 		}
-		else if (m_CharacterIndex % 2 == 3)
+		else if (m_CharacterIndex % 4 == 3)
 		{
 			m_State |= (encoded << 6);
 			//Write all three bytes

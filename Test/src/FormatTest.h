@@ -128,6 +128,11 @@ TEST_CASE("File formatter flush", "[formatting]")
 		formatter << "Print me test string" << '\n' << 5;
 	}
 
+	std::vector<char> str(formatter.BufferCapacity());
+	std::fill(str.begin(), str.begin() + str.capacity(), 'A');
+	str.push_back('\0');
+	formatter << str.data();
+
 }
 
 TEST_CASE("DefualtFormatter Code coverage", "[formatting]")

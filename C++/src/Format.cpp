@@ -165,7 +165,7 @@ namespace ES {
 		{
 			//flush the current data and then print the string directly
 			Flush();
-			std::size_t bytesWritten = fwrite(m_Buf, 1, m_Wrapper.Size(), m_File);
+			std::size_t bytesWritten = fwrite(value, 1, length, m_File);
 			ES_ASSERT(bytesWritten == length, "Failed to write to STDOut");
 			Flush();//fsync
 		}
