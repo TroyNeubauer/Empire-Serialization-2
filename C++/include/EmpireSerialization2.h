@@ -13,6 +13,8 @@
 #include "EmpireSerialization/ForwardTypes.h"
 #include "EmpireSerialization/Error.h"
 #include "EmpireSerialization/Charsets.h"
+#include "EmpireSerialization/Conversions.h"
+#include "EmpireSerialization/ESString.h"
 
 namespace ES {
 

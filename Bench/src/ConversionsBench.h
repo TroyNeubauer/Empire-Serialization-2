@@ -3,8 +3,7 @@
 #include <iostream>
 #include <random>
 
-#include <EmpireSerialization/Conversions.h>
-#include <EmpireSerialization/Charsets.h>
+#include <EmpireSerialization2.h>
 #include <Internal.h>
 
 using namespace ES;
@@ -14,7 +13,11 @@ template<typename SrcType, typename DestType>
 void TestFromFile(const char* benchName, const char* fileName, double fileMultiplier = 1.0)
 {
 	std::ifstream file(fileName);
-	REQUIRE(file.good());
+	if (!file.good())
+	{
+		Print::STDOUT.Write("Cannot open file: ").Write(fileName).Write('\n').Flush();
+		REQUIRE(file.good());
+	}
 	
 	std::vector<char> rawFile((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 	std::vector<utf8> finalChars;
@@ -42,7 +45,12 @@ void TestFromFile(const char* benchName, const char* fileName, double fileMultip
 	{
 		//We need to convert from the utf8 file to the source type
 		StringCodingData data;
-		REQUIRE(Conversions::ConvertString<utf8, SrcType>(finalChars.data(), characters, src.data(), characters, data) == ErrorCode::NONE);
+		ErrorCode code = Conversions::ConvertString<utf8, SrcType>(finalChars.data(), characters, src.data(), characters, data);
+		if (code != ErrorCode::NONE)
+		{
+			DefaultFormatter formatter;
+			
+		}
 		REQUIRE(data.Characters == characters);
 	}
 	
@@ -92,9 +100,9 @@ void TestFromRandomCharset(const char* benchName, const std::array<char, Len>& c
     };
 }
 
-//Origional about 2ns per character for direct. Double for things like utf16->esc4
-TEST_CASE("utf8->esc4") {
 
+TEST_CASE("utf8->esc4 (random chars)") {
+	TestFromRandomCharset<utf8, esc4>("10B utf8->esc4", ESC4_DECODE, 10);
 	TestFromRandomCharset<utf8, esc4>("100B utf8->esc4", ESC4_DECODE, 100);
 	TestFromRandomCharset<utf8, esc4>(  "1K utf8->esc4", ESC4_DECODE, 1000);
 	TestFromRandomCharset<utf8, esc4>( "10K utf8->esc4", ESC4_DECODE, 10000);
@@ -103,8 +111,8 @@ TEST_CASE("utf8->esc4") {
 	TestFromRandomCharset<utf8, esc4>("10MB utf8->esc4", ESC4_DECODE, 10000000);
 }
 
-TEST_CASE("utf8->utf32") {
-
+TEST_CASE("utf8->utf32 (file, ASCII Only)") {
+	TestFromFile<utf8, utf32>("10B utf8->utf32", "res/conversion/1k_ascii.txt", 0.01);
 	TestFromFile<utf8, utf32>("100B utf8->utf32", "res/conversion/1k_ascii.txt", 0.1);
 	TestFromFile<utf8, utf32>("1K utf8->utf32", "res/conversion/1k_ascii.txt", 1.0);
 	TestFromFile<utf8, utf32>("10K utf8->utf32", "res/conversion/1k_ascii.txt", 10);
@@ -114,8 +122,20 @@ TEST_CASE("utf8->utf32") {
 	TestFromFile<utf8, utf32>("10MB utf8->utf32", "res/conversion/100k_ascii.txt", 100);
 }
 
-TEST_CASE("utf16->utf32") {
+TEST_CASE("utf8->utf8 (file, ASCII Only)") {
+	TestFromFile<utf8, utf8>("10B utf8->utf8", "res/conversion/1k_ascii.txt", 0.01);
+	TestFromFile<utf8, utf8>("100B utf8->utf8", "res/conversion/1k_ascii.txt", 0.1);
+	TestFromFile<utf8, utf8>("1K utf8->utf8", "res/conversion/1k_ascii.txt", 1.0);
+	TestFromFile<utf8, utf8>("10K utf8->utf8", "res/conversion/1k_ascii.txt", 10);
+	TestFromFile<utf8, utf8>("100K utf8->utf8", "res/conversion/100k_ascii.txt");
 
+	TestFromFile<utf8, utf32>("1MB utf8->utf32", "res/conversion/100k_ascii.txt", 10);
+	TestFromFile<utf8, utf32>("10MB utf8->utf32", "res/conversion/100k_ascii.txt", 100);
+}
+
+
+TEST_CASE("utf16->utf32 (file, ASCII Only)") {
+	TestFromFile<utf16, utf32>("10B utf16->utf32", "res/conversion/1k_ascii.txt", 0.01);
 	TestFromFile<utf16, utf32>("100B utf16->utf32", "res/conversion/1k_ascii.txt", 0.1);
 	TestFromFile<utf16, utf32>("1K utf16->utf32", "res/conversion/1k_ascii.txt", 1.0);
 	TestFromFile<utf16, utf32>("10K utf16->utf32", "res/conversion/1k_ascii.txt", 10);
@@ -126,8 +146,8 @@ TEST_CASE("utf16->utf32") {
 
 }
 
-TEST_CASE("utf8->utf16") {
-
+TEST_CASE("utf8->utf16 (file, ASCII Only)") {
+	TestFromFile<utf8, utf16>("10B utf8->utf16", "res/conversion/1k_ascii.txt", 0.01);
 	TestFromFile<utf8, utf16>("100B utf8->utf16", "res/conversion/1k_ascii.txt", 0.1);
 	TestFromFile<utf8, utf16>("1K utf8->utf16", "res/conversion/1k_ascii.txt", 1.0);
 	TestFromFile<utf8, utf16>("10K utf8->utf16", "res/conversion/1k_ascii.txt", 10);
@@ -138,8 +158,13 @@ TEST_CASE("utf8->utf16") {
 }
 
 
-TEST_CASE("utf8->esc6") {
-
-
+TEST_CASE("utf8->esc6 (file, ASCII Only)") {
+	TestFromRandomCharset<utf8, esc6>( "10B utf8->esc6", ESC6_DECODE, 10);
+	TestFromRandomCharset<utf8, esc6>("100B utf8->esc6", ESC6_DECODE, 100);
+	TestFromRandomCharset<utf8, esc6>(  "1K utf8->esc6", ESC6_DECODE, 1000);
+	TestFromRandomCharset<utf8, esc6>( "10K utf8->esc6", ESC6_DECODE, 10000);
+	TestFromRandomCharset<utf8, esc6>("100K utf8->esc6", ESC6_DECODE, 100000);
+	TestFromRandomCharset<utf8, esc6>( "1MB utf8->esc6", ESC6_DECODE, 1000000);
+	TestFromRandomCharset<utf8, esc6>("10MB utf8->esc6", ESC6_DECODE, 10000000);
 }
 

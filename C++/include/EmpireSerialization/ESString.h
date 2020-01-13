@@ -16,8 +16,7 @@
 
 #pragma once
 
-#include "EmpireSerialization2.h"
-#include "Conversions.h"
+#include "Charsets.h"
 
 namespace ES {
 

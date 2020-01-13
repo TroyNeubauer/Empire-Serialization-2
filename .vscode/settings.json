@@ -67,6 +67,9 @@
 		"forwardtypes.h": "c",
 		"immintrin.h": "c",
 		"mmintrin.h": "c",
-		"climits": "c"
+		"climits": "c",
+		"charsets.h": "c",
+		"error.h": "c",
+		"esstring.h": "c"
 	}
 }

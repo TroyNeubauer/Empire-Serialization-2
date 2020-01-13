@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "EmpireSerialization2.h"
 #include "Charsets.h"
 
 namespace ES {
