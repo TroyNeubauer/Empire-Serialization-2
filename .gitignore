@@ -1,10 +1,17 @@
 
+#Code coverage
+**.gcov
+**.gcno
 
+#VSCode
 **/peda-session*
 **/.vs/
+
+#Binaries
 **/bin/
 **/bin-int/
 
+#Visual Studio
 **/*.sln
 **/*.vcxproj
 **/*.vcxproj.user

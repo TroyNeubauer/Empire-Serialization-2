@@ -158,13 +158,15 @@ project "Bench"
 
 	if _OPTIONS["coverage"] then
 		buildoptions { "-fprofile-abs-path" }
+
+		if os.target() == "linux" then
+			links
+			{
+				"gcov",
+			}
+		end
 	end
 
-	filter "system:linux"
-		links
-		{
-			"gcov",
-		}
 
 project "Test"
 	location "Test"
@@ -202,13 +204,15 @@ project "Test"
 
 	if _OPTIONS["coverage"] then
 		buildoptions { "-fprofile-abs-path" }
+		
+		if os.target() == "linux" then
+			links
+			{
+				"gcov",
+			}
+		end
 	end
 
-	filter "system:linux"
-		links
-		{
-			"gcov",
-		}
 
 
 project "Sandbox"
@@ -246,11 +250,12 @@ project "Sandbox"
 
 	if _OPTIONS["coverage"] then
 		buildoptions { "-fprofile-abs-path" }
-	end
 
-	filter "system:linux"
-		links
-		{
-			"gcov",
-		}
+		if os.target() == "linux" then
+			links
+			{
+				"gcov",
+			}
+		end
+	end
 
